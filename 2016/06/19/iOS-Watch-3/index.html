@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    
+    <title>watchOS 2 - WatchConnectivity | 意林</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+        <meta name="keywords" content="" />
+    
+    <meta name="description" content="写在前面虽然watchOS 2实现了可以脱离iPhone进行网络请求，但是也不可以避免的要跟iPhone进行一些数据通信。相信你对WatchConnectivity并不陌生了，只要你去Google一下就会有大把讲WatchConnectivity是怎么用的博客。但是我还是打算写一下我用下来的一些感受。当时准备开发时，也是看了很多博客的介绍，但是并没有通过看这些博客就理解透了WatchConnect">
+<meta property="og:type" content="article">
+<meta property="og:title" content="watchOS 2 - WatchConnectivity">
+<meta property="og:url" content="http://shinancao.github.io/2016/06/19/iOS-Watch-3/index.html">
+<meta property="og:site_name" content="意林">
+<meta property="og:description" content="写在前面虽然watchOS 2实现了可以脱离iPhone进行网络请求，但是也不可以避免的要跟iPhone进行一些数据通信。相信你对WatchConnectivity并不陌生了，只要你去Google一下就会有大把讲WatchConnectivity是怎么用的博客。但是我还是打算写一下我用下来的一些感受。当时准备开发时，也是看了很多博客的介绍，但是并没有通过看这些博客就理解透了WatchConnect">
+<meta property="og:image" content="http://shinancao.github.io/images/iOS-Watch-3.png">
+<meta property="og:updated_time" content="2016-06-19T15:01:03.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="watchOS 2 - WatchConnectivity">
+<meta name="twitter:description" content="写在前面虽然watchOS 2实现了可以脱离iPhone进行网络请求，但是也不可以避免的要跟iPhone进行一些数据通信。相信你对WatchConnectivity并不陌生了，只要你去Google一下就会有大把讲WatchConnectivity是怎么用的博客。但是我还是打算写一下我用下来的一些感受。当时准备开发时，也是看了很多博客的介绍，但是并没有通过看这些博客就理解透了WatchConnect">
+<meta name="twitter:image" content="http://shinancao.github.io/images/iOS-Watch-3.png">
+    
+
+    
+
+    
+        <link rel="icon" href="/favicon.png" />
+    
+
+    <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/vendor/titillium-web/styles.css">
+    <link rel="stylesheet" href="/vendor/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/vendor/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/vendor/fancybox/jquery.fancybox.css">
+    
+    
+        <link rel="stylesheet" href="/vendor/scrollLoading/style.css">
+    
+    
+    
+
+</head>
+
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo"></a>
+                    </h1>
+                    
+                        <h2 class="subtitle-wrap">
+                            <p class="subtitle">Be a cool girl ~</p>
+                        </h2>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/">Home</a>
+                                </li>
+                            
+                                        <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Bakery/">Bakery</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/English/">English</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/English/Poetry/">Poetry</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Life/">Life</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/">iOS</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/Apple-Watch/">Apple Watch</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/GCD/">GCD</a></li></ul></li></ul>
+                                    
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/about/index.html">About</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/iOS/Apple-Watch/">Apple Watch</a>
+    </h1>
+</div>
+                        <div class="main-body-content">
+                            <article id="post-iOS-Watch-3" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        watchOS 2 - WatchConnectivity
+        </h1>
+    
+
+            </header>
+        
+        <div class="article-subtitle">
+            <a href="/2016/06/19/iOS-Watch-3/" class="article-date">
+    <time datetime="2016-06-19T03:44:23.000Z" itemprop="datePublished">2016-06-19</time>
+</a>
+            
+        </div>
+        <div class="article-entry" itemprop="articleBody">
+            <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>虽然watchOS 2实现了可以脱离iPhone进行网络请求，但是也不可以避免的要跟iPhone进行一些数据通信。相信你对<code>WatchConnectivity</code>并不陌生了，只要你去Google一下就会有大把讲<code>WatchConnectivity</code>是怎么用的博客。但是我还是打算写一下我用下来的一些感受。当时准备开发时，也是看了很多博客的介绍，但是并没有通过看这些博客就理解透了<code>WatchConnectivity</code>里面的那些方法的用法和应用场景。希望这篇总结能让你少踩一些坑~。</p>
+<h2 id="WCSession"><a href="#WCSession" class="headerlink" title="WCSession"></a>WCSession</h2><p><code>WatchConnectivity</code>是一个Framework，里面包含了watch与iPhone进行数据交互的类和协议，在watch和iPhone上都支持。<code>WCSession</code>便是这个框架的主角，它提供了一个单例方法<code>+ (WCSession *)defaultSession</code>来获得当前设备上的session。在使用该session前，要先设置它的<code>delegate</code>，并激活它。一个设备上就只有这一个session哦，<strong>所以在使用到第三方SDK时，注意可能产生的冲突，因为<code>delegate</code>是一种一对一的关系。</strong></p>
+<p>在iPhone端配置<code>WCSession</code>:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">- (instancetype)init &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span> = [<span class="keyword">super</span> init]) &#123;</span><br><span class="line">        <span class="keyword">if</span> ([WCSession class]) &#123;</span><br><span class="line">            <span class="keyword">if</span> ([WCSession isSupported]) &#123;</span><br><span class="line">                _session = [WCSession defaultSession];</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                _session = <span class="literal">nil</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            _session = <span class="literal">nil</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)startSession &#123;</span><br><span class="line">    <span class="keyword">if</span> (_session) &#123;</span><br><span class="line">        _session.delegate = <span class="keyword">self</span>;</span><br><span class="line">        [_session activateSession];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在watch端配置<code>WCSession</code>:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (instancetype)init &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span> = [<span class="keyword">super</span> init]) &#123;</span><br><span class="line">        _session = [WCSession defaultSession];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)startSession &#123;</span><br><span class="line">    _session.delegate = <span class="keyword">self</span>;</span><br><span class="line">    [_session activateSession];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>已经在watch端了，所以没有加上<code>[WCSession isSupported]</code>判断，一定是支持的。</p>
+<p>同时，在iPhone端发送数据之前，要判断_session是否有效：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- (WCSession *)validSession &#123;</span><br><span class="line">    <span class="keyword">if</span> (_session.paired &amp;&amp; _session.watchAppInstalled) &#123;</span><br><span class="line">        <span class="keyword">return</span> _session;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面将介绍几种数据传输的方式。</p>
+<h2 id="session-sendMessage-replyHandler-errorHandler"><a href="#session-sendMessage-replyHandler-errorHandler" class="headerlink" title="[_session sendMessage:replyHandler:errorHandler:]"></a>[_session sendMessage:replyHandler:errorHandler:]</h2><p>该方法会比较及时的发送消息，如果watch端是处于活跃状态，那么在watch App中调用该个方法，会将与其配对的iPhone上的相应App在后台启动（但是你看不见哦），但是反过来在iPhone App中调用该方法是无法启动对应的watch App的。在掉用该方法时一定要判断session的可到达性<code>_session.reachable</code>。关于这个到达心，可以看一下官方的解释：</p>
+<p><img src="/images/session-reachable.png" width="687" height="165"></p>
+<p>在天气王App中，用户一打开手表时，就要知道有在手机上添加了几个城市，又由于用户添加的城市列表没有同步到服务器上，所以只能通过iPhone来拿数据，此处就用到了该方法。其实就是用watch给iPhone发送一条拿城市的信息，iPhone收到该信息后，把城市列表数据再发给watch。发送的消息就是一个固定的key-value:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSDictionary</span> *)getCitysMessage &#123;</span><br><span class="line">    <span class="comment">//获取系统当前的时间戳</span></span><br><span class="line">    <span class="built_in">NSDate</span>* dat = [<span class="built_in">NSDate</span> dateWithTimeIntervalSinceNow:<span class="number">0</span>];</span><br><span class="line">    <span class="built_in">NSTimeInterval</span> a=[dat timeIntervalSince1970]*<span class="number">1000</span>;</span><br><span class="line">    <span class="built_in">NSString</span> *timeString = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%f"</span>, a];</span><br><span class="line">    <span class="comment">//发送的消息与上次一样则不会发送，因此加上时间戳</span></span><br><span class="line">    <span class="built_in">NSDictionary</span> *dict = @&#123;<span class="string">@"watchSessionSycnCitys"</span>:[<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%@%@"</span>, <span class="string">@"watchSessionSycnCitys"</span>, timeString]&#125;;</span><br><span class="line">    <span class="keyword">return</span> dict;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>对于同样的数据内容，<code>WCSession</code>不会连续发送2次，所以加上一个时间戳。</strong></p>
+<p>使用<code>-(void)sendMessage:replyHandler:errorHandler:</code>有2种方式来接收iPhone传过来的数据：</p>
+<ul>
+<li>在iPhone端实现<code>WCSessionDelegate</code>中的<code>-(void)session:didReceiveMessage:replyHandler:</code>方法，然后把数据交给<code>replyHandler</code>。在watch端直接在<code>-(void)sendMessage:replyHandler:errorHandler:</code>中的<code>replyHandler</code>中处理收到的数据就可以了。</li>
+<li>在iPhone端同样实现<code>WCSessionDelegate</code>中的<code>-(void)session:didReceiveMessage:replyHandler:</code>方法，然后调用<code>sendMessage</code>把数据发送出去。在watch端也实现这个delegate方法，然后处理<code>receiveMessage</code>就可以了。</li>
+</ul>
+<h2 id="session-updateApplicationContext-error"><a href="#session-updateApplicationContext-error" class="headerlink" title="[_session updateApplicationContext:error:]"></a>[_session updateApplicationContext:error:]</h2><p>该方法会把最近的一次数据发送给对方。也就是说，如果我用它发出去了一次数据，对方没有处理，然后我又用它发了一次数据，那么这次的数据会把上次的给覆盖掉，也就是上一次的数据对方永远收不到了。此外，如果本次发送的数据是与上次一模一样的，那么本次的数据就不会发送了。它发送消息不是及时的。</p>
+<p>在天气王App中，用户每次在手机上添加、删除城市，或者设置了默认城市，需要同步到手表上，但是又不需要及时处理，只要在用户打开手表时，看到的城市与手机上的一致就行了。在用户每次添加了城市，或删除了城市，或设置了默认城市，就会把这个城市列表发送一次。</p>
+<p>在接收数据的一端，实现<code>WCSessionDelegate</code>中的<code>- (void)session:didReceiveApplicationContext:</code>方法，如果需要更新界面，注意要在主线程中来处理收到的数据，这个delegate方法不保证一定是在主线程中执行的。</p>
+<p>有一点想特意说一下，一定要把<code>updateApplicationContext</code>中的<code>error</code>用弹窗形式打印出来，我就掉到这个坑里了，只用了<code>NSLog</code>，但是调试Watch端的时候，iPhone中的信息是不会打印到控制台上的…，于是在收不到数据时就一脸懵bi了。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)updateApplicationContext:(<span class="built_in">NSDictionary</span> *)applicationContext &#123;</span><br><span class="line">    <span class="keyword">if</span> ([<span class="keyword">self</span> validSession]) &#123;</span><br><span class="line">        <span class="built_in">NSError</span> *error = <span class="literal">nil</span>;</span><br><span class="line">        [_session updateApplicationContext:applicationContext error:&amp;error];</span><br><span class="line">        <span class="keyword">if</span> (error) &#123;</span><br><span class="line">            <span class="built_in">UIAlertView</span> *alert = [[<span class="built_in">UIAlertView</span> alloc]initWithTitle:<span class="string">@"error"</span> message:error.description delegate:<span class="literal">nil</span> cancelButtonTitle:<span class="string">@"取消"</span> otherButtonTitles:<span class="literal">nil</span>];</span><br><span class="line">            [alert show];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="session-transferUserInfo"><a href="#session-transferUserInfo" class="headerlink" title="[_session transferUserInfo]"></a>[_session transferUserInfo]</h2><p>该方法会把数据放到队列中，然后按照顺序发送出去。一旦数据开始传输了，即使app被挂起，该传输过程也不会被中断。同时注意，该方法是有返回值的，返回了<code>WCSessionUserInfoTransfer</code>，让你可以取消本次数据传输，查看传输的数据，和是否正在进行传输。</p>
+<p>在天气王App中，watch端和iPhone端拉取天气数据的接口都是一样了，为了避免浪费请求，在iPhone拿到天气数据后，会通过该方法将其同步到watch上。</p>
+<h2 id="WCSessionDelegate的代理方法sessionReachabilityDidChange"><a href="#WCSessionDelegate的代理方法sessionReachabilityDidChange" class="headerlink" title="WCSessionDelegate的代理方法sessionReachabilityDidChange"></a>WCSessionDelegate的代理方法sessionReachabilityDidChange</h2><p>这个delegate方法会在对方的session可到达性发生变化时被触发。比如你某一天出门时忘记戴手表了，然后白天时iPhone天气王App中添加了几个城市，晚上下班回到家，这时拿起手表看天气，需要立即同步到白天添加的城市，就可以在该方法中处理了。</p>
+<h2 id="WCSession在代码层的设计"><a href="#WCSession在代码层的设计" class="headerlink" title="WCSession在代码层的设计"></a>WCSession在代码层的设计</h2><p>简单的说一下我的做法，作为你去处理这块的一个参考，有什么好的建议也希望在留言中分享哦~。</p>
+<p><code>WCSession</code>在iOS App上和WatchKit Extension上都只能有一个，所以用一个单例类来管理对它的一些操作还是比较合理的，在iOS App上和WatchKit Extension上都分别创建一个<code>WatchSessionManager</code>类。这个类中的<code>_session</code>最好不要暴露出去，又因为涉及到的操作也不是很多，所以我把具体的业务处理也放在了这个类中，然后直接提供封装好的具体方法出去，比如<code>getCitysFromIphone</code>这样。</p>
+<p>在watch端拿到数据后，还要通知界面做相应的处理，用<code>NSNotification</code>显然会把代码弄的非常不优雅，于是用delegate的方式了。<code>WatchSessionManager</code>要通知的对象通常不会只有一个，所以这里我用了一个：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSPointerArray</span> *weakRefDelegates;</span><br></pre></td></tr></table></figure>
+<p>来放所有的代理对象。为了方便使用，封装了以下方法：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)addDelegate:(<span class="keyword">id</span>)delegate &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (!_weakRefDelegates) &#123;</span><br><span class="line">        _weakRefDelegates = [<span class="built_in">NSPointerArray</span> weakObjectsPointerArray];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (![_weakRefDelegates containsObject:delegate]) &#123;</span><br><span class="line">        [_weakRefDelegates addObject:delegate];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)removeDelegate:(<span class="keyword">id</span>)delegate &#123;</span><br><span class="line">    [_weakRefDelegates removeObject:delegate];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)notifyDelegates:(SEL)selector withObject:(<span class="keyword">id</span>)param &#123;</span><br><span class="line">    <span class="keyword">if</span> (!_weakRefDelegates) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i= <span class="number">0</span>; i &lt; [_weakRefDelegates count]; i++) &#123;</span><br><span class="line">        <span class="keyword">id</span> obj = [_weakRefDelegates objectAtIndex:i];</span><br><span class="line">        <span class="keyword">if</span> (obj &amp;&amp; [obj respondsToSelector:selector]) &#123;</span><br><span class="line">            IMP imp = [obj methodForSelector:selector];</span><br><span class="line">            <span class="keyword">void</span> (*func)(<span class="keyword">id</span>, SEL, <span class="keyword">id</span>, <span class="keyword">id</span>) = (<span class="keyword">void</span> (*) (<span class="keyword">id</span>, SEL, <span class="keyword">id</span>, <span class="keyword">id</span>))imp;</span><br><span class="line">            func(obj, selector, <span class="keyword">self</span>, param);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><em>其中用到的NSPointerArray的<code>removeObject</code>等方法是自己写的它的一个category</em>。</p>
+<p>至此，总结完毕，欢迎拍砖^_^</p>
+<p>–End–</p>
+<p><em>以上如果有说的不严谨的地方，希望在下面的留言中指出哦，如果对你有一些帮助，也希望能在下面的留言中给一些鼓励^_^</em></p>
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://shinancao.github.io/2016/06/19/iOS-Watch-3/" data-id="cipmpesox000siest9x6i2zrf" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>follow:</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="github" href="https://github.com/shinancao/" target="_blank">
+                        <i class="icon fa fa-github"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2016/06/11/Life-Steve-Jobs-2/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">older</strong>
+        <p class="article-nav-title">读《史蒂夫•乔布斯传》</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">recents</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2016/06/19/iOS-Watch-3/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/iOS-Watch-3.png)" alt="watchOS 2 - WatchConnectivity" class="thumbnail-image"></span>
+    
+    
+</a>
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Apple-Watch/">Apple Watch</a></p>
+                            <p class="item-title"><a href="/2016/06/19/iOS-Watch-3/" class="title">watchOS 2 - WatchConnectivity</a></p>
+                            <p class="item-date"><time datetime="2016-06-19T03:44:23.000Z" itemprop="datePublished">2016-06-19</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2016/06/11/Life-Steve-Jobs-2/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/Steve-Jobs2.png)" alt="读《史蒂夫•乔布斯传》" class="thumbnail-image"></span>
+    
+    
+</a>
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Life/">Life</a></p>
+                            <p class="item-title"><a href="/2016/06/11/Life-Steve-Jobs-2/" class="title">读《史蒂夫•乔布斯传》</a></p>
+                            <p class="item-date"><time datetime="2016-06-11T10:36:44.000Z" itemprop="datePublished">2016-06-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2016/06/10/Life-Steve-Jobs/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/Steve-Jobs.png)" alt="读《史蒂夫•乔布斯传》" class="thumbnail-image"></span>
+    
+    
+</a>
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Life/">Life</a></p>
+                            <p class="item-title"><a href="/2016/06/10/Life-Steve-Jobs/" class="title">读《史蒂夫•乔布斯传》</a></p>
+                            <p class="item-date"><time datetime="2016-06-10T03:30:54.000Z" itemprop="datePublished">2016-06-10</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2016/06/02/iOS-Watch-2/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/iOS-Watch-2.png)" alt="WatchKit相关的" class="thumbnail-image"></span>
+    
+    
+</a>
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Apple-Watch/">Apple Watch</a></p>
+                            <p class="item-title"><a href="/2016/06/02/iOS-Watch-2/" class="title">WatchKit相关的</a></p>
+                            <p class="item-date"><time datetime="2016-06-02T13:17:56.000Z" itemprop="datePublished">2016-06-02</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2016/06/01/iOS-Watch-1/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/iOS-Watch-1.png)" alt="watchOS 2 App开发前需要了解的" class="thumbnail-image"></span>
+    
+    
+</a>
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Apple-Watch/">Apple Watch</a></p>
+                            <p class="item-title"><a href="/2016/06/01/iOS-Watch-1/" class="title">watchOS 2 App开发前需要了解的</a></p>
+                            <p class="item-date"><time datetime="2016-06-01T13:25:24.000Z" itemprop="datePublished">2016-06-01</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Bakery/">Bakery</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/English/">English</a><span class="category-list-count">6</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/English/Poetry/">Poetry</a><span class="category-list-count">6</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">4</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Apple-Watch/">Apple Watch</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/GCD/">GCD</a><span class="category-list-count">1</span></li></ul></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a><span class="archive-list-count">8</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+
+            
+                
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://www.jianshu.com/users/5ec2077b2e63/latest_articles">冬季的Blog</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://blog.csdn.net/shinancao666">意林的CSDN Blog</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <h1 class="logo-wrap">
+                    <a href="/" class="logo"></a>
+                </h1>
+                <p>&copy; 2016 Zhang Nan</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'shinancao';
+    
+    
+    var disqus_url = 'http://shinancao.github.io/2016/06/19/iOS-Watch-3/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+    
+        <script src="/vendor/fancybox/jquery.fancybox.pack.js"></script>
+    
+
+    
+        <script src="/vendor/scrollLoading/jquery.scrollLoading.js"></script>
+        <script src="/vendor/scrollLoading/main.js"></script>
+    
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
