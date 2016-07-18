@@ -3,21 +3,23 @@
 <head>
     <meta charset="utf-8">
     
-    <title>关于我 | 意林</title>
+    <title>Static Library在项目中的一次实践 | 意林</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
-    <meta name="description" content="先认识一下我吧~我叫张楠，90年生人，属性女，目前坐标上海，正在从事iOS开发。软件工程科班出身，从事iOS开发也有几年了，但是到现在还是很感兴趣。越往下走，觉得需要学的东西越多= =！。我喜欢电子产品，是苹果脑残粉，也喜欢裙子和高跟鞋^_^。老乔是我这一生最最崇拜的人，没有之一。最大的心愿是能开发出一款被App Store推荐的App。最近开始利用周末时间也玩玩烘培，把以前只知道吃却觉得制作">
-<meta property="og:type" content="website">
-<meta property="og:title" content="关于我">
-<meta property="og:url" content="http://shinancao.github.io/about/index.html">
+        <meta name="keywords" content="" />
+    
+    <meta name="description" content="写在前面还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Static Library在项目中的一次实践">
+<meta property="og:url" content="http://shinancao.github.io/2016/07/05/iOS-Project-Design-1/index.html">
 <meta property="og:site_name" content="意林">
-<meta property="og:description" content="先认识一下我吧~我叫张楠，90年生人，属性女，目前坐标上海，正在从事iOS开发。软件工程科班出身，从事iOS开发也有几年了，但是到现在还是很感兴趣。越往下走，觉得需要学的东西越多= =！。我喜欢电子产品，是苹果脑残粉，也喜欢裙子和高跟鞋^_^。老乔是我这一生最最崇拜的人，没有之一。最大的心愿是能开发出一款被App Store推荐的App。最近开始利用周末时间也玩玩烘培，把以前只知道吃却觉得制作">
-<meta property="og:image" content="http://shinancao.github.io/images/MyPhoto.png">
-<meta property="og:updated_time" content="2016-07-03T14:23:39.000Z">
+<meta property="og:description" content="写在前面还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我">
+<meta property="og:image" content="http://shinancao.github.io/images/iOS-Watch-1.png">
+<meta property="og:updated_time" content="2016-07-18T15:07:25.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于我">
-<meta name="twitter:description" content="先认识一下我吧~我叫张楠，90年生人，属性女，目前坐标上海，正在从事iOS开发。软件工程科班出身，从事iOS开发也有几年了，但是到现在还是很感兴趣。越往下走，觉得需要学的东西越多= =！。我喜欢电子产品，是苹果脑残粉，也喜欢裙子和高跟鞋^_^。老乔是我这一生最最崇拜的人，没有之一。最大的心愿是能开发出一款被App Store推荐的App。最近开始利用周末时间也玩玩烘培，把以前只知道吃却觉得制作">
-<meta name="twitter:image" content="http://shinancao.github.io/images/MyPhoto.png">
+<meta name="twitter:title" content="Static Library在项目中的一次实践">
+<meta name="twitter:description" content="写在前面还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我">
+<meta name="twitter:image" content="http://shinancao.github.io/images/iOS-Watch-1.png">
     
 
     
@@ -129,37 +131,84 @@
                         <div class="main-body-header">
     <h1 class="header">
     
-    <em class="page-title-link" data-url="/about/index.html">关于我</em>
+    <a class="page-title-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/iOS/Project-Design/">Project Design</a>
     </h1>
 </div>
                         <div class="main-body-content">
-                            <article id="page-undefined" class="article article-single article-type-page" itemscope itemprop="blogPost">
+                            <article id="post-iOS-Project-Design-1" class="article article-single article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
             <header class="article-header">
                 
     
         <h1 class="article-title" itemprop="name">
-        关于我
+        Static Library在项目中的一次实践
         </h1>
     
 
             </header>
         
         <div class="article-subtitle">
-            <a href="/about/index.html" class="article-date">
-    <time datetime="2015-03-14T13:17:05.000Z" itemprop="datePublished">2015-03-14</time>
+            <a href="/2016/07/05/iOS-Project-Design-1/" class="article-date">
+    <time datetime="2016-07-05T13:39:01.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
             
         </div>
         <div class="article-entry" itemprop="articleBody">
-            <p><img src="/images/MyPhoto.png" width="200" height="267"></p>
-<h2 id="先认识一下我吧"><a href="#先认识一下我吧" class="headerlink" title="先认识一下我吧~"></a>先认识一下我吧~</h2><p>我叫张楠，90年生人，属性女，目前坐标上海，正在从事iOS开发。软件工程科班出身，从事iOS开发也有几年了，但是到现在还是很感兴趣。越往下走，觉得需要学的东西越多= =！。我喜欢电子产品，是苹果脑残粉，也喜欢裙子和高跟鞋^_^。老乔是我这一生最最崇拜的人，没有之一。最大的心愿是能开发出一款被App Store推荐的App。最近开始利用周末时间也玩玩烘培，把以前只知道吃却觉得制作过程很神秘的东西做出来，感觉真是很美妙，同时还能跟别人分享。</p>
-<p>很高兴能够通过文字与你相遇，也很感谢你能付出时间来阅读~。如果对我写的一些点感兴趣可以在评论区留言，如果有需要纠正的地方也可以在评论区留言，如果半夜睡不着觉也可以在评论区留言~~</p>
-<h2 id="博客都会记录些什么呢"><a href="#博客都会记录些什么呢" class="headerlink" title="博客都会记录些什么呢"></a>博客都会记录些什么呢</h2><p>记录iOS开发中踩过的坑，这是肯定的。同时也会记录玩烘培的一些经验，希望对刚入门的伙伴能有些帮助。还有一个分类是英语，目前想到的就是把我之前收藏的一些英语诗歌整理到这，以后也会有一些英语的学习笔记吧。此外就是会记录生活中的一些琐碎的事情，比如游记、读书笔记，某些瞬间的感悟等等。</p>
-<h2 id="目前正在开发的App"><a href="#目前正在开发的App" class="headerlink" title="目前正在开发的App"></a>目前正在开发的App</h2><p><a href="https://itunes.apple.com/cn/app/2345tian-qi-wang-tian-qi-yu/id965693108?l=en&amp;mt=8" target="_blank" rel="external">2345天气王iOS版</a></p>
-<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>搭建这个博客也折腾了蛮久，每个人熟悉的东西不一样，遇到的问题可能也不一样，所以就不专门写一篇文章来介绍如何搭建了。有疑问的地方可以在下面留言哦~~我知道的一定帮忙解答。</p>
-<p><em>感谢github、感谢hexo，可以让每个人都能有自己独立的博客。感谢<a href="https://github.com/ppoffice" target="_blank" rel="external">ppoffice</a>开发出了这么好的主题。</em></p>
+            <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我就想尝试一下用Framework来打包数据层的代码，这样以后再多加Today插件，也是很轻松就搞定的事儿。</p>
+<p>嗯，我知道的，可以选择每个.m所属的Target，但是随着项目中的Target越来越多，你就知道这有多痛苦了。犹记得忘记给某个.m文件选上某个Target而苦苦调试了n久…。</p>
+<p>正好这个版本的开发时间还不算紧，我决定干脆把整个项目的代码都重新梳理一下。折腾这一次，你会发现自己原来的代码存在多少不合理的耦合。但还是友情提醒一下，真的要做好心里准备，因为这个过程真的不容易，而且你不能半途而废。还有一定要跟产品和测试报备，好争取时间和保证项目没被改出问题=。=</p>
+<h2 id="用Static-Library封装代码的好处"><a href="#用Static-Library封装代码的好处" class="headerlink" title="用Static Library封装代码的好处"></a>用Static Library封装代码的好处</h2><ul>
+<li>项目结构清晰</li>
+</ul>
+<p>项目里哪些是共用的代码，是在哪些Target中共用的代码，代码的分层结构，都一目了然。这样就算一个新加入的伙伴，也能比较快的了解项目，而且基本不用你给他讲=。=</p>
+<ul>
+<li>避免选择.m文件所在的Target，而带来的bug隐患</li>
+</ul>
+<p>一种情况是，当项目中增加了一个Target时，你要到文件里一个一个去添加，难免就漏掉了几个.m没选。</p>
+<p>一种情况是，你删除了某个类，删除的时候却没有注意它所属的Target，然后运行当前的Target还是正常的。比如我们项目有2套Target，一套是AppStore的，一套是Enterprise的。那你留给其他Target的这个bug，就不吉岛什么时候能发现了= =!</p>
+<ul>
+<li>有助于约束项目的代码规范</li>
+</ul>
+<p>Static Libray允许你只暴露你想给别人使用的类，把不想让别人使用的类保护起来，这样就避免了淘气的Parter会随意调用不必要的类，以至于破坏了整个项目的层次结构，产生了不合理的耦合。如果即使用了Static Library，还要随意到xxLibrary中将自己想使用的类改成Public的，那真是不能一起愉快的写代码了= =</p>
+<ul>
+<li>降低耦合度</li>
+</ul>
+<p>总体上，达到了一种单向依赖的关系，封装好的Static Library完全可以移出去用在其他的项目中。而且我在梳理代码的过程中，发现了很多环状的引用，虽然import允许这样做，但是这会拖累编译时间。所以在.h中，非必要时还是用@class。还有就是common、constant这样的类，真的是重构的重灾区。即使常量也还要按照类别放到不同的类中去。此外，如果以后项目要从Objective-C转移到Swift上，可以一个Kit一个Kit的进行重写，由于与主工程脱离开了，所以调试也会轻松。</p>
+<h2 id="我最终抽出的几个Kit"><a href="#我最终抽出的几个Kit" class="headerlink" title="我最终抽出的几个Kit"></a>我最终抽出的几个Kit</h2><ul>
+<li>KingWeatherKit</li>
+</ul>
+<p>这个Kit的目标是用在主App和Today插件中。其中封装了DB层、网络层、Model层、还有主App和Today插件会共用的一些代码，比如xxUtil类等。每往这个Kit里放代码时，要反复问自己，是必须的吗？因为我们不能把它最后给搞的很臃肿。有些类里的代码其实只有一部分是公用的，一部分只是为了适应很独特的场景，这时就要做适当的拆封了。</p>
+<ul>
+<li>KingWeatherTodayKit</li>
+</ul>
+<p>这个Kit的目标是用在Today插件中。其中封装了拿到数据后的业务逻辑处理。它会引用KingWeatherKit中的代码。</p>
+<ul>
+<li>KingWeatherWatchKit</li>
+</ul>
+<p>这个Kit的目标是用在Watch App中，主要封装了数据处理部分，和Util类。无法创建一个Framework或Static Library，即能在iOS App中用，又能在watchOS App中用，所以我创建了一个<code>iPhoneAndWatch</code>的Groups，来放置共用的代码，这块没办法了，只能勾选.m所在的Target，让其同时属于KingWeatherKit和KingWeahterWatchKit。这样这部分代码就始终都是属于这2个Target的了，其他地方要用，通过这2个Kit去用。</p>
+<h2 id="踩到的几个坑"><a href="#踩到的几个坑" class="headerlink" title="踩到的几个坑"></a>踩到的几个坑</h2><ul>
+<li>无法创建一个Kit在iOS与watchOS2上共用</li>
+</ul>
+<p>这一点要注意一下，一开始不知道，我就想创建一个Kit同时在iOS和watchOS上使用，后来发现watchOS有自己的Framework和Static Library。也可以理解，从watchOS2开始watch app脱离iPhone直接在watch上运行了。watchOS1是否可以创建一个Kit同时在iOS和watchOS上运行我没有实验，所以暂时打个问号在这= =。</p>
+<ul>
+<li>同一个Project中的类都是可以访问到的，即使将这些类打包到了Framework或Static Library中</li>
+</ul>
+<p>iOS8开始多了一个Cocoa Touch Framework，我开始重构时就直接在当前工程中创建了它，但是调试到后面时发现，即使我放在Private中的文件，也是可以被随意引用到的。原来在一个Project中的类都是可以调用到的，不管是Framework中的还是Static Library中的。无奈只能再弄一个Project来专门放置这些Kit了，且叫KingWeatherLibrarys。要把这个Project和原来Project合成一个workspace，只能用Static Library，用Cocoa Touch Framework的话KingWeatherLibrarys无法展开看到里面的文件，所以最终我用了Static Library，而不是Framework，并且单独弄了一个Project。</p>
+<ul>
+<li>主工程编译的时候，使封装好的Kit跟着一起编译</li>
+</ul>
+<p>这一点很重要，这样就可以在改动了Kit中的代码时，不用单独编译一次Kit了，而是直接运行主工程就可以看到结果了。操作步骤如下：</p>
+<p>Edit Scheme -&gt; Build -&gt; 添加编译时需要同时编译的Target</p>
+<p><img src="/images/Edit-Scheme.png" width="448" height="252"></p>
+<ul>
+<li>CocoaPods同时作用于多个Project</li>
+</ul>
+<p>抽离出来的Librarys Project和主Project同时都需要通过CocoaPods来引用第三方库，只要在Podfile中处理就可以了，并不会每一个Project同时又跟一个Pods Project哦=。= 。Podfile的写法如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">workspace 'MyLibraryDemo.xcworkspace'</span><br><span class="line">platform :ios, '7.0'</span><br><span class="line"></span><br><span class="line">inhibit_all_warnings!</span><br><span class="line"></span><br><span class="line">xcodeproj 'MyLibraryDemo.xcodeproj'</span><br><span class="line">xcodeproj 'MyLibrarys/MyLibrarys.xcodeproj'</span><br><span class="line"></span><br><span class="line">target :MyLibraryDemo do</span><br><span class="line">  xcodeproj 'MyLibraryDemo'</span><br><span class="line">  pod 'FMDB'</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">target :LibraryOne do</span><br><span class="line">  xcodeproj 'MyLibrarys/MyLibrarys.xcodeproj'</span><br><span class="line">  pod 'SDWebImage'</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">target :LibraryTwo do</span><br><span class="line">  xcodeproj 'MyLibrarys/MyLibrarys.xcodeproj'</span><br><span class="line">  pod 'MJRefresh'</span><br><span class="line">end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>至此，总结完毕，欢迎拍砖 (♥◠‿◠)</p>
+<p>–End–</p>
+<p><em>以上如果有说的不严谨的地方，希望在下面的留言中指出哦，如果对你有一些帮助，也希望能在下面的留言中给一些鼓励^_^</em></p>
 
         </div>
         <footer class="article-footer">
@@ -167,7 +216,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/about/index.html" data-id="ciqs61rfe0001jqstwh9fvgbs" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2016/07/05/iOS-Project-Design-1/" data-id="ciqs61rgd000cjqstbo0917c0" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
@@ -259,6 +308,19 @@
             
         </ul>
     </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2016/06/19/iOS-Watch-3/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">older</strong>
+        <p class="article-nav-title">watchOS 2 - WatchConnectivity</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
     
     <div class="widgets-container">
         
@@ -441,7 +503,7 @@
     var disqus_shortname = 'shinancao';
     
     
-    var disqus_url = 'http://shinancao.github.io/about/index.html';
+    var disqus_url = 'http://shinancao.github.io/2016/07/05/iOS-Project-Design-1/';
     
     (function() {
     var dsq = document.createElement('script');
