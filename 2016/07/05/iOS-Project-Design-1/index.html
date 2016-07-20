@@ -3,21 +3,21 @@
 <head>
     <meta charset="utf-8">
     
-    <title>Static Library在项目中的一次实践 | 意林</title>
+    <title>用Static Library进行代码组织的一次实践 | 意林</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
         <meta name="keywords" content="" />
     
     <meta name="description" content="写在前面还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Static Library在项目中的一次实践">
+<meta property="og:title" content="用Static Library进行代码组织的一次实践">
 <meta property="og:url" content="http://shinancao.github.io/2016/07/05/iOS-Project-Design-1/index.html">
 <meta property="og:site_name" content="意林">
 <meta property="og:description" content="写在前面还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我">
 <meta property="og:image" content="http://shinancao.github.io/images/iOS-Project-Design-1.png">
-<meta property="og:updated_time" content="2016-07-18T15:25:41.000Z">
+<meta property="og:updated_time" content="2016-07-20T15:15:44.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Static Library在项目中的一次实践">
+<meta name="twitter:title" content="用Static Library进行代码组织的一次实践">
 <meta name="twitter:description" content="写在前面还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我">
 <meta name="twitter:image" content="http://shinancao.github.io/images/iOS-Project-Design-1.png">
     
@@ -142,7 +142,7 @@
                 
     
         <h1 class="article-title" itemprop="name">
-        Static Library在项目中的一次实践
+        用Static Library进行代码组织的一次实践
         </h1>
     
 
@@ -194,7 +194,14 @@
 <ul>
 <li>同一个Project中的类都是可以访问到的，即使将这些类打包到了Framework或Static Library中</li>
 </ul>
-<p>iOS8开始多了一个Cocoa Touch Framework，我开始重构时就直接在当前工程中创建了它，但是调试到后面时发现，即使我放在Private中的文件，也是可以被随意引用到的。原来在一个Project中的类都是可以调用到的，不管是Framework中的还是Static Library中的。无奈只能再弄一个Project来专门放置这些Kit了，且叫KingWeatherLibrarys。要把这个Project和原来Project合成一个workspace，只能用Static Library，用Cocoa Touch Framework的话KingWeatherLibrarys无法展开看到里面的文件，所以最终我用了Static Library，而不是Framework，并且单独弄了一个Project。</p>
+<p>iOS8开始多了一个Cocoa Touch Framework，我开始重构时就直接在当前工程中创建了它，但是调试到后面时发现，即使我放在Private中的文件，也是可以被随意引用到的。原来在一个Project中的类都是可以调用到的，不管是放在Framework中还是放在Static Library中。无奈只能再弄一个Project来专门放置这些Kit了。</p>
+<p>至于是用Static Libray还是用Framework，因为从iOS8开始苹果才允许用纯粹的Framework，所以如果项目是从iOS8开始支持的，当然是用Framework好，毕竟Framework是动态加载的。因为我们项目还是支持iOS7的，还是不太放心用Framework是否会被拒，所以最后我用了Static Library。</p>
+<ul>
+<li>涉及到AppGroups的地方该如何处理</li>
+</ul>
+<p>AppGroups在封装librarys的project中是无法识别到的，在我们的项目中有2处涉及到了AppGroups，一处是<code>NSUserdefaults</code>，一处是<code>databasePath</code>。经过一番尝试，我最终采取的办法是，在主工程中创建了一个<code>AppGroupUtils</code>类来返回根据AppGroups创建好的<code>NSUserDefaults</code>和<code>databasePath</code>。与这两者有关的具体工作还是放到library中去做，但是在主工程中使用前进行赋值。例如<code>NSUserDefaults</code>在library中如下处理：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">UserDefaultsUtils</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">NSUserDefaults</span> *_userDefaults = <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line">+ (<span class="built_in">NSUserDefaults</span> *)userDefaults &#123;</span><br><span class="line">    <span class="built_in">NSAssert</span>(_userDefaults != <span class="literal">nil</span>, <span class="string">@"使用XXStorage之前，请先给userDefaults赋值！"</span>);</span><br><span class="line">    <span class="keyword">return</span> _userDefaults;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)setUserDefaults:(<span class="built_in">NSUserDefaults</span> *)userDefaults &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> predicate;</span><br><span class="line">    <span class="built_in">dispatch_once</span>(&amp;predicate, ^&#123;</span><br><span class="line">        _userDefaults = userDefaults;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)saveValue:(<span class="keyword">id</span>) value forKey:(<span class="built_in">NSString</span> *)key &#123;</span><br><span class="line">    <span class="built_in">NSUserDefaults</span> *userDefaults = [<span class="keyword">self</span> userDefaults];</span><br><span class="line">    [userDefaults setObject:value forKey:key];</span><br><span class="line">    [userDefaults synchronize];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在主工程中：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//一定要在所有的代码运行之前执行这句话，否则storage不能正常用</span></span><br><span class="line">[UserDefaultsUtils setUserDefaults:[AppGroupUtils userDefaults]];</span><br></pre></td></tr></table></figure></p>
 <ul>
 <li>主工程编译的时候，使封装好的Kit跟着一起编译</li>
 </ul>
@@ -216,7 +223,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/2016/07/05/iOS-Project-Design-1/" data-id="ciqs6o7px000gkzstjc5hsk9g" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2016/07/05/iOS-Project-Design-1/" data-id="ciqv11byb000d6gstosxjccwx" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
@@ -337,7 +344,7 @@
                             <a href="/2016/07/05/iOS-Project-Design-1/" class="thumbnail">
     
     
-        <span style="background-image:url(/images/iOS-Project-Design-1.png)" alt="Static Library在项目中的一次实践" class="thumbnail-image"></span>
+        <span style="background-image:url(/images/iOS-Project-Design-1.png)" alt="用Static Library进行代码组织的一次实践" class="thumbnail-image"></span>
     
     
 </a>
@@ -345,7 +352,7 @@
                         
                         <div class="item-inner">
                             <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Project-Design/">Project Design</a></p>
-                            <p class="item-title"><a href="/2016/07/05/iOS-Project-Design-1/" class="title">Static Library在项目中的一次实践</a></p>
+                            <p class="item-title"><a href="/2016/07/05/iOS-Project-Design-1/" class="title">用Static Library进行代码组织的一次实践</a></p>
                             <p class="item-date"><time datetime="2016-07-05T13:39:01.000Z" itemprop="datePublished">2016-07-05</time></p>
                         </div>
                     </li>
