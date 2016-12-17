@@ -19,7 +19,7 @@
 
 达成共识如果没有给UIButton的宽和高一个固定值，那么UIButon的大小将调整为正好放下title和image。这个苹果官方文档有提到，而且在Storyboard中一试便知。此外，默认情">
 <meta property="og:image" content="http://shinancao.github.io/images/iOS-UIButton-EdgeInsets.jpg">
-<meta property="og:updated_time" content="2016-12-17T09:21:26.000Z">
+<meta property="og:updated_time" content="2016-12-17T09:32:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="理解UIButton的各种EdgeInsets">
 <meta name="twitter:description" content="这篇文章整理了一下UIButton的各种EdgeInsets都咋用，有啥效果。只是想留着自己再遇到时可以找来看一看，如果你恰好看到了，并且帮助你弄明白了这些EdgeInsets，那我真是非常的开心😜。
@@ -170,9 +170,7 @@
 <h3 id="UIControlContent-Vertical-Horizontal-Alignment"><a href="#UIControlContent-Vertical-Horizontal-Alignment" class="headerlink" title="UIControlContent Vertical/Horizontal Alignment"></a>UIControlContent Vertical/Horizontal Alignment</h3><p>在开始说EdgeInsets之前，先说说<code>UIControlContentVerticalAlignment</code>和<code>UIControlContentHorizontalAlignment</code>产生的效果，因为这两个属性的设置也会对<code>UIButton</code>的效果有一定影响，而且跟后面EdgeInsets的计算也有关系。</p>
 <p><code>UIControlContentVerticalAlignment</code>控制的是<code>UIButton</code>的<code>image</code>和<code>title</code>在竖直方向的对齐方式，其值有<code>top</code>、<code>bottom</code>、<code>center</code>、<code>fill</code>。当指定为<code>fill</code>时，图片会在竖直方向被拉伸填满<code>UIButton</code>的高度。</p>
 <p>为了效果明显，我给上面的那个按钮设置了一个较大的宽高，当取各种值时，效果如下：</p>
-<table><tr><br><td><img src="/images/ButtonEdgeInsets-Vertical-Top.jpg" width="256" height="150"></td><br><td><img src="/images/ButtonEdgeInsets-Vertical-Center.jpg" width="256" height="150"></td><br></tr></table>
-
-<p><img src="/images/ButtonEdgeInsets-Vertical-Bottom.jpg" width="256" height="150"><br><img src="/images/ButtonEdgeInsets-Vertical-Fill.jpg" width="256" height="150"></p>
+<p><img src="/images/ButtonEdgeInsets-Vertical.jpg" width="532" height="332"></p>
 
         </div>
         <footer class="article-footer">
@@ -180,7 +178,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/2016/12/15/iOS-UIButton-EdgeInsets/" data-id="ciwt0l80k000m2gst39ys4smv" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2016/12/15/iOS-UIButton-EdgeInsets/" data-id="ciwt0z1la000i38st5t8jxcor" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
