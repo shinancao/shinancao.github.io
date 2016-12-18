@@ -8,23 +8,26 @@
     
         <meta name="keywords" content="" />
     
-    <meta name="description" content="这篇文章整理了一下UIButton的各种EdgeInsets都咋用，有啥效果。只是想留着自己再遇到时可以找来看一看，如果你恰好看到了，并且帮助你弄明白了这些EdgeInsets，那我真是非常的开心😜。
+    <meta name="description" content="这篇文章整理了一下UIButton的各种EdgeInsets都咋用，有啥效果。留着自己以后对此迷糊时再看一看，也希望能对你有所帮助喔😜。
 
-达成共识如果没有给UIButton的宽和高一个固定值，那么UIButon的大小将调整为正好放下title和image。这个苹果官方文档有提到，而且在Storyboard中一试便知。此外，默认情">
+达成共识如果没有给UIButton的宽和高一个固定值，那么UIButon的大小将自动调整为正好放下title和image。这个苹果官方文档有提到，而且在Storyboard中一试便知。此外，默认情况下图片在左，文字在右。
+没有给固定宽和高，给UIButto">
 <meta property="og:type" content="article">
 <meta property="og:title" content="理解UIButton的各种EdgeInsets">
 <meta property="og:url" content="http://shinancao.github.io/2016/12/15/iOS-UIButton-EdgeInsets/index.html">
 <meta property="og:site_name" content="意林">
-<meta property="og:description" content="这篇文章整理了一下UIButton的各种EdgeInsets都咋用，有啥效果。只是想留着自己再遇到时可以找来看一看，如果你恰好看到了，并且帮助你弄明白了这些EdgeInsets，那我真是非常的开心😜。
+<meta property="og:description" content="这篇文章整理了一下UIButton的各种EdgeInsets都咋用，有啥效果。留着自己以后对此迷糊时再看一看，也希望能对你有所帮助喔😜。
 
-达成共识如果没有给UIButton的宽和高一个固定值，那么UIButon的大小将调整为正好放下title和image。这个苹果官方文档有提到，而且在Storyboard中一试便知。此外，默认情">
+达成共识如果没有给UIButton的宽和高一个固定值，那么UIButon的大小将自动调整为正好放下title和image。这个苹果官方文档有提到，而且在Storyboard中一试便知。此外，默认情况下图片在左，文字在右。
+没有给固定宽和高，给UIButto">
 <meta property="og:image" content="http://shinancao.github.io/images/iOS-UIButton-EdgeInsets.jpg">
-<meta property="og:updated_time" content="2016-12-17T09:32:13.000Z">
+<meta property="og:updated_time" content="2016-12-18T10:43:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="理解UIButton的各种EdgeInsets">
-<meta name="twitter:description" content="这篇文章整理了一下UIButton的各种EdgeInsets都咋用，有啥效果。只是想留着自己再遇到时可以找来看一看，如果你恰好看到了，并且帮助你弄明白了这些EdgeInsets，那我真是非常的开心😜。
+<meta name="twitter:description" content="这篇文章整理了一下UIButton的各种EdgeInsets都咋用，有啥效果。留着自己以后对此迷糊时再看一看，也希望能对你有所帮助喔😜。
 
-达成共识如果没有给UIButton的宽和高一个固定值，那么UIButon的大小将调整为正好放下title和image。这个苹果官方文档有提到，而且在Storyboard中一试便知。此外，默认情">
+达成共识如果没有给UIButton的宽和高一个固定值，那么UIButon的大小将自动调整为正好放下title和image。这个苹果官方文档有提到，而且在Storyboard中一试便知。此外，默认情况下图片在左，文字在右。
+没有给固定宽和高，给UIButto">
 <meta name="twitter:image" content="http://shinancao.github.io/images/iOS-UIButton-EdgeInsets.jpg">
     
 
@@ -162,15 +165,60 @@
         </div>
         <div class="article-entry" itemprop="articleBody">
             <blockquote>
-<p>这篇文章整理了一下UIButton的各种EdgeInsets都咋用，有啥效果。只是想留着自己再遇到时可以找来看一看，如果你恰好看到了，并且帮助你弄明白了这些EdgeInsets，那我真是非常的开心😜。</p>
+<p>这篇文章整理了一下UIButton的各种EdgeInsets都咋用，有啥效果。留着自己以后对此迷糊时再看一看，也希望能对你有所帮助喔😜。</p>
 </blockquote>
-<h3 id="达成共识"><a href="#达成共识" class="headerlink" title="达成共识"></a>达成共识</h3><p>如果没有给<code>UIButton</code>的宽和高一个固定值，那么<code>UIButon</code>的大小将调整为正好放下<code>title</code>和<code>image</code>。这个苹果官方文档有提到，而且在<code>Storyboard</code>中一试便知。此外，默认情况下图片在左，文字在右。</p>
-<p>没有固定宽和高，给<code>UIButton</code>设置了一个<code>image</code>和<code>title</code>，运行的结果如下：</p>
+<h3 id="达成共识"><a href="#达成共识" class="headerlink" title="达成共识"></a>达成共识</h3><p>如果没有给<code>UIButton</code>的宽和高一个固定值，那么<code>UIButon</code>的大小将自动调整为正好放下<code>title</code>和<code>image</code>。这个苹果官方文档有提到，而且在<code>Storyboard</code>中一试便知。此外，默认情况下图片在左，文字在右。</p>
+<p>没有给固定宽和高，给<code>UIButton</code>设置了一个<code>image</code>和<code>title</code>，运行的结果如下：</p>
 <p><img src="/images/ButtonEdgeInsets.jpg" width="256" height="150"></p>
 <h3 id="UIControlContent-Vertical-Horizontal-Alignment"><a href="#UIControlContent-Vertical-Horizontal-Alignment" class="headerlink" title="UIControlContent Vertical/Horizontal Alignment"></a>UIControlContent Vertical/Horizontal Alignment</h3><p>在开始说EdgeInsets之前，先说说<code>UIControlContentVerticalAlignment</code>和<code>UIControlContentHorizontalAlignment</code>产生的效果，因为这两个属性的设置也会对<code>UIButton</code>的效果有一定影响，而且跟后面EdgeInsets的计算也有关系。</p>
 <p><code>UIControlContentVerticalAlignment</code>控制的是<code>UIButton</code>的<code>image</code>和<code>title</code>在竖直方向的对齐方式，其值有<code>top</code>、<code>bottom</code>、<code>center</code>、<code>fill</code>。当指定为<code>fill</code>时，图片会在竖直方向被拉伸填满<code>UIButton</code>的高度。</p>
 <p>为了效果明显，我给上面的那个按钮设置了一个较大的宽高，当取各种值时，效果如下：</p>
-<p><img src="/images/ButtonEdgeInsets-Vertical.jpg" width="532" height="332"></p>
+<p><img src="/images/ButtonEdgeInsets-Vertical.jpg" width="532" height="331"></p>
+<p><code>UIControlContentHorizontalAlignment</code>控制的则是水平方向的对齐方式。其值有<code>left</code>、<code>right</code>、<code>center</code>、<code>fill</code>。当指定为<code>fill</code>时，图片并没有在水平方向将<code>UIButton</code>充满，而是在右侧留出了一定距离，这个距离应该是<code>title</code>的宽度，但是<code>title</code>实际上也没有乖乖的跑到那段空隙去，而是和<code>image</code>重叠了╮(╯▽╰)╭</p>
+<p>当取各种值时，效果如下：</p>
+<p><img src="/images/ButtonEdgeInsets-Horizontal.jpg" width="532" height="331"></p>
+<h3 id="UIEdgeInsets"><a href="#UIEdgeInsets" class="headerlink" title="UIEdgeInsets"></a>UIEdgeInsets</h3><p><code>UIButton</code>共有3个与<code>UIEdgeInsets</code>相关的属性：</p>
+<p><code>imageEdgeInsets</code>调整<code>image</code>的上下左右边缘离开原来位置的距离，该调整并不会改变<code>UIButton</code>原来的大小，<code>image</code>为了适应调整，可能会变形或者跑出<code>UIButton</code>的外面。</p>
+<p><code>titleEdgeInsets</code>调整<code>title</code>的上下左右边缘离开原来位置的距离，该调整并不会改变<code>UIButton</code>原来的大小，<code>title</code>为了适应调整，文字可能显示不全或者跑出<code>UIButton</code>的外面。</p>
+<p><code>contentEdgeInsets</code>调整<code>UIButton</code>本身的上下左右边缘离开原来位置的距离，该调整会改变<code>UIButton</code>的大小。</p>
+<p>这个3个属性的默认值都是<code>.zero</code>。</p>
+<p><code>UIEdgeInsets</code>由<code>top</code>、<code>left</code>、<code>bottom</code>、<code>right</code>构成，对于<code>imageEdgeInsets</code>和<code>titleEdgeInsets</code>来说：</p>
+<p><code>top</code>为正值时，控件会相对原来所在的位置下移相应值，控件的顶部边缘会在原来位置的下方相应值。<code>top</code>为负值时，控件会相对原来的位置上移相应值，控件的顶部边缘会在原来位置的上方相应值。</p>
+<p><code>left</code>为正值时，控件会相对原来所在的位置右移相应值，控件的左侧边缘会在原来位置的右方相应值。<code>left</code>为负值时，控件会相对原来的位置左移相应值，控件的左侧边缘会在原来位置的左方相应值。</p>
+<p><code>bottom</code>为正值时，控件会相对原来所在的位置上移相应值，控件的底部边缘会在原来位置的上方相应值。<code>bottom</code>为负值时，控件会相对原来的位置下移相应值，控件的底部边缘会在原来位置的下方相应值。</p>
+<p><code>right</code>为正值时，控件会相对原来所在的位置左移相应值，控件的右侧边缘会在原来位置的左方相应值。<code>right</code>为负值时，控件会相对原来位置右移相应值，控件的右侧边缘会在原来位置的右方相应值。</p>
+<p>对于<code>contentEdgeInsets</code>来说，当<code>top</code>、<code>left</code>、<code>bottom</code>、<code>right</code>为正值时，会使<code>UIButton</code>向四周扩展变大。为负值时，会使<code>UIButton</code>向内收缩变小。哈哈，这样好记一些😄</p>
+<p>现在把<code>UIButton</code>的固定大小去掉，让它自己自适应。先来一个水平方向调整的：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yellowButton.contentHorizontalAlignment = .left</span><br><span class="line">yellowButton.contentVerticalAlignment = .center</span><br><span class="line">yellowButton.imageEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(<span class="number">0</span>, <span class="number">20</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">yellowButton.titleEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(<span class="number">0</span>, <span class="number">20</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="/images/ButtonEdgeInsets-Left.jpg" width="532" height="431"></p>
+<p>第一张图只设置了<code>imageEdgeInsets</code>，没有设置<code>titleEdgeInsets</code>，第三张两者都设置了。可以看到，<code>imageEdgeInsets</code>和<code>titleEdgeInsets</code>并不会互相影响，第一张图中<code>image</code>跟<code>title</code>重合了，并没有把<code>title</code>往右挤了相应距离。第二张和第四张看到，<code>image</code>和<code>title</code>本身被压缩了。</p>
+<p>还有一点值得注意的是，如果原来<code>UIButton</code>的大小能容纳下调整后的<code>image</code>和<code>title</code>，它们将不会被压缩。像第一张那样，<code>image</code>左移后还是放得下的，所以没有被压缩，<code>title</code>却放不下了，所以被压缩了。为什么说是<em>原来的大小</em>呢，因为调整<code>contentEdgeInsets</code>也会使<code>UIButton</code>变大，但是<code>image</code>和<code>title</code>却不会因此而不被压缩。</p>
+<p>再来一个竖直方向调整的：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yellowButton.contentHorizontalAlignment = .center</span><br><span class="line">yellowButton.contentVerticalAlignment = .top</span><br><span class="line">yellowButton.imageEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(<span class="number">20</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">yellowButton.titleEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(<span class="number">20</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="/images/ButtonEdgeInsets-Top.jpg" width="532" height="431"></p>
+<p>第一张图仍然是只调整了<code>imageEdgeInsets</code>的效果。</p>
+<p>从上面的结果可以看到调整<code>imageEdgeInsets</code>和<code>titleEdgeInsets</code>并不会改变<code>UIButton</code>的大小，而导致有时图片被压缩，或者文字显示不下。这时就要接着用<code>UIButton</code>的另一个属性<code>contentEdgeInsets</code>来调整了。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">yellowButton.contentHorizontalAlignment = .left</span><br><span class="line">yellowButton.contentVerticalAlignment = .center   </span><br><span class="line">yellowButton.imageEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(<span class="number">0</span>, <span class="number">20</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">yellowButton.titleEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(<span class="number">0</span>, <span class="number">20</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">yellowButton.contentEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">20</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="/images/ButtonEdgeInsets-Content.jpg" width="532" height="202"></p>
+<p>好吧，结果并不如我们想象的一样，<code>UIButton</code>是变大了，但是<code>image</code>和<code>title</code>并没有自己调整，还是一个压缩的状态。验证了上面值得注意的那一点~ 这时候要再调整一下它们的<code>right</code>值了，将其设置为<code>-20</code>，如愿得到了下面的结果。</p>
+<p><img src="/images/ButtonEdgeInsets-Content-Right.jpg" width="532" height="202"></p>
+<p><strong>需要注意</strong> 当设置<code>contentHorizontalAlignment</code>为<code>.left</code>时，再设置<code>imageEdgeInsets</code>和<code>titleEdgeInsets</code>的<code>.right</code>为负值时，如果<code>image</code>和<code>title</code>原来是压缩状态，会对其调整。如果原来是正常状态，则不会产生任何影响。也就是说，<code>imageEdgeInsets</code>和<code>titleEdgeInsets</code>的设置并不会让<code>image</code>和<code>title</code>被拉伸！其他方向亦如此~</p>
+<p>所以，为了保证<code>image</code>和<code>title</code>始终不被压缩，<code>.left</code>设置了多少正值，<code>.right</code>就设置多少负值。上下方向也一样。</p>
+<h3 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h3><p>上面做了这么多铺垫，现在通过设置<code>UIButton</code>的3个<code>EdgeInsets</code>属性来实现一些我们想要的效果吧😉</p>
+<p>在做水平方向的调整时，最好将<code>contentHorizontalAlignment</code>设置为<code>.left</code>，这样改动就从左开始。在做竖直方向的调整时，最好将<code>contentVerticalAlignment</code>设置为<code>.top</code>，这样改动就从上面开始。对于自己在设置时，比较容易在脑子想象每个值设置完的样子😁</p>
+<h4 id="例1：设置一个四周间隔20，image和title之间间隔20的button。"><a href="#例1：设置一个四周间隔20，image和title之间间隔20的button。" class="headerlink" title="例1：设置一个四周间隔20，image和title之间间隔20的button。"></a>例1：设置一个四周间隔20，image和title之间间隔20的button。</h4><p>计算过程如下：</p>
+<p><img src="/images/ButtonEdgeInsets-Space.jpg" width="256" height="151"></p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//水平方向的调整，设为靠左对齐</span></span><br><span class="line">yellowButton.contentHorizontalAlignment = .left</span><br><span class="line">yellowButton.contentVerticalAlignment = .center       </span><br><span class="line"><span class="comment">//image左移20</span></span><br><span class="line">yellowButton.imageEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(<span class="number">0</span>, <span class="number">20</span>, <span class="number">0</span>, <span class="number">-20</span>)</span><br><span class="line"><span class="comment">//title左移20，并且与image之间间隔20</span></span><br><span class="line">yellowButton.titleEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(<span class="number">0</span>, <span class="number">40</span>, <span class="number">0</span>, <span class="number">-40</span>)</span><br><span class="line"><span class="comment">//image左移20，已经使button左侧的间隔是20了</span></span><br><span class="line">yellowButton.contentEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(<span class="number">20</span>, <span class="number">0</span>, <span class="number">20</span>, <span class="number">60</span>)</span><br></pre></td></tr></table></figure>
+<p>最后，完美😂</p>
+<p><img src="/images/ButtonEdgeInsets-Space-Result.jpg" width="256" height="150"></p>
+<h4 id="例2：设置一个image在上居中，title在下居中，两者之间间距20，四周间距20的button。"><a href="#例2：设置一个image在上居中，title在下居中，两者之间间距20，四周间距20的button。" class="headerlink" title="例2：设置一个image在上居中，title在下居中，两者之间间距20，四周间距20的button。"></a>例2：设置一个image在上居中，title在下居中，两者之间间距20，四周间距20的button。</h4><p>这个看起来复杂一些，但也只是计算复杂一些~ 计算过程如下，求出标记问号的距离就行了：</p>
+<p><img src="/images/ButtonEdgeInsets-Center.jpg" width="256" height="335"></p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//设置水平和竖直的对齐方式</span></span><br><span class="line">yellowButton.contentHorizontalAlignment = .left</span><br><span class="line">yellowButton.contentVerticalAlignment = .top</span><br><span class="line">        </span><br><span class="line">let imageRect = yellowButton.imageView!.frame</span><br><span class="line">let titleRect = yellowButton.titleLabel!.frame</span><br><span class="line">let buttonRect = yellowButton.frame</span><br><span class="line">        </span><br><span class="line"><span class="comment">//图中?1的值</span></span><br><span class="line">let image_l = (buttonRect.size.width-imageRect.size.width)/<span class="number">2</span></span><br><span class="line"><span class="comment">//确定image的位置</span></span><br><span class="line">yellowButton.imageEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(<span class="number">20</span>, image_l, <span class="number">-20</span>, -image_l)</span><br><span class="line"><span class="comment">//图中?2的值</span></span><br><span class="line">let title_l = imageRect.size.width-(buttonRect.size.width-titleRect.size.width)/<span class="number">2</span></span><br><span class="line"><span class="comment">//图中?3的值</span></span><br><span class="line">let title_t = imageRect.size.height+<span class="number">40</span></span><br><span class="line"><span class="comment">//title的位置可以确定了</span></span><br><span class="line">yellowButton.titleEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(title_t, -title_l, -title_t, title_l)</span><br><span class="line"><span class="comment">//图中?4的值</span></span><br><span class="line">let button_b = titleRect.size.height+<span class="number">60</span></span><br><span class="line"><span class="comment">//计算图中?5的值</span></span><br><span class="line">let max_w = max(titleRect.size.width, imageRect.size.width)</span><br><span class="line">let button_l = -(buttonRect.size.width-(max_w+<span class="number">20</span>*<span class="number">2</span>))/<span class="number">2</span></span><br><span class="line"><span class="comment">//button要调整的大小确定了</span></span><br><span class="line">yellowButton.contentEdgeInsets = <span class="built_in">UIEdgeInsetsMake</span>(<span class="number">0</span>, button_l, button_b, button_l)</span><br></pre></td></tr></table></figure>
+<p>运行后的结果：</p>
+<p><img src="/images/ButtonEdgeInsets-Center-Result.jpg" width="256" height="150"></p>
+<p>了解<code>imageEdgeInsets</code>、<code>titleEdgeInsets</code>、<code>contentEdgeInsets</code>后，就可以随心所欲的来设置自己的<code>button</code>了。</p>
+<p>至此，总结完毕😆</p>
+<p>–End–</p>
 
         </div>
         <footer class="article-footer">
@@ -178,7 +226,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/2016/12/15/iOS-UIButton-EdgeInsets/" data-id="ciwt0z1la000i38st5t8jxcor" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2016/12/15/iOS-UIButton-EdgeInsets/" data-id="ciwt10s1p000f40st9qd8hs3n" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
