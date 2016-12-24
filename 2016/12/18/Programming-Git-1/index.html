@@ -23,7 +23,7 @@
 公司的Mac上，要能往公司自己的git服务器上对应项目提交代码，也要能往自己github上的项目提交代码。
 别人github上项目，在自己的Mac上能往上面提交代码。">
 <meta property="og:image" content="http://shinancao.github.io/images/Programming-Git-Account.jpg">
-<meta property="og:updated_time" content="2016-12-24T13:43:14.000Z">
+<meta property="og:updated_time" content="2016-12-24T13:52:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="同一个Mac，配置多个SSH Key">
 <meta name="twitter:description" content="缕清思路网上关于这方面的文章已经挺多的了，但是每次要配置的时候，还是要靠搜索引擎找半天才搞定，索性自己记录一下。之前我遇到了下面几种情况：
@@ -200,14 +200,14 @@
 </ul>
 <p><img src="/images/Git-Add-DeployKeys.png" width="320" height="217"></p>
 <ul>
-<li>ssh服务器默认是去找<code>id_rsa</code>，现在需要添加刚生成的这个key让它能认识<code>id_rsa_TestSSH_github</code>。</li>
+<li>ssh服务器默认是去找<code>id_rsa</code>，现在需要把这个key添加到<code>ssh-agent</code>中，这样ssh服务器才能认识<code>id_rsa_TestSSH_github</code>。</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1  $ ssh-add -K ~/.ssh/id_rsa_TestSSH_github</span><br></pre></td></tr></table></figure>
-<p>这里加上了一个<code>-K</code>参数，因为在Mac上，当系统重启后会“忘记”这个密钥，所以通过指定<code>-K</code>把SSH key导入到密钥链中。</p>
+<p>这里为什么加上了一个<code>-K</code>参数呢？因为在Mac上，当系统重启后会“忘记”这个密钥，所以通过指定<code>-K</code>把SSH key导入到密钥链中。</p>
 <p>查看添加结果：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1  $ ssh-add -l</span><br></pre></td></tr></table></figure>
 <ul>
-<li>新建本地认证文件 ~/.ssh/config，进行如下编辑：</li>
+<li>创建本地的配置文件 ~/.ssh/config，编辑如下：</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Host TestSSH.github.com</span><br><span class="line">	HostName github.com</span><br><span class="line">	User git</span><br><span class="line">	PreferredAuthentications publickey</span><br><span class="line">	IdentityFile ~/.ssh/id_rsa_TestSSH_github</span><br><span class="line">Host YourProjectName.gitlab.com</span><br><span class="line">	HostName gitlab.com</span><br><span class="line">	User git</span><br><span class="line">	PreferredAuthentications publickey</span><br><span class="line">	IdentityFile ~/.ssh/id_rsa_YourProjectName_gitlab</span><br></pre></td></tr></table></figure>
 <p>Host的名字可以随意取，我这边按照的规则是<code>项目名.git服务器来源</code>，接下来会用到这个名字。测试是否配置正确：</p>
@@ -259,6 +259,11 @@
 <li><a href="http://k99k.com/2015/github-multiple-ssh-key/" target="_blank" rel="external">http://k99k.com/2015/github-multiple-ssh-key/</a></li>
 <li><a href="https://favoorr.github.io/2015/05/27/git-more-sshkeys-more-host/" target="_blank" rel="external">https://favoorr.github.io/2015/05/27/git-more-sshkeys-more-host/</a></li>
 </ul>
+<blockquote>
+<p>转载请注明出处：</p>
+<p>作者：意林</p>
+<p>原文链接：<a href="http://shinancao.github.io/2016/12/18/Programming-Git-1/">http://shinancao.github.io/2016/12/18/Programming-Git-1/</a></p>
+</blockquote>
 <p>–End–</p>
 
         </div>
@@ -267,7 +272,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/2016/12/18/Programming-Git-1/" data-id="ciwuniz0f000djustvd52pk91" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2016/12/18/Programming-Git-1/" data-id="cix3adhpk0012o6st9abs9pnm" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
