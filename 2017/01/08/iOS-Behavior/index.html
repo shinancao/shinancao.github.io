@@ -3,18 +3,23 @@
 <head>
     <meta charset="utf-8">
     
-    <title>Category: Bakery | 意林</title>
+    <title>iOS中的行为 | 意林</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
-    <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="意林">
-<meta property="og:url" content="http://shinancao.github.io/categories/Bakery/index.html">
+        <meta name="keywords" content="" />
+    
+    <meta name="description" content="开场白8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇iOS中的行为已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS中的行为">
+<meta property="og:url" content="http://shinancao.github.io/2017/01/08/iOS-Behavior/index.html">
 <meta property="og:site_name" content="意林">
-<meta property="og:description">
+<meta property="og:description" content="开场白8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇iOS中的行为已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。">
+<meta property="og:image" content="http://shinancao.github.io/images/iOS-Project-Design-1.png">
+<meta property="og:updated_time" content="2017-01-08T14:49:58.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="意林">
-<meta name="twitter:description">
+<meta name="twitter:title" content="iOS中的行为">
+<meta name="twitter:description" content="开场白8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇iOS中的行为已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。">
+<meta name="twitter:image" content="http://shinancao.github.io/images/iOS-Project-Design-1.png">
     
 
     
@@ -126,75 +131,121 @@
                         <div class="main-body-header">
     <h1 class="header">
     
-    <i class="icon fa fa-folder-open"></i>Category: <em class="page-title-link">Bakery</em>
+    <a class="page-title-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/iOS/Project-Design/">Project Design</a>
     </h1>
 </div>
                         <div class="main-body-content">
-                            
-
-    
-    
+                            <article id="post-iOS-Behavior" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
         
-        
-        <section class="archives-wrap">
-            <div class="archive-year-wrap">
-                <a href="/archives/2016" class="archive-year"><i class="icon fa fa-calendar-o"></i>2016</a>
-            </div>
-            <div class="archives">
-    
-    
-    
-        <div class="article-row">
-    
-        <article class="article article-summary">
-    <div class="article-summary-inner">
-        
-        <a href="/2016/05/14/2016-5-14-bakery-md/" class="thumbnail">
-    
-    
-        <span style="background-image:url(/images/Bakery-1.png)" alt="开始烘培吧" class="thumbnail-image"></span>
-    
-    
-        
-<span class="comment-counter">
-    <i class="fa fa-comments-o"></i>
-    
-        <span class="disqus-comment-count" data-disqus-url="http://shinancao.github.io/2016/05/14/2016-5-14-bakery-md/">0</span>
-    
-</span>
-
-    
-</a>
-        
-        <div class="article-meta">
-            <p class="category">
-            <a class="article-category-link" href="/categories/Bakery/">Bakery</a>
-            </p>
-            <p class="date"><time datetime="2016-05-14T13:33:58.000Z" itemprop="datePublished">2016-05-14</time></p>
-        </div>
-        
+            <header class="article-header">
+                
     
         <h1 class="article-title" itemprop="name">
-        <a href="/2016/05/14/2016-5-14-bakery-md/">开始烘培吧</a>
+        iOS中的行为
         </h1>
     
 
-        <p class="article-excerpt">
-            烘培这件事呢，如果想做就可以行动起来，不用被那些食谱里的繁琐步骤和各种工具吓的打消了念头。这篇文章我会介绍一下我目前用的这些工具，先声明绝对不是打广告哦，只是我觉得我买的这些用起来还不错，也不是很贵，可以作为入门的参考。工具置备齐全了后就是要耐心按照食谱去做了，失败会是常事，每次总结一下问题出在哪，总会成功的^_^
-烤箱
-在京东上买的，299块钱，链接：http://m.jd.com/produc
-        </p>
+            </header>
+        
+        <div class="article-subtitle">
+            <a href="/2017/01/08/iOS-Behavior/" class="article-date">
+    <time datetime="2017-01-08T08:51:08.000Z" itemprop="datePublished">2017-01-08</time>
+</a>
+            
+        </div>
+        <div class="article-entry" itemprop="articleBody">
+            <h2 id="开场白"><a href="#开场白" class="headerlink" title="开场白"></a>开场白</h2><p>8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇<a href="https://objccn.io/issue-13-3/" target="_blank" rel="external">iOS中的行为</a>已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。</p>
+<h2 id="进入主题"><a href="#进入主题" class="headerlink" title="进入主题"></a>进入主题</h2><p>行为是一个负责实现一个指定功能的对象，在iOS中就是一个封装了特定功能，继承于NSObject的普通对象。运用行为，实际上就是组合模式，将每个不可再划分的功能模块单独封装起来，然后再通过一定手段组装起来。这样的设计至少有以下点好处：</p>
+<ul>
+<li>能大大减少ViewController中的代码</li>
+<li>能让你0代码的去集成一个功能</li>
+<li>能让设计和产品自己去调整效果</li>
+<li>能提高代码的可复用性和可测试性</li>
+</ul>
+<p>减少<code>ViewController</code>中的代码是自然的啦，对于职责单一的功能自然也是容易复用和容易测试的，那对于第2点和第3点怎么做到的呢？那就是借助IB中一个强大的但是经常被忽略的功能，<code>Object</code>这个控件。同时借助在IB中设置运行时属性，达到可视化编程。</p>
+<p><img src="/images/iOS-IB-Object.jpg" width="242" height="338"></p>
+<p><img src="/images/iOS-Behavior-IB.jpg" width="331" height="216"></p>
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://shinancao.github.io/2017/01/08/iOS-Behavior/" data-id="cixos13bd000ee6stof8p622t" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
     </div>
 </article>
+
+    <section id="comments">
     
-        </div>
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
     
-
-
-    </div></section>
-
-
-
+    </section>
 
                         </div>
                     </section>
@@ -214,6 +265,19 @@
             
         </ul>
     </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2017/01/02/iOS-Layout-Event/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">older</strong>
+        <p class="article-nav-title">Layout事件调用</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
     
     <div class="widgets-container">
         
@@ -396,11 +460,13 @@
     var disqus_shortname = 'shinancao';
     
     
+    var disqus_url = 'http://shinancao.github.io/2017/01/08/iOS-Behavior/';
+    
     (function() {
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     </script>
