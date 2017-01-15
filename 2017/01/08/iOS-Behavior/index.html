@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="意林">
 <meta property="og:description" content="开场白8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇iOS中的行为已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。">
 <meta property="og:image" content="http://shinancao.github.io/images/iOS-Behavior-Cover.jpg">
-<meta property="og:updated_time" content="2017-01-15T06:51:24.000Z">
+<meta property="og:updated_time" content="2017-01-15T07:23:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS中的行为">
 <meta name="twitter:description" content="开场白8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇iOS中的行为已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。">
@@ -193,7 +193,7 @@
 <p>第1点显示是很糟糕的做法，对于第2点我也一直耿耿于怀，因为让在<code>View</code>里干了<code>Controller</code>要做的事儿，所以学习行为时，觉得行为能够解决这个问题。但仔细想了想还是有一些问题，就是有可能导致<code>ViewController</code>和<code>Behavior</code>频繁的互调通信，如果这两部分耦合这么强烈，那拆分就没啥意义了。</p>
 <p>这也是我的一个思考吧，实际开发中我还没有这样用过。后来接触到了一个架构模式<code>VIPER</code>，可以让<code>View</code>中不去处理那么多逻辑。但是使用下来也有些其他的问题，以后再另外写文章总结啦。</p>
 <h4 id="行为的生命周期"><a href="#行为的生命周期" class="headerlink" title="行为的生命周期"></a>行为的生命周期</h4><p>在Interface Builder中创建的行为，如果没有另外的对象对其引用，它将会在被创建后立刻移除。如果真的需要该行为常住，也尽量不要将行为定义成Controller的一个属性。这有可能导致行为与Controller过多的耦合，而且当不需要这个行为时，还要在Controller中去清除这个行为。可以通过Objective-C运行时将行为与Controller进行绑定，Demo中有演示。</p>
-<p><a href="http://" target="_blank" rel="external">下一篇文章</a>说了一下给这些<code>Behavior</code>写单元测试的一些感受~</p>
+<p><a href="http://shinancao.github.io/2017/01/12/iOS-Tester-1/">下一篇文章</a>说了一下给这些<code>Behavior</code>写单元测试的一些感受~</p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><h4 id="介绍行为相关的"><a href="#介绍行为相关的" class="headerlink" title="介绍行为相关的"></a>介绍行为相关的</h4><p><a href="https://www.objc.io/issues/13-architecture/behaviors/" target="_blank" rel="external">https://www.objc.io/issues/13-architecture/behaviors/</a></p>
 <p><a href="https://github.com/zziking/KIZBehavior" target="_blank" rel="external">https://github.com/zziking/KIZBehavior</a></p>
 <h4 id="涉及到动画实现的"><a href="#涉及到动画实现的" class="headerlink" title="涉及到动画实现的"></a>涉及到动画实现的</h4><p><a href="http://five.agency/how-to-create-an-interactive-blur-effect-in-ios8/" target="_blank" rel="external">http://five.agency/how-to-create-an-interactive-blur-effect-in-ios8/</a></p>
@@ -211,7 +211,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/2017/01/08/iOS-Behavior/" data-id="cixybsjsh000jzyst35y06snx" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2017/01/08/iOS-Behavior/" data-id="cixyc5vd0000g4zst8xkwo3u3" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {

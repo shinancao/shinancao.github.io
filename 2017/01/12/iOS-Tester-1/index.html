@@ -17,7 +17,7 @@
 <meta property="og:description" content="上一篇文章讲到了行为，行为具有职责单一性，所以易于测试。那到底有多易于测试呢？我较了一次真想写写看，也是第一次写单元测试，所以记录一些自己的感受~
 网上有很多文章介绍单元测试，但是大部分都是讲如setUp()、tearDown()等是什么时候调用的，怎样写一个测试用例，然后举个很简单的例子说明一下。还有一部分文章会讲到用单元测试去测试API接口部分，但发现照葫芦画瓢的，也就只会用它来测试这部分。我">
 <meta property="og:image" content="http://shinancao.github.io/images/iOS-Test-Cover.jpg">
-<meta property="og:updated_time" content="2017-01-15T07:11:56.000Z">
+<meta property="og:updated_time" content="2017-01-15T07:22:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="初识单元测试">
 <meta name="twitter:description" content="上一篇文章讲到了行为，行为具有职责单一性，所以易于测试。那到底有多易于测试呢？我较了一次真想写写看，也是第一次写单元测试，所以记录一些自己的感受~
@@ -159,7 +159,7 @@
         </div>
         <div class="article-entry" itemprop="articleBody">
             <p>上一篇文章讲到了行为，行为具有职责单一性，所以易于测试。那到底有多易于测试呢？我较了一次真想写写看，也是第一次写单元测试，所以记录一些自己的感受~</p>
-<p>网上有很多文章介绍单元测试，但是大部分都是讲如<code>setUp()</code>、<code>tearDown()</code>等是什么时候调用的，怎样写一个测试用例，然后举个很简单的例子说明一下。还有一部分文章会讲到用单元测试去测试API接口部分，但发现照葫芦画瓢的，也就只会用它来测试这部分。我以为已经了解了，然后开始想在自己的项目里去用，竟发现居然无从下手！到底要测试什么呢？似乎有些逻辑肯定是对的，不需要测，那要测试一些复杂流程的输入和输出是否正确吗？我不甘心呀，继续用搜索引擎变换着关键词去找😤，后来再一些文章中看到说<strong>测试行为，不要测试细节</strong>。有比较大的启发，我想我们在写单元测试的时候就要变换自己的角色了，站在tester或者user的角度去想，他们关注什么呢。下面就说一说我给在上一篇文章中讲到的<code>Behavior</code>写的单元测试，Demo地址：<a href="http://" target="_blank" rel="external">http://</a></p>
+<p>网上有很多文章介绍单元测试，但是大部分都是讲如<code>setUp()</code>、<code>tearDown()</code>等是什么时候调用的，怎样写一个测试用例，然后举个很简单的例子说明一下。还有一部分文章会讲到用单元测试去测试API接口部分，但发现照葫芦画瓢的，也就只会用它来测试这部分。我以为已经了解了，然后开始想在自己的项目里去用，竟发现居然无从下手！到底要测试什么呢？似乎有些逻辑肯定是对的，不需要测，那要测试一些复杂流程的输入和输出是否正确吗？我不甘心呀，继续用搜索引擎变换着关键词去找😤，后来再一些文章中看到说<strong>测试行为，不要测试细节</strong>。有比较大的启发，我想我们在写单元测试的时候就要变换自己的角色了，站在tester或者user的角度去想，他们关注什么呢。下面就说一说我给在上一篇文章中讲到的<code>Behavior</code>写的单元测试，Demo地址：<a href="https://github.com/shinancao/BehaviorDemo" target="_blank" rel="external">https://github.com/shinancao/BehaviorDemo</a></p>
 <ul>
 <li>CheckCodeBehaviorTests</li>
 </ul>
@@ -212,7 +212,7 @@
 <blockquote>
 <p>转载请注明出处：</p>
 <p>作者：意林</p>
-<p>原文链接：<a href="http://shinancao.github.io/2016/12/18/Programming-Git-1/">http://shinancao.github.io/2016/12/18/Programming-Git-1/</a></p>
+<p>原文链接：<a href="http://shinancao.github.io/2017/01/12/iOS-Tester-1/">http://shinancao.github.io/2017/01/12/iOS-Tester-1/</a></p>
 </blockquote>
 <p>–End–</p>
 
@@ -222,7 +222,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/2017/01/12/iOS-Tester-1/" data-id="cixybsjsw000pzystwytk6unj" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2017/01/12/iOS-Tester-1/" data-id="cixyc5vdp000p4zst09g6hcxt" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
