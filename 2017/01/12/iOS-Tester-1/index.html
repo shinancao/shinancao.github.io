@@ -3,41 +3,24 @@
 <head>
     <meta charset="utf-8">
     
-    <title>When You Are Old - William Butler Yeats | 意林</title>
+    <title>初识单元测试 | 意林</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
         <meta name="keywords" content="" />
     
-    <meta name="description" content="When you are old and grey and full of sleep,
-当你老了，头发花白，睡衣沉沉，
-And nodding by the fire, take down this book,
-倦坐在炉边，取下这本书来，
-And slowly read, and dream of the soft look
-慢慢读着，追梦当年的眼神
-Your eyes had once, an">
+    <meta name="description" content="上一篇文章讲到了行为，行为具有职责单一性，所以易于测试。那到底有多易于测试呢？我较了一次真想写写看，也是第一次写单元测试，所以记录一些自己的感受~
+网上有很多文章介绍单元测试，但是大部分都是讲如setUp()、tearDown()等是什么时候调用的，怎样写一个测试用例，然后举个很简单的例子说明一下。还有一部分文章会讲到用单元测试去测试API接口部分，但发现照葫芦画瓢的，也就只会用它来测试这部分。我">
 <meta property="og:type" content="article">
-<meta property="og:title" content="When You Are Old - William Butler Yeats">
-<meta property="og:url" content="http://shinancao.github.io/2016/05/21/English-When-You-Are-Old/index.html">
+<meta property="og:title" content="初识单元测试">
+<meta property="og:url" content="http://shinancao.github.io/2017/01/12/iOS-Tester-1/index.html">
 <meta property="og:site_name" content="意林">
-<meta property="og:description" content="When you are old and grey and full of sleep,
-当你老了，头发花白，睡衣沉沉，
-And nodding by the fire, take down this book,
-倦坐在炉边，取下这本书来，
-And slowly read, and dream of the soft look
-慢慢读着，追梦当年的眼神
-Your eyes had once, an">
-<meta property="og:image" content="http://shinancao.github.io/images/When-You-Are-Old.png">
-<meta property="og:updated_time" content="2016-05-21T06:34:00.000Z">
+<meta property="og:description" content="上一篇文章讲到了行为，行为具有职责单一性，所以易于测试。那到底有多易于测试呢？我较了一次真想写写看，也是第一次写单元测试，所以记录一些自己的感受~
+网上有很多文章介绍单元测试，但是大部分都是讲如setUp()、tearDown()等是什么时候调用的，怎样写一个测试用例，然后举个很简单的例子说明一下。还有一部分文章会讲到用单元测试去测试API接口部分，但发现照葫芦画瓢的，也就只会用它来测试这部分。我">
+<meta property="og:updated_time" content="2017-01-12T14:41:23.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="When You Are Old - William Butler Yeats">
-<meta name="twitter:description" content="When you are old and grey and full of sleep,
-当你老了，头发花白，睡衣沉沉，
-And nodding by the fire, take down this book,
-倦坐在炉边，取下这本书来，
-And slowly read, and dream of the soft look
-慢慢读着，追梦当年的眼神
-Your eyes had once, an">
-<meta name="twitter:image" content="http://shinancao.github.io/images/When-You-Are-Old.png">
+<meta name="twitter:title" content="初识单元测试">
+<meta name="twitter:description" content="上一篇文章讲到了行为，行为具有职责单一性，所以易于测试。那到底有多易于测试呢？我较了一次真想写写看，也是第一次写单元测试，所以记录一些自己的感受~
+网上有很多文章介绍单元测试，但是大部分都是讲如setUp()、tearDown()等是什么时候调用的，怎样写一个测试用例，然后举个很简单的例子说明一下。还有一部分文章会讲到用单元测试去测试API接口部分，但发现照葫芦画瓢的，也就只会用它来测试这部分。我">
     
 
     
@@ -149,54 +132,81 @@ Your eyes had once, an">
                         <div class="main-body-header">
     <h1 class="header">
     
-    <a class="page-title-link" href="/categories/English/">English</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/English/Poetry/">Poetry</a>
+    uncategorized
     </h1>
 </div>
                         <div class="main-body-content">
-                            <article id="post-English-When-You-Are-Old" class="article article-single article-type-post" itemscope itemprop="blogPost">
+                            <article id="post-iOS-Tester-1" class="article article-single article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
             <header class="article-header">
                 
     
         <h1 class="article-title" itemprop="name">
-        When You Are Old - William Butler Yeats
+        初识单元测试
         </h1>
     
 
             </header>
         
         <div class="article-subtitle">
-            <a href="/2016/05/21/English-When-You-Are-Old/" class="article-date">
-    <time datetime="2016-05-21T05:13:05.000Z" itemprop="datePublished">2016-05-21</time>
+            <a href="/2017/01/12/iOS-Tester-1/" class="article-date">
+    <time datetime="2017-01-12T14:34:46.000Z" itemprop="datePublished">2017-01-12</time>
 </a>
             
         </div>
         <div class="article-entry" itemprop="articleBody">
-            <p>When you are old and grey and full of sleep,</p>
-<p>当你老了，头发花白，睡衣沉沉，</p>
-<p>And nodding by the fire, take down this book,</p>
-<p>倦坐在炉边，取下这本书来，</p>
-<p>And slowly read, and dream of the soft look</p>
-<p>慢慢读着，追梦当年的眼神</p>
-<p>Your eyes had once, and of their shadows deep;</p>
-<p>你那柔美的神采与深幽的晕影。</p>
-<p>How many loved your moments of glad grace,</p>
-<p>多少人爱过你昙花一现的身影，</p>
-<p>And loved your beauty with love false or true,</p>
-<p>爱过你的美貌，以虚伪或真情，</p>
-<p>But one man loved the pilgrim Soul in you,</p>
-<p>唯独一人曾爱你那朝圣者的心，</p>
-<p>And loved the sorrows of your changing face;</p>
-<p>爱你哀戚的脸上岁月的留痕。</p>
-<p>And bending down beside the glowing bars,</p>
-<p>在炉罩边低眉弯腰，</p>
-<p>Murmur, a little sadly, how love fled</p>
-<p>忧戚沉思，喃喃而语，</p>
-<p>And paced upon the mountains overhead</p>
-<p>爱情是怎样逝去，又怎样上群山，</p>
-<p>And hid his face amid a crowd of stars.</p>
-<p>怎样在繁星之间藏住了脸。</p>
+            <p>上一篇文章讲到了行为，行为具有职责单一性，所以易于测试。那到底有多易于测试呢？我较了一次真想写写看，也是第一次写单元测试，所以记录一些自己的感受~</p>
+<p>网上有很多文章介绍单元测试，但是大部分都是讲如<code>setUp()</code>、<code>tearDown()</code>等是什么时候调用的，怎样写一个测试用例，然后举个很简单的例子说明一下。还有一部分文章会讲到用单元测试去测试API接口部分，但发现照葫芦画瓢的，也就只会用它来测试这部分。我以为已经了解了，然后开始想在自己的项目里去用，竟发现居然无从下手！到底要测试什么呢？似乎有些逻辑肯定是对的，不需要测，那要测试一些复杂流程的输入和输出是否正确吗？我不甘心呀，继续用搜索引擎变换着关键词去找😤，后来再一些文章中看到说<strong>测试行为，不要测试细节</strong>。有比较大的启发，我想我们在写单元测试的时候就要变换自己的角色了，站在tester或者user的角度去想，他们关注什么呢。下面就说一说我给在上一篇文章中讲到的<code>Behavior</code>写的单元测试，Demo地址：<a href="http://" target="_blank" rel="external">http://</a></p>
+<ul>
+<li>CheckCodeBehaviorTests</li>
+</ul>
+<p>对于<code>CheckCodeBehavior</code>的测试相对还好入手一点，从整个功能上的表现我需要验证这些情况是正确的：</p>
+<ol>
+<li>输入错误的手机号码时，<code>发送验证码</code>按钮不可用。</li>
+<li>输入正确的手机号码时，<code>发送验证码</code>按钮变为可用。</li>
+<li>点击<code>发送验证码</code>按钮后，按钮变为不可用，并且<code>title</code>显示正在倒计时。</li>
+<li>倒计时结束后，按钮的<code>title</code>会变为<code>发送验证码</code>。</li>
+</ol>
+<p>接着再测试一下如果别人正确配置了<code>CheckCodeBehavior</code>，那它的表现是否会如预期一样：</p>
+<ol>
+<li>设置<code>cornerRadius</code>时，按钮的圆角是否变为相应值。</li>
+<li>设置<code>borderWidth</code>时，按钮的边框是否变为相应值。</li>
+<li>设置<code>normalTitleColor</code>和<code>disableTitleColor</code>时，按钮在正常状态下和不可用状态下的<code>titleColor</code>是否正确。</li>
+<li>设置<code>initialState</code>为1时，按钮的样式是否为可用的样式。</li>
+<li>设置<code>initialState</code>为0时，按钮的样式是否为不可用的样式。</li>
+</ol>
+<p>想好要测试什么，写的过程就不是事儿啦😄。</p>
+<ul>
+<li>ImagePickerBehaviorTests</li>
+</ul>
+<p>运用同样的想法来写<code>ImagePickerBehavior</code>的测试用例，于是我想到的是用例是：</p>
+<ol>
+<li>点击按钮时弹出了<code>UIAlertController</code>。</li>
+<li>弹出的<code>UIAlertController</code>的标题分别是<code>相册</code>、<code>相机</code>、<code>取消</code>。</li>
+<li>点击<code>相册</code>时，相册打开了。</li>
+<li>点击<code>相机</code>时，相机打开了。</li>
+<li>点击<code>取消</code>时，<code>UIAlertController</code>消失了。</li>
+</ol>
+<p>1、2还是轻松实现了，3、4、5就犯难了，<code>UIAlertController</code>并没有将按钮被点击了的消息放出来，也没有啥hack的方法能够监听到那个按钮被点击了。通过迂回的办法还是可以做的，我找到了一篇介绍：<a href="http://swiftandpainless.com/correction-on-testing-uialertcontroller/" target="_blank" rel="external">传送门</a>。但是这要改变我主程序的代码呀！<code>UIAlertController</code>在我原来的程序中只是一个临时变量，也确实没必要把它写成一个全局变量，但是为了写测试用例必须要把它弄成一个全局变量。这就有一点为了测试而测试了，有点教条主义了。再来看一下是否真的有必要写测试用来呢，对于这5点，只要运行一下程序，点下按钮就看的一目了然了。还有<code>BackgroundGradientBehavior</code>和<code>NavBarGradientBehavior</code>，直接运行起来看效果更直观一些。也许对于这种偏界面的、有动画交互的效果，确实不适合写测试用例，所以这2个我就都没写。（哈哈，理由找的还不错吧😆）但是UI方面的东西还是一样可以用<code>XCTest</code>来测试的，我们也应尽量来测试，如<a href="https://objccn.io/issue-15-6/" target="_blank" rel="external">这篇文章</a>所讲的，自己权衡吧。</p>
+<p>王垠的这篇文章：<a href="http://www.jianshu.com/p/d6ff2e433590" target="_blank" rel="external">测试的道理</a>讲的还是非常好的，如果你打算开始写测试用例了，强烈建议你看一看。对于测试，不能太教条。</p>
+<ul>
+<li>GoodsDetailBehaviorTests</li>
+</ul>
+<p>对<code>GoodsDetailBehavior</code>的测试就相对简单一些了，就是看能否正常接收通知，各个控件是否被正常的赋值。</p>
+<ul>
+<li>MultipleProxyBehaviorTests</li>
+</ul>
+<p>对<code>MultipleProxyBehavior</code>的测试也相对简单，就是看是否正常的实现了多路代理。</p>
+<p>这样的测试看似简单，但是还是值得写，便于我们开始时调试逻辑，免得改一点东西就要编译运行一下程序，然后再创造出各种条件，才能验证。</p>
+<p>以上的所有这些测试用例，看起来都测试的是一个小功能点的各种情况，也能比较分析出来要测试什么，这都是因为一个<code>Behavior</code>的职责单一性。你可以回头去看看你的<code>ViewController</code>，要对其写测试用例，是不是都觉得无从下手，很难清晰的列出来要测哪些，测了之后就能保证逻辑没问题了。</p>
+<h2 id="初步经验总结"><a href="#初步经验总结" class="headerlink" title="初步经验总结"></a>初步经验总结</h2><ul>
+<li><strong>测试行为，不要测试细节</strong>。功能的实现细节变的可能性非常大，一定实现变了，那测试又要跟着变，没有多大必要写。真正要关注的是，我们究竟要要得到什么效果。</li>
+<li><strong>从开发的角度转换到测试或者用户的角度去思考</strong>。如此，我们就能从我们自己写的代码中跳出来了，别管你咋实现的，就问你实现了没有。</li>
+<li><strong>功能模块保持职责单一</strong>。开发时就要尽量做到这一点，这样才能有明确的输入和输出，便于我们分析测试用例。</li>
+<li><strong>测试用例保持简单</strong>。单元测试来测试我们开发的功能代码了，那单元测试的代码谁来测试呢？所以尽量的保持每个用例的实现简单，才能让用例代码本身出错的几率变小。</li>
+</ul>
+<h2 id="其路漫漫"><a href="#其路漫漫" class="headerlink" title="其路漫漫"></a>其路漫漫</h2><p>在这个摸索的过程中，我还了解到了测试中的<code>Mock</code>、<code>Stub</code>这些术语，Objective-C有比较成熟的<code>Mock</code>框架，像<code>OCMock</code>，但是Swift目前好像还没有。以后随着使用的加深再一点点总结经验~</p>
 
         </div>
         <footer class="article-footer">
@@ -204,7 +214,7 @@ Your eyes had once, an">
 
 
 
-    <a data-url="http://shinancao.github.io/2016/05/21/English-When-You-Are-Old/" data-id="cixya1lgk000bdwstp8fu0uly" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2017/01/12/iOS-Tester-1/" data-id="cixya1lhc000ldwst6ps6skxu" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
@@ -300,20 +310,10 @@ Your eyes had once, an">
         
 <nav id="article-nav">
     
-        <a href="/2016/05/21/English-The-Farthest-Distance-In-The-World/" id="article-nav-newer" class="article-nav-link-wrap">
-        <strong class="article-nav-caption">newer</strong>
-        <p class="article-nav-title">
-        
-            The Farthest Distance In The World - By 泰戈尔
-        
-        </p>
-        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
-    </a>
     
-    
-        <a href="/2016/05/21/English-Passion-For-Life/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2017/01/08/iOS-Behavior/" id="article-nav-older" class="article-nav-link-wrap">
         <strong class="article-nav-caption">older</strong>
-        <p class="article-nav-title">Passion For Life - By 汪国真</p>
+        <p class="article-nav-title">iOS中的行为</p>
         <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
         </a>
     
@@ -501,7 +501,7 @@ Your eyes had once, an">
     var disqus_shortname = 'shinancao';
     
     
-    var disqus_url = 'http://shinancao.github.io/2016/05/21/English-When-You-Are-Old/';
+    var disqus_url = 'http://shinancao.github.io/2017/01/12/iOS-Tester-1/';
     
     (function() {
     var dsq = document.createElement('script');
