@@ -23,7 +23,7 @@
 公司的Mac上，要能往公司自己的git服务器上对应项目提交代码，也要能往自己github上的项目提交代码。
 别人github上项目，在自己的Mac上能往上面提交代码。">
 <meta property="og:image" content="http://shinancao.github.io/images/Programming-Git-Account.jpg">
-<meta property="og:updated_time" content="2016-12-24T13:54:48.000Z">
+<meta property="og:updated_time" content="2017-01-29T14:06:57.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="同一个Mac，配置多个SSH Key">
 <meta name="twitter:description" content="缕清思路网上关于这方面的文章已经挺多的了，但是每次要配置的时候，还是要靠搜索引擎找半天才搞定，索性自己记录一下。之前我遇到了下面几种情况：
@@ -190,11 +190,11 @@
 <ul>
 <li>生成1个SSH Key:</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1  $ ssh-keygen -t rsa -C &quot;youremail@xxx.com&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -C &quot;youremail@xxx.com&quot;</span><br></pre></td></tr></table></figure>
 <p>按回车后：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1  Generating public/private rsa key pair.</span><br><span class="line">2  Enter file in which to save the key (/Users/Shinancao/.ssh/id_rsa): id_rsa_TestSSH_github(取个名字)</span><br><span class="line">3  Enter passphrase (empty for no passphrase): </span><br><span class="line">4  Enter same passphrase again: </span><br><span class="line">5  Your identification has been saved in </span><br><span class="line">6  id_rsa_TestSSH_github.</span><br><span class="line">7  Your public key has been saved in </span><br><span class="line">8  id_rsa_TestSSH_github.pub.</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file in which to save the key (/Users/Shinancao/.ssh/id_rsa): id_rsa_TestSSH_github(取个名字)</span><br><span class="line">Enter passphrase (empty for no passphrase): </span><br><span class="line">Enter same passphrase again: </span><br><span class="line">Your identification has been saved in </span><br><span class="line">id_rsa_TestSSH_github.</span><br><span class="line">Your public key has been saved in </span><br><span class="line">id_rsa_TestSSH_github.pub.</span><br></pre></td></tr></table></figure>
 <p>最好每次生成时都给SSH Key取个名字，这样后面在管理时自己也一目了然。我这里的格式是<code>id_rsa_项目名_git提供方</code>，我生成的所有key都遵循这个规则命名。建议你也有你自己的一种命名方式，并且保持统一。如果不取名字，默认的是<code>id_rsa</code>，如果后面生成时不命名，会把这个覆盖掉。密码可以不设置，免得每次提交时还要输入一次，安全性自己衡量吧。第一次生成key时，会在<code>~</code>目录下创建一个<code>.ssh</code>目录。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1  $ cd ~/.ssh</span><br><span class="line">2  $ ls</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd ~/.ssh</span><br><span class="line">$ ls</span><br></pre></td></tr></table></figure>
 <ul>
 <li>把<code>id_rsa_TestSSH_github.pub</code>添加到github对应的项目的<code>Deploy keys</code>中。</li>
 </ul>
@@ -202,16 +202,16 @@
 <ul>
 <li>ssh服务器默认是去找<code>id_rsa</code>，现在需要把这个key添加到<code>ssh-agent</code>中，这样ssh服务器才能认识<code>id_rsa_TestSSH_github</code>。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1  $ ssh-add -K ~/.ssh/id_rsa_TestSSH_github</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-add -K ~/.ssh/id_rsa_TestSSH_github</span><br></pre></td></tr></table></figure>
 <p>这里为什么加上了一个<code>-K</code>参数呢？因为在Mac上，当系统重启后会“忘记”这个密钥，所以通过指定<code>-K</code>把SSH key导入到密钥链中。</p>
 <p>查看添加结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1  $ ssh-add -l</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-add -l</span><br></pre></td></tr></table></figure>
 <ul>
 <li>创建本地的配置文件 ~/.ssh/config，编辑如下：</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Host TestSSH.github.com</span><br><span class="line">	HostName github.com</span><br><span class="line">	User git</span><br><span class="line">	PreferredAuthentications publickey</span><br><span class="line">	IdentityFile ~/.ssh/id_rsa_TestSSH_github</span><br><span class="line">Host YourProjectName.gitlab.com</span><br><span class="line">	HostName gitlab.com</span><br><span class="line">	User git</span><br><span class="line">	PreferredAuthentications publickey</span><br><span class="line">	IdentityFile ~/.ssh/id_rsa_YourProjectName_gitlab</span><br></pre></td></tr></table></figure>
 <p>Host的名字可以随意取，我这边按照的规则是<code>项目名.git服务器来源</code>，接下来会用到这个名字。测试是否配置正确：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1  $ ssh -T git@TestSSH.github.com (就是刚刚你给Host取的名字)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -T git@TestSSH.github.com (就是刚刚你给Host取的名字)</span><br></pre></td></tr></table></figure>
 <p>敲一下回车，如下出现下面的提示就连接成功了：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hi shinancao/TestSSH! You&apos;ve successfully authenticated, but GitHub does not provide shell access.</span><br></pre></td></tr></table></figure>
 <p>一定要注意哦，帐号名称/项目名称，如果这个key没有连接成功，它有可能提示的是别的key的。</p>
@@ -222,36 +222,36 @@
 <p>(1) 打开<code>项目目录/.git/config</code>，将[remote “origin”]中的url中的<code>github.com</code>修改为<code>TestSSH.github.com</code>，就是你在第4步中给Host取的那个名字。如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">remote &quot;origin&quot;]</span><br><span class="line">	url = git@TestSSH.github.com:shinancao/TestSSH.git</span><br><span class="line">	fetch = +refs/heads/*:refs/remotes/origin/*</span><br></pre></td></tr></table></figure>
 <p>(2) 也可以在提交时修改</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1  $ git remote rm origin</span><br><span class="line">2  $ git remote add origin git@TestSSH.github.com:shinancao/TestSSH.git</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git remote rm origin</span><br><span class="line">$ git remote add origin git@TestSSH.github.com:shinancao/TestSSH.git</span><br></pre></td></tr></table></figure>
 <p>如果还没有clone到本地，则在clone时可以直接将<code>github.com</code>改为<code>TestSSH.github.com</code>，如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1  $ git clone git@TestSSH.github.com:shinancao/TestSSH.git</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git clone git@TestSSH.github.com:shinancao/TestSSH.git</span><br></pre></td></tr></table></figure>
 <p>到此，就可以Happy Coding啦😄，可以push一次试试~</p>
 <h3 id="github用户设置中的SSH-Key"><a href="#github用户设置中的SSH-Key" class="headerlink" title="github用户设置中的SSH Key"></a>github用户设置中的SSH Key</h3><p>细心的小伙伴可能已经注意到了，在用户设置中也有一个SSH Keys的配置，这块添加的key是来设置一个电脑上默认使用的key的。每创建一个<code>repository</code>都弄一次<code>Deploy Keys</code>是挺麻烦的。</p>
 <p><img src="/images/Git-Global-SSH.png" width="320" height="94"></p>
 <p>github默认找的是<code>id_rsa</code>这对密钥，所以此处要添加到github上的就是<code>id_rsa.pub</code>的内容。这对密钥一样存在于<code>~/.ssh</code>中，而且无需在<code>config</code>中设置。</p>
 <p>先看一下<code>id_rsa</code>是否已经在<code>ssh-agent</code>中了：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1  $ ssh-add -l</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-add -l</span><br></pre></td></tr></table></figure>
 <p>如果不在要添加进去：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1  $ ssh-add -K ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-add -K ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
 <p>测试是否能连接成功：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1  $ ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -T git@github.com</span><br></pre></td></tr></table></figure>
 <p>敲一下回车，如果结果如下则成功了：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hi shinancao! You&apos;ve successfully authenticated, but GitHub does not provide shell access.</span><br></pre></td></tr></table></figure>
 <p>注意哦，这里只有用户名！没有跟着项目名了~ 配置完成后，就是可以轻松的创建<code>repository</code>，然后clone到本地，自由自在的往上面<code>push</code>代码啦~</p>
 <h3 id="配置邮箱和用户名"><a href="#配置邮箱和用户名" class="headerlink" title="配置邮箱和用户名"></a>配置邮箱和用户名</h3><p>配置邮箱和用户名是用来干啥的呢？就是记录每一次<code>commit</code>的用户和与之关联的邮箱。可以在电脑上配置一个全局的<code>user.name</code>和<code>user.email</code>，也可以针对不同的<code>repository</code>配置不同的<code>user.name</code>和<code>user.email</code>。</p>
 <p><img src="/images/Git-UserName.png" width="320" height="101"></p>
 <p>配置全局的<code>user.name</code>和<code>user.email</code>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1  $ git config --global user.name &quot;your name&quot;</span><br><span class="line">2  $ git config --global user.email &quot;your email&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global user.name &quot;your name&quot;</span><br><span class="line">$ git config --global user.email &quot;your email&quot;</span><br></pre></td></tr></table></figure>
 <p>查看结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1  $ git config --global user.name</span><br><span class="line">2  $ git config --global user.email</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global user.name</span><br><span class="line">$ git config --global user.email</span><br></pre></td></tr></table></figure>
 <p>位置在<code>~/.gitconfig</code>文件中。</p>
 <p>在做这块的测试时，我发现了一个很有意思的事情，对于github，即使我随意设置了一个全局的<code>name</code>，但最后提交完，显示的还是我github的用户名。当取消了global的设置，只针对某个<code>repository</code>设置，则github上可以显示我设置的了。</p>
 <p>如果同时设置了全局的，和针对某个<code>repository</code>的，则优先使用全局的。那要单独给每个<code>repository</code>设置，要先取消全局的设置。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1  $ git config --global --unset user.name</span><br><span class="line">2  $ git config --global --unset user.email</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global --unset user.name</span><br><span class="line">$ git config --global --unset user.email</span><br></pre></td></tr></table></figure>
 <p>然后进入到项目目录下设置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1  $ git config user.email &quot;your name&quot;</span><br><span class="line">2  $ git config user.email &quot;your email&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config user.email &quot;your name&quot;</span><br><span class="line">$ git config user.email &quot;your email&quot;</span><br></pre></td></tr></table></figure>
 <p>查看结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1  $ git config user.name</span><br><span class="line">2  $ git config user.email</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config user.name</span><br><span class="line">$ git config user.email</span><br></pre></td></tr></table></figure>
 <p>位置在<code>项目目录/.git/config</code>文件中。</p>
 <h3 id="HTTPS的方式提交代码"><a href="#HTTPS的方式提交代码" class="headerlink" title="HTTPS的方式提交代码"></a>HTTPS的方式提交代码</h3><p>通过https的方式clone url，然后再以https的方式提交代码，我觉得就是正常的使用帐号和密码去操作。这种方式需要你知道项目拥有者的帐号和密码，而且在每次<code>commit</code>时都要输入用户名和密码。显然不方便啦，尤其是你要参与到别人的项目中去开发，人家总不能把帐号名和密码都给你吧😂。</p>
 <h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><ul>
@@ -272,7 +272,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/2016/12/18/Programming-Git-1/" data-id="ciyhbje77000gplstiep3jzen" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2016/12/18/Programming-Git-1/" data-id="ciyiqqo9v000bcvst7k4io6to" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
