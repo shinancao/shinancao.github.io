@@ -3,18 +3,23 @@
 <head>
     <meta charset="utf-8">
     
-    <title>Archive: 2016/11 | 意林</title>
+    <title>通过Shell一键修改target的版本号 | 意林</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
-    <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="意林">
-<meta property="og:url" content="http://shinancao.github.io/archives/2016/11/index.html">
+        <meta name="keywords" content="" />
+    
+    <meta name="description" content="脚本的由来随着项目的发展，目前我们项目已经有5个target了，一个主target，2个Today Widget的target，2个Apple Watch的target。这些target的版本号必须一模一样才能编译通过，也就是Info.plist中的CFBundleShortVersionString。每次版本迭代的时候都要手动一个一个改一点，实在太麻烦，而且对于一个程序员，怎么能忍这种很机械的操">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过Shell一键修改target的版本号">
+<meta property="og:url" content="http://shinancao.github.io/2017/01/28/Script-Plist-Version/index.html">
 <meta property="og:site_name" content="意林">
-<meta property="og:description">
+<meta property="og:description" content="脚本的由来随着项目的发展，目前我们项目已经有5个target了，一个主target，2个Today Widget的target，2个Apple Watch的target。这些target的版本号必须一模一样才能编译通过，也就是Info.plist中的CFBundleShortVersionString。每次版本迭代的时候都要手动一个一个改一点，实在太麻烦，而且对于一个程序员，怎么能忍这种很机械的操">
+<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/Script-Plist-Version.jpg">
+<meta property="og:updated_time" content="2017-01-29T13:24:12.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="意林">
-<meta name="twitter:description">
+<meta name="twitter:title" content="通过Shell一键修改target的版本号">
+<meta name="twitter:description" content="脚本的由来随着项目的发展，目前我们项目已经有5个target了，一个主target，2个Today Widget的target，2个Apple Watch的target。这些target的版本号必须一模一样才能编译通过，也就是Info.plist中的CFBundleShortVersionString。每次版本迭代的时候都要手动一个一个改一点，实在太麻烦，而且对于一个程序员，怎么能忍这种很机械的操">
+<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/Script-Plist-Version.jpg">
     
 
     
@@ -126,75 +131,125 @@
                         <div class="main-body-header">
     <h1 class="header">
     
-    <i class="icon fa fa-archive"></i>Archive: 2016/11
+    <a class="page-title-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/Programming/Script/">Script</a>
     </h1>
 </div>
                         <div class="main-body-content">
-                            
-
-    
-    
+                            <article id="post-Script-Plist-Version" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
         
-        
-        <section class="archives-wrap">
-            <div class="archive-year-wrap">
-                <a href="/archives/2016" class="archive-year"><i class="icon fa fa-calendar-o"></i>2016</a>
-            </div>
-            <div class="archives">
-    
-    
-    
-        <div class="article-row">
-    
-        <article class="article article-summary">
-    <div class="article-summary-inner">
-        
-        <a href="/2016/11/27/English-B-To-L/" class="thumbnail">
-    
-    
-        <span style="background-image:url(/images/English-B-To-L.jpg)" alt="Introduce Software Development Engineers" class="thumbnail-image"></span>
-    
-    
-        
-<span class="comment-counter">
-    <i class="fa fa-comments-o"></i>
-    
-        <span class="disqus-comment-count" data-disqus-url="http://shinancao.github.io/2016/11/27/English-B-To-L/">0</span>
-    
-</span>
-
-    
-</a>
-        
-        <div class="article-meta">
-            <p class="category">
-            <a class="article-category-link" href="/categories/English/">English</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/English/Presentation/">Presentation</a>
-            </p>
-            <p class="date"><time datetime="2016-11-27T13:30:37.000Z" itemprop="datePublished">2016-11-27</time></p>
-        </div>
-        
+            <header class="article-header">
+                
     
         <h1 class="article-title" itemprop="name">
-        <a href="/2016/11/27/English-B-To-L/">Introduce Software Development Engineers</a>
+        通过Shell一键修改target的版本号
         </h1>
     
 
-        <p class="article-excerpt">
+            </header>
+        
+        <div class="article-subtitle">
+            <a href="/2017/01/28/Script-Plist-Version/" class="article-date">
+    <time datetime="2017-01-28T14:05:23.000Z" itemprop="datePublished">2017-01-28</time>
+</a>
             
-This is my presentation from B level to L level in Web International English.
+        </div>
+        <div class="article-entry" itemprop="articleBody">
+            <h3 id="脚本的由来"><a href="#脚本的由来" class="headerlink" title="脚本的由来"></a>脚本的由来</h3><p>随着项目的发展，目前我们项目已经有5个target了，一个主target，2个Today Widget的target，2个Apple Watch的target。这些target的版本号必须一模一样才能编译通过，也就是<code>Info.plist</code>中的<code>CFBundleShortVersionString</code>。每次版本迭代的时候都要手动一个一个改一点，实在太麻烦，而且对于一个程序员，怎么能忍这种很机械的操作！遂，鼓动个脚本一劳永逸~</p>
+<h3 id="脚本的实现思路"><a href="#脚本的实现思路" class="headerlink" title="脚本的实现思路"></a>脚本的实现思路</h3><p>主要要解决2个问题，一个是怎么拿到<code>Info.plist</code>的路径，一个是怎么区分要改哪个渠道的版本号，我们有App Store包、企业包、两个马甲版的包…</p>
+<p>对于<code>Info.plist</code>的路径，我一开始想的遍历整个项目的目录文件查找，细想后发现这个操作起来太麻烦，而且又有<code>Pods</code>等，会起到干扰，很难判断哪些才是真正target对应的plist。如果直接把plist的路径都放在脚本中，也不是很好，因为这个路径可能因为项目重新进行整理变掉，这个时候还要再来改脚本的内容。后来想到Xcode <code>Build Settings</code>中的内容应该也会以某种文件形式存在，google了一下，发现了<code>xcodebuild -showBuildSettings</code>这个命令可以把指定target的<code>Build Settings</code>中所有的内容都打印出来。仔细一找，plist的路径在<code>PRODUCT_SETTINGS_PATH</code>这个key里。这就好办了，用<code>grep &quot;PRODUCT_SETTINGS_PATH&quot;</code>可以只拿这一行，再用字符串处理把路径拿到。</p>
+<p>对于第2个问题，解决的过程中走了一些弯路，直接说一下我最后的处理方式吧，通过<code>Bundle Id</code>来定位是要改哪个渠道的版本号。通过<code>xcodebuild -showBuildSettings</code>一样可以拿到<code>Bundle Id</code>，那用<code>grep -E &quot;PRODUCT_SETTINGS_PATH|PRODUCT_BUNDLE_IDENTIFIER&quot;</code>就可以把指定target的plist路径和<code>Bundle Id</code>都拿到了，再指定<code>alltargets</code>可以指定获取全部的了，最终的命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xcodebuild -project $projectName -alltargets -showBuildSettings | grep -E &quot;PRODUCT_SETTINGS_PATH|PRODUCT_BUNDLE_IDENTIFIER&quot;</span><br></pre></td></tr></table></figure>
+<p>运行后得到的结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">PRODUCT_BUNDLE_IDENTIFIER = bundle id</span><br><span class="line">PRODUCT_SETTINGS_PATH = plist path</span><br><span class="line">PRODUCT_BUNDLE_IDENTIFIER = bundle id</span><br><span class="line">PRODUCT_SETTINGS_PATH = plist path</span><br><span class="line">PRODUCT_BUNDLE_IDENTIFIER = bundle id</span><br><span class="line">PRODUCT_SETTINGS_PATH = plist path</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>把上面的结果，分割成数组，比较<code>2*i</code>位置的<code>Bundle Id</code>是不是想要的，如果是，则取<code>2*i+1</code>的plist路径，然后修改<code>CFBundleShortVersionString</code>即可。<code>Bundle Id</code>要直接配置在脚本中，只要配置主target的就好，比如主target的<code>Bundle Id</code>是<code>com.zn.abc</code>，那其他的target的<code>Bundle Id</code>的格式一定是这样的<code>com.zn.abc.*</code>。</p>
+<p>脚本的地址：<a href="https://github.com/shinancao/Shell-Plist-Version" target="_blank" rel="external">https://github.com/shinancao/Shell-Plist-Version</a></p>
+<h3 id="脚本的使用"><a href="#脚本的使用" class="headerlink" title="脚本的使用"></a>脚本的使用</h3><ol>
+<li>在脚本中配置你工程的project的名字，还有各渠道的主target的<code>Bundle Id</code>。</li>
+<li>将脚本放在project所在的文件夹中。</li>
+<li>具体的使用：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">使用说明：</span><br><span class="line">       修改指定target组的版本号</span><br><span class="line">          plist-version -i &lt;index of bundleId array&gt; -v &lt;version num&gt;</span><br><span class="line">       修改全部target的版本号</span><br><span class="line">          plist-version -a -v &lt;version num&gt;</span><br><span class="line"></span><br><span class="line">参数说明： </span><br><span class="line">          -a               指定修改全部target的版本号</span><br><span class="line">          -s               展示配置在脚本中的target</span><br><span class="line">          -h               查看命令的使用</span><br><span class="line">          -v               指定的版本号</span><br><span class="line">          -i               指定build id对应的索引</span><br></pre></td></tr></table></figure>
 
-Nowadays people nearly can’t live without the internet. It is many engineers who develop these products. After graduatin
-        </p>
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://shinancao.github.io/2017/01/28/Script-Plist-Version/" data-id="ciyhbje79000iplstg95gews6" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
     </div>
 </article>
+
+    <section id="comments">
     
-        </div>
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
     
-
-
-    </div></section>
-
-
+    </section>
 
                         </div>
                     </section>
@@ -214,6 +269,19 @@ Nowadays people nearly can’t live without the internet. It is many engineers w
             
         </ul>
     </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2017/01/12/iOS-Tester-1/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">older</strong>
+        <p class="article-nav-title">初识单元测试</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
     
     <div class="widgets-container">
         
@@ -396,11 +464,13 @@ Nowadays people nearly can’t live without the internet. It is many engineers w
     var disqus_shortname = 'shinancao';
     
     
+    var disqus_url = 'http://shinancao.github.io/2017/01/28/Script-Plist-Version/';
+    
     (function() {
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     </script>
