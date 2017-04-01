@@ -3,23 +3,47 @@
 <head>
     <meta charset="utf-8">
     
-    <title>用Static Library进行代码组织的一次实践 | 意林</title>
+    <title>于我，现在和未来 | 意林</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
         <meta name="keywords" content="" />
     
-    <meta name="description" content="写在前面还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我">
+    <meta name="description" content="生活不止眼前的苟且，还有诗和远方的田野下面这首诗来自英国诗人西格夫里•萨松，翻译余光中
+
+In me, past, pressent, future meet,
+于我，过去、现在和未来
+To hold long childing conference.
+商讨聚会各执一词 纷扰不息
+My lusts usurp the present tense
+林林总总的欲望，掠取着我的现在
+And stran">
 <meta property="og:type" content="article">
-<meta property="og:title" content="用Static Library进行代码组织的一次实践">
-<meta property="og:url" content="http://shinancao.github.io/2016/07/05/iOS-Project-Design-1/index.html">
+<meta property="og:title" content="于我，现在和未来">
+<meta property="og:url" content="http://shinancao.github.io/2017/04/01/Me-Pressent-Future/index.html">
 <meta property="og:site_name" content="意林">
-<meta property="og:description" content="写在前面还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我">
-<meta property="og:image" content="http://shinancao.github.io/images/iOS-Project-Design-1.png">
-<meta property="og:updated_time" content="2016-07-20T15:15:44.000Z">
+<meta property="og:description" content="生活不止眼前的苟且，还有诗和远方的田野下面这首诗来自英国诗人西格夫里•萨松，翻译余光中
+
+In me, past, pressent, future meet,
+于我，过去、现在和未来
+To hold long childing conference.
+商讨聚会各执一词 纷扰不息
+My lusts usurp the present tense
+林林总总的欲望，掠取着我的现在
+And stran">
+<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/Me-Pressent-Future.jpg">
+<meta property="og:updated_time" content="2017-04-01T15:21:10.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="用Static Library进行代码组织的一次实践">
-<meta name="twitter:description" content="写在前面还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我">
-<meta name="twitter:image" content="http://shinancao.github.io/images/iOS-Project-Design-1.png">
+<meta name="twitter:title" content="于我，现在和未来">
+<meta name="twitter:description" content="生活不止眼前的苟且，还有诗和远方的田野下面这首诗来自英国诗人西格夫里•萨松，翻译余光中
+
+In me, past, pressent, future meet,
+于我，过去、现在和未来
+To hold long childing conference.
+商讨聚会各执一词 纷扰不息
+My lusts usurp the present tense
+林林总总的欲望，掠取着我的现在
+And stran">
+<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/Me-Pressent-Future.jpg">
     
 
     
@@ -131,91 +155,60 @@
                         <div class="main-body-header">
     <h1 class="header">
     
-    <a class="page-title-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/iOS/Project-Design/">Project Design</a>
+    <a class="page-title-link" href="/categories/English/">English</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/English/Poetry/">Poetry</a>
     </h1>
 </div>
                         <div class="main-body-content">
-                            <article id="post-iOS-Project-Design-1" class="article article-single article-type-post" itemscope itemprop="blogPost">
+                            <article id="post-Me-Pressent-Future" class="article article-single article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
             <header class="article-header">
                 
     
         <h1 class="article-title" itemprop="name">
-        用Static Library进行代码组织的一次实践
+        于我，现在和未来
         </h1>
     
 
             </header>
         
         <div class="article-subtitle">
-            <a href="/2016/07/05/iOS-Project-Design-1/" class="article-date">
-    <time datetime="2016-07-05T13:39:01.000Z" itemprop="datePublished">2016-07-05</time>
+            <a href="/2017/04/01/Me-Pressent-Future/" class="article-date">
+    <time datetime="2017-04-01T14:46:51.000Z" itemprop="datePublished">2017-04-01</time>
 </a>
             
         </div>
         <div class="article-entry" itemprop="articleBody">
-            <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我就想尝试一下用Framework来打包数据层的代码，这样以后再多加Today插件，也是很轻松就搞定的事儿。</p>
-<p>嗯，我知道的，可以选择每个.m所属的Target，但是随着项目中的Target越来越多，你就知道这有多痛苦了。犹记得忘记给某个.m文件选上某个Target而苦苦调试了n久…。</p>
-<p>正好这个版本的开发时间还不算紧，我决定干脆把整个项目的代码都重新梳理一下。折腾这一次，你会发现自己原来的代码存在多少不合理的耦合。但还是友情提醒一下，真的要做好心里准备，因为这个过程真的不容易，而且你不能半途而废。还有一定要跟产品和测试报备，好争取时间和保证项目没被改出问题=。=</p>
-<h2 id="用Static-Library封装代码的好处"><a href="#用Static-Library封装代码的好处" class="headerlink" title="用Static Library封装代码的好处"></a>用Static Library封装代码的好处</h2><ul>
-<li>项目结构清晰</li>
-</ul>
-<p>项目里哪些是共用的代码，是在哪些Target中共用的代码，代码的分层结构，都一目了然。这样就算一个新加入的伙伴，也能比较快的了解项目，而且基本不用你给他讲=。=</p>
-<ul>
-<li>避免选择.m文件所在的Target，而带来的bug隐患</li>
-</ul>
-<p>一种情况是，当项目中增加了一个Target时，你要到文件里一个一个去添加，难免就漏掉了几个.m没选。</p>
-<p>一种情况是，你删除了某个类，删除的时候却没有注意它所属的Target，然后运行当前的Target还是正常的。比如我们项目有2套Target，一套是AppStore的，一套是Enterprise的。那你留给其他Target的这个bug，就不吉岛什么时候能发现了= =!</p>
-<ul>
-<li>有助于约束项目的代码规范</li>
-</ul>
-<p>Static Libray允许你只暴露你想给别人使用的类，把不想让别人使用的类保护起来，这样就避免了淘气的Parter会随意调用不必要的类，以至于破坏了整个项目的层次结构，产生了不合理的耦合。如果即使用了Static Library，还要随意到xxLibrary中将自己想使用的类改成Public的，那真是不能一起愉快的写代码了= =</p>
-<ul>
-<li>降低耦合度</li>
-</ul>
-<p>总体上，达到了一种单向依赖的关系，封装好的Static Library完全可以移出去用在其他的项目中。而且我在梳理代码的过程中，发现了很多环状的引用，虽然import允许这样做，但是这会拖累编译时间。所以在.h中，非必要时还是用@class。还有就是common、constant这样的类，真的是重构的重灾区。即使常量也还要按照类别放到不同的类中去。此外，如果以后项目要从Objective-C转移到Swift上，可以一个Kit一个Kit的进行重写，由于与主工程脱离开了，所以调试也会轻松。</p>
-<h2 id="我最终抽出的几个Kit"><a href="#我最终抽出的几个Kit" class="headerlink" title="我最终抽出的几个Kit"></a>我最终抽出的几个Kit</h2><ul>
-<li>KingWeatherKit</li>
-</ul>
-<p>这个Kit的目标是用在主App和Today插件中。其中封装了DB层、网络层、Model层、还有主App和Today插件会共用的一些代码，比如xxUtil类等。每往这个Kit里放代码时，要反复问自己，是必须的吗？因为我们不能把它最后给搞的很臃肿。有些类里的代码其实只有一部分是公用的，一部分只是为了适应很独特的场景，这时就要做适当的拆封了。</p>
-<ul>
-<li>KingWeatherTodayKit</li>
-</ul>
-<p>这个Kit的目标是用在Today插件中。其中封装了拿到数据后的业务逻辑处理。它会引用KingWeatherKit中的代码。</p>
-<ul>
-<li>KingWeatherWatchKit</li>
-</ul>
-<p>这个Kit的目标是用在Watch App中，主要封装了数据处理部分，和Util类。无法创建一个Framework或Static Library，即能在iOS App中用，又能在watchOS App中用，所以我创建了一个<code>iPhoneAndWatch</code>的Groups，来放置共用的代码，这块没办法了，只能勾选.m所在的Target，让其同时属于KingWeatherKit和KingWeahterWatchKit。这样这部分代码就始终都是属于这2个Target的了，其他地方要用，通过这2个Kit去用。</p>
-<h2 id="踩到的几个坑"><a href="#踩到的几个坑" class="headerlink" title="踩到的几个坑"></a>踩到的几个坑</h2><ul>
-<li>无法创建一个Kit在iOS与watchOS2上共用</li>
-</ul>
-<p>这一点要注意一下，一开始不知道，我就想创建一个Kit同时在iOS和watchOS上使用，后来发现watchOS有自己的Framework和Static Library。也可以理解，从watchOS2开始watch app脱离iPhone直接在watch上运行了。watchOS1是否可以创建一个Kit同时在iOS和watchOS上运行我没有实验，所以暂时打个问号在这= =。</p>
-<ul>
-<li>同一个Project中的类都是可以访问到的，即使将这些类打包到了Framework或Static Library中</li>
-</ul>
-<p>iOS8开始多了一个Cocoa Touch Framework，我开始重构时就直接在当前工程中创建了它，但是调试到后面时发现，即使我放在Private中的文件，也是可以被随意引用到的。原来在一个Project中的类都是可以调用到的，不管是放在Framework中还是放在Static Library中。无奈只能再弄一个Project来专门放置这些Kit了。</p>
-<p>至于是用Static Libray还是用Framework，因为从iOS8开始苹果才允许用纯粹的Framework，所以如果项目是从iOS8开始支持的，当然是用Framework好，毕竟Framework是动态加载的。因为我们项目还是支持iOS7的，还是不太放心用Framework是否会被拒，所以最后我用了Static Library。</p>
-<ul>
-<li>涉及到AppGroups的地方该如何处理</li>
-</ul>
-<p>AppGroups在封装librarys的project中是无法识别到的，在我们的项目中有2处涉及到了AppGroups，一处是<code>NSUserdefaults</code>，一处是<code>databasePath</code>。经过一番尝试，我最终采取的办法是，在主工程中创建了一个<code>AppGroupUtils</code>类来返回根据AppGroups创建好的<code>NSUserDefaults</code>和<code>databasePath</code>。与这两者有关的具体工作还是放到library中去做，但是在主工程中使用前进行赋值。例如<code>NSUserDefaults</code>在library中如下处理：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">UserDefaultsUtils</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">NSUserDefaults</span> *_userDefaults = <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line">+ (<span class="built_in">NSUserDefaults</span> *)userDefaults &#123;</span><br><span class="line">    <span class="built_in">NSAssert</span>(_userDefaults != <span class="literal">nil</span>, <span class="string">@"使用XXStorage之前，请先给userDefaults赋值！"</span>);</span><br><span class="line">    <span class="keyword">return</span> _userDefaults;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)setUserDefaults:(<span class="built_in">NSUserDefaults</span> *)userDefaults &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> predicate;</span><br><span class="line">    <span class="built_in">dispatch_once</span>(&amp;predicate, ^&#123;</span><br><span class="line">        _userDefaults = userDefaults;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)saveValue:(<span class="keyword">id</span>) value forKey:(<span class="built_in">NSString</span> *)key &#123;</span><br><span class="line">    <span class="built_in">NSUserDefaults</span> *userDefaults = [<span class="keyword">self</span> userDefaults];</span><br><span class="line">    [userDefaults setObject:value forKey:key];</span><br><span class="line">    [userDefaults synchronize];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在主工程中：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//一定要在所有的代码运行之前执行这句话，否则storage不能正常用</span></span><br><span class="line">[UserDefaultsUtils setUserDefaults:[AppGroupUtils userDefaults]];</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>主工程编译的时候，使封装好的Kit跟着一起编译</li>
-</ul>
-<p>这一点很重要，这样就可以在改动了Kit中的代码时，不用单独编译一次Kit了，而是直接运行主工程就可以看到结果了。操作步骤如下：</p>
-<p>Edit Scheme -&gt; Build -&gt; 添加编译时需要同时编译的Target</p>
-<p><img src="/images/Edit-Scheme.png" width="448" height="252"></p>
-<ul>
-<li>CocoaPods同时作用于多个Project</li>
-</ul>
-<p>抽离出来的Librarys Project和主Project同时都需要通过CocoaPods来引用第三方库，只要在Podfile中处理就可以了，并不会每一个Project同时又跟一个Pods Project哦=。= 。Podfile的写法如下：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">workspace 'MyLibraryDemo.xcworkspace'</span><br><span class="line">platform :ios, '7.0'</span><br><span class="line"></span><br><span class="line">inhibit_all_warnings!</span><br><span class="line"></span><br><span class="line">xcodeproj 'MyLibraryDemo.xcodeproj'</span><br><span class="line">xcodeproj 'MyLibrarys/MyLibrarys.xcodeproj'</span><br><span class="line"></span><br><span class="line">target :MyLibraryDemo do</span><br><span class="line">  xcodeproj 'MyLibraryDemo'</span><br><span class="line">  pod 'FMDB'</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">target :LibraryOne do</span><br><span class="line">  xcodeproj 'MyLibrarys/MyLibrarys.xcodeproj'</span><br><span class="line">  pod 'SDWebImage'</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">target :LibraryTwo do</span><br><span class="line">  xcodeproj 'MyLibrarys/MyLibrarys.xcodeproj'</span><br><span class="line">  pod 'MJRefresh'</span><br><span class="line">end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>至此，总结完毕，欢迎拍砖 (♥◠‿◠)</p>
-<p>–End–</p>
-<p><em>以上如果有说的不严谨的地方，希望在下面的留言中指出哦，如果对你有一些帮助，也希望能在下面的留言中给一些鼓励^_^</em></p>
+            <blockquote>
+<p>生活不止眼前的苟且，还有诗和远方的田野<br>下面这首诗来自英国诗人西格夫里•萨松，翻译余光中</p>
+</blockquote>
+<p>In me, past, pressent, future meet,</p>
+<p>于我，过去、现在和未来</p>
+<p>To hold long childing conference.</p>
+<p>商讨聚会各执一词 纷扰不息</p>
+<p>My lusts usurp the present tense</p>
+<p>林林总总的欲望，掠取着我的现在</p>
+<p>And strangle Reason in his seat.</p>
+<p>把“理性”扼杀于它的宝座</p>
+<p>My loves leap through the future’s fense</p>
+<p>我的爱情纷纷越过未来的藩篱</p>
+<p>To dance with dream-enfranchised feet.</p>
+<p>梦想解放出它的双脚 舞蹈不挺</p>
+<p>In me the cave-man clasps the seer,</p>
+<p>于我，穴居人攫取了先知</p>
+<p>And garlanded Apollo goes</p>
+<p>佩戴花环的阿波罗神</p>
+<p>Chanting to Abraham’s deaf ear.</p>
+<p>向亚伯拉罕的聋耳唱叹歌吟。</p>
+<p>In me the tiger sniffs the rose.</p>
+<p>心有猛虎，细嗅蔷薇</p>
+<p>Look in my heart, kind friends, andtremble,</p>
+<p>审视我的内心吧，亲爱的朋友，你应颤栗，</p>
+<p>Since there your elements assemble.</p>
+<p>因为那才是你本来的面目。</p>
+<blockquote>
+<p>今天晚上突然不是很想思考代码，看完了最新一期的《奇葩说》，把最近反复听了几遍的两首诗记录一下，然后睡觉前看一会刚买的书《爱你就像爱生命》Σ(￣。￣ノ)ノ</p>
+</blockquote>
 
         </div>
         <footer class="article-footer">
@@ -223,7 +216,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/2016/07/05/iOS-Project-Design-1/" data-id="cj0zeoa3e001lgpst0fu3bh72" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2017/04/01/Me-Pressent-Future/" data-id="cj0zeoa2q0018gpstbe00pw5w" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
@@ -319,20 +312,10 @@
         
 <nav id="article-nav">
     
-        <a href="/2016/11/27/English-B-To-L/" id="article-nav-newer" class="article-nav-link-wrap">
-        <strong class="article-nav-caption">newer</strong>
-        <p class="article-nav-title">
-        
-            Introduce Software Development Engineers
-        
-        </p>
-        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
-    </a>
     
-    
-        <a href="/2016/06/19/iOS-Watch-3/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2017/03/12/iOS-Memory-Management/" id="article-nav-older" class="article-nav-link-wrap">
         <strong class="article-nav-caption">older</strong>
-        <p class="article-nav-title">watchOS 2 - WatchConnectivity</p>
+        <p class="article-nav-title">iOS内存管理小结</p>
         <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
         </a>
     
@@ -520,7 +503,7 @@
     var disqus_shortname = 'shinancao';
     
     
-    var disqus_url = 'http://shinancao.github.io/2016/07/05/iOS-Project-Design-1/';
+    var disqus_url = 'http://shinancao.github.io/2017/04/01/Me-Pressent-Future/';
     
     (function() {
     var dsq = document.createElement('script');
