@@ -21,7 +21,7 @@ Mac上安装Reve">
 在Cydia源中安装OpenSSH、Cydia Substrate，OpenSSH使我们能够通过Mac终端连接到iPhone上，从而进行一些对iPhone的操作。Cydia Substrate（原来的名字叫MobileSubstrate）主要的功能是hook某个App，修改代码比如替换其中方法的实现，Cydia上的补丁都是基于它实现的。
 Mac上安装Reve">
 <meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/IMG_0002.PNG">
-<meta property="og:updated_time" content="2017-04-09T11:23:00.000Z">
+<meta property="og:updated_time" content="2017-04-09T11:27:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="用Reveal查看别人的App布局">
 <meta name="twitter:description" content="准备材料
@@ -190,10 +190,8 @@ Mac上安装Reve">
 <pre><code>scp /Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries/libReveal.dylib root@192.168.1.110:/Library/RHRevealLoader
 </code></pre><p><strong>这里要注意</strong>，我们是要把Mac上的文件上传到iPhone上，所以要确保终端在Mac的环境中，可执行<code>exit</code>退出之前的iPhone环境，否则会报找不到<code>libReveal.dylib</code>。</p>
 <ul>
-<li><p>重启iPhone，再执行<code>ssh root@[设备IP地址]</code>回到iPhone环境，然后执行<code>killall SpringBoard</code>。</p>
-</li>
-<li><p>打开一个App，现在可以开始在Reveal中查看布局啦~。要确保Reveal和iPhone连的是同一个网，如果Mac上开了代理记得要退出去哦。</p>
-</li>
+<li>重启iPhone，再执行<code>ssh root@[设备IP地址]</code>回到iPhone环境，然后执行<code>killall SpringBoard</code>。</li>
+<li>打开一个App，现在可以开始在Reveal中查看布局啦~。要确保Reveal和iPhone连的是同一个网，如果Mac上开了代理记得要退出去哦。</li>
 </ul>
 <p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170409-184454@2x.png" width="400" height="252"></p>
 <p>试了几次，在不在设置 -&gt; Reveal -&gt; Enabled Applications中打开App，都是可以在Reveal中正常看到的。</p>
@@ -208,7 +206,7 @@ Mac上安装Reve">
 
 
 
-    <a data-url="http://shinancao.github.io/2017/04/09/Reveal-App-Layout/" data-id="cj1ahqhro000ii7stv8q9fii7" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2017/04/09/Reveal-App-Layout/" data-id="cj1alum2600147dstxoygj3q9" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
