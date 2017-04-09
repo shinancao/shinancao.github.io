@@ -3,23 +3,18 @@
 <head>
     <meta charset="utf-8">
     
-    <title>iOS中的行为 | 意林</title>
+    <title>Category: Cocoa Touch | 意林</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
-        <meta name="keywords" content="" />
-    
-    <meta name="description" content="开场白8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇iOS中的行为已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="iOS中的行为">
-<meta property="og:url" content="http://shinancao.github.io/2017/01/08/iOS-Behavior/index.html">
+    <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="意林">
+<meta property="og:url" content="http://shinancao.github.io/categories/iOS/Cocoa-Touch/index.html">
 <meta property="og:site_name" content="意林">
-<meta property="og:description" content="开场白8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇iOS中的行为已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。">
-<meta property="og:image" content="http://shinancao.github.io/images/iOS-Behavior-Cover.jpg">
-<meta property="og:updated_time" content="2017-01-15T07:23:31.000Z">
+<meta property="og:description">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS中的行为">
-<meta name="twitter:description" content="开场白8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇iOS中的行为已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。">
-<meta name="twitter:image" content="http://shinancao.github.io/images/iOS-Behavior-Cover.jpg">
+<meta name="twitter:title" content="意林">
+<meta name="twitter:description">
     
 
     
@@ -131,159 +126,271 @@
                         <div class="main-body-header">
     <h1 class="header">
     
-    <a class="page-title-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/iOS/Project-Design/">Project Design</a>
+    <i class="icon fa fa-folder-open"></i>Category: <em class="page-title-link">Cocoa Touch</em>
     </h1>
 </div>
                         <div class="main-body-content">
-                            <article id="post-iOS-Behavior" class="article article-single article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
+                            
+
+    
+    
         
-            <header class="article-header">
-                
+        
+        <section class="archives-wrap">
+            <div class="archive-year-wrap">
+                <a href="/archives/2017" class="archive-year"><i class="icon fa fa-calendar-o"></i>2017</a>
+            </div>
+            <div class="archives">
+    
+    
+    
+        <div class="article-row">
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2017/04/09/Reveal-App-Layout/" class="thumbnail">
+    
+    
+        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/Reveal-App-Layout.jpg)" alt="用Reveal查看别人的App布局" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-url="http://shinancao.github.io/2017/04/09/Reveal-App-Layout/">0</span>
+    
+</span>
+
+    
+</a>
+        
+        <div class="article-meta">
+            <p class="category">
+            <a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a>
+            </p>
+            <p class="date"><time datetime="2017-04-09T08:33:56.000Z" itemprop="datePublished">2017-04-09</time></p>
+        </div>
+        
     
         <h1 class="article-title" itemprop="name">
-        iOS中的行为
+        <a href="/2017/04/09/Reveal-App-Layout/">用Reveal查看别人的App布局</a>
         </h1>
     
 
-            </header>
-        
-        <div class="article-subtitle">
-            <a href="/2017/01/08/iOS-Behavior/" class="article-date">
-    <time datetime="2017-01-08T08:51:08.000Z" itemprop="datePublished">2017-01-08</time>
-</a>
-            
-        </div>
-        <div class="article-entry" itemprop="articleBody">
-            <h2 id="开场白"><a href="#开场白" class="headerlink" title="开场白"></a>开场白</h2><p>8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇<a href="https://objccn.io/issue-13-3/" target="_blank" rel="external">iOS中的行为</a>已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。</p>
-<h2 id="进入主题"><a href="#进入主题" class="headerlink" title="进入主题"></a>进入主题</h2><p>行为是一个负责实现一个指定功能的对象，在iOS中就是一个封装了特定功能，继承于NSObject的普通对象。运用行为，实际上就是组合模式，将每个不可再划分的功能模块单独封装起来，然后再通过一定手段组装起来。这样的设计至少有以下点好处：</p>
-<ul>
-<li>能大大减少ViewController中的代码</li>
-<li>能让你0代码的去集成一个功能</li>
-<li>能让设计和产品自己去调整效果</li>
-<li>能提高代码的可复用性和可测试性</li>
-</ul>
-<p>减少<code>ViewController</code>中的代码是自然的啦，对于职责单一的功能自然也是容易复用和容易测试的，那对于第2点和第3点怎么做到的呢？那就是借助IB中一个强大的但是经常被忽略的功能，<code>Object</code>这个控件。同时借助在IB中设置运行时属性，达到可视化编程。对于<code>StoryBoard</code>和<code>Xib</code>都有这个控件。</p>
-<p><img src="/images/iOS-IB-Object.png" width="121" height="169"></p>
-<p><img src="/images/iOS-Behavior-IB.png" width="331" height="216"></p>
-<p><em>Talk is cheap, Show me the code</em>，演示的demo:<a href="https://github.com/shinancao/BehaviorDemo" target="_blank" rel="external">https://github.com/shinancao/BehaviorDemo</a></p>
-<p>这里面举了几个例子，是目前我能想到的行为可以应用到的场景。</p>
-<h4 id="基础行为的构建"><a href="#基础行为的构建" class="headerlink" title="基础行为的构建"></a>基础行为的构建</h4><ul>
-<li>ImagePickerBehavior</li>
-</ul>
-<p>点击一个按钮，弹起选项，然后调起系统相册或相机。这个是非常简单的功能了，你可以通过这个了解IB中<code>Object</code>这个控件怎么用。操作一遍后你会发现，真的无须写一行代码就能让你的应用成功集成这个功能。</p>
-<ul>
-<li>CheckCodeBehavior</li>
-</ul>
-<p>在文本框中输入内容，如果符合电话号码则发送验证码的按钮会亮起来，点击发送后，按钮变为不可用，然后开始倒计时。发送验证码的样式完全在IB中可配置。通过这个例子，可以了解到我们在IB中可以定义的运行时属性其实非常的丰富，上面的那张截图正是来自这个例子。</p>
-<p>在这个例子中还有一个特别要注意的技巧，就是按钮被点击时，要通知<code>ViewController</code>去真正的向服务器发送请求发一个验证号码给用户。那怎么通知呢？可以让<code>CheckCodeBehavior</code>继承自<code>UIControl</code>，通过调用<code>sendActions(for: .touchUpInside)</code>手动触发<code>CheckCodeBehavior</code>的点击事件，然后把这个点击事件连接到<code>ViewController</code>中，这样就可以啦。这个技巧在设计行为时非常有用，让你的行为继承<code>UIControl</code>。</p>
-<h4 id="组合行为（多路代理）"><a href="#组合行为（多路代理）" class="headerlink" title="组合行为（多路代理）"></a>组合行为（多路代理）</h4><ul>
-<li>BackgroundGradientBehavior + NavBarGradientBehavior</li>
-</ul>
-<p>在滑动列表时，导航栏会由透明变成紫色，同时背景也会逐渐变模糊。这两个行为都需要用到<code>UIScrollView</code>的<code>delegate</code>方法，而代理通常又是一对一的关系，那如何将每个行为分离开呢？可以用消息来实现多路代理，具体的代码在Demo有。这样就不用在<code>UIScrollView</code>的<code>delegate</code>方法中写长长的代码了，要做的功能拆分到每个行为中去。</p>
-<p>不一定非得用IB才能做，用代码一样也可以实现多路代理，有可能你的App已经比较成熟了，而且一开始并不是用IB做的，也可以试试的。</p>
-<h4 id="剥离布局和布局展示的逻辑"><a href="#剥离布局和布局展示的逻辑" class="headerlink" title="剥离布局和布局展示的逻辑"></a>剥离布局和布局展示的逻辑</h4><ul>
-<li>GoodsDetailBehavior</li>
-</ul>
-<p>像商品详情界面，若不需要用UITableView来实现，而是直接用多个view布局的。通常有两种做法：</p>
-<ol>
-<li>直接将控件连到Controller中，但会使Controller变得臃肿。</li>
-<li>用一个BoxView将所有的小控件放进去，然后Controller只与其交互。但在数据展示前通常要做一些逻辑处理，实质上干了控制层应该干的事。而且不能直接在StoryBoard上的Controller中直接布局了。</li>
-</ol>
-<p>第1点显示是很糟糕的做法，对于第2点我也一直耿耿于怀，因为让在<code>View</code>里干了<code>Controller</code>要做的事儿，所以学习行为时，觉得行为能够解决这个问题。但仔细想了想还是有一些问题，就是有可能导致<code>ViewController</code>和<code>Behavior</code>频繁的互调通信，如果这两部分耦合这么强烈，那拆分就没啥意义了。</p>
-<p>这也是我的一个思考吧，实际开发中我还没有这样用过。后来接触到了一个架构模式<code>VIPER</code>，可以让<code>View</code>中不去处理那么多逻辑。但是使用下来也有些其他的问题，以后再另外写文章总结啦。</p>
-<h4 id="行为的生命周期"><a href="#行为的生命周期" class="headerlink" title="行为的生命周期"></a>行为的生命周期</h4><p>在Interface Builder中创建的行为，如果没有另外的对象对其引用，它将会在被创建后立刻移除。如果真的需要该行为常住，也尽量不要将行为定义成Controller的一个属性。这有可能导致行为与Controller过多的耦合，而且当不需要这个行为时，还要在Controller中去清除这个行为。可以通过Objective-C运行时将行为与Controller进行绑定，Demo中有演示。</p>
-<p><a href="http://shinancao.github.io/2017/01/12/iOS-Tester-1/">下一篇文章</a>说了一下给这些<code>Behavior</code>写单元测试的一些感受~</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><h4 id="介绍行为相关的"><a href="#介绍行为相关的" class="headerlink" title="介绍行为相关的"></a>介绍行为相关的</h4><p><a href="https://www.objc.io/issues/13-architecture/behaviors/" target="_blank" rel="external">https://www.objc.io/issues/13-architecture/behaviors/</a></p>
-<p><a href="https://github.com/zziking/KIZBehavior" target="_blank" rel="external">https://github.com/zziking/KIZBehavior</a></p>
-<h4 id="涉及到动画实现的"><a href="#涉及到动画实现的" class="headerlink" title="涉及到动画实现的"></a>涉及到动画实现的</h4><p><a href="http://five.agency/how-to-create-an-interactive-blur-effect-in-ios8/" target="_blank" rel="external">http://five.agency/how-to-create-an-interactive-blur-effect-in-ios8/</a></p>
-<p><a href="https://github.com/ltebean/LTNavigationBar" target="_blank" rel="external">https://github.com/ltebean/LTNavigationBar</a></p>
-<blockquote>
-<p>转载请注明出处：</p>
-<p>作者：意林</p>
-<p>原文链接：<a href="http://shinancao.github.io/2017/01/08/iOS-Behavior/">http://shinancao.github.io/2017/01/08/iOS-Behavior/</a></p>
-</blockquote>
-<p>–End–</p>
-
-        </div>
-        <footer class="article-footer">
-            
-
-
-
-    <a data-url="http://shinancao.github.io/2017/01/08/iOS-Behavior/" data-id="cj1amhryg000pbxstu77b83cl" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-        </footer>
+        <p class="article-excerpt">
+            准备材料
+一台已经越狱的iPhone。
+在Cydia源中安装OpenSSH、Cydia Substrate，OpenSSH使我们能够通过Mac终端连接到iPhone上，从而进行一些对iPhone的操作。Cydia Substrate（原来的名字叫MobileSubstrate）主要的功能是hook某个App，修改代码比如替换其中方法的实现，Cydia上的补丁都是基于它实现的。
+Mac上安装Reve
+        </p>
     </div>
 </article>
+    
 
-    <section id="comments">
+    
+    
+    
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2017/01/02/iOS-Layout-Event/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/iOS-AutoLayout-Event1.jpg)" alt="Layout事件调用" class="thumbnail-image"></span>
+    
     
         
-    <div id="disqus_thread">
-        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    </div>
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-url="http://shinancao.github.io/2017/01/02/iOS-Layout-Event/">0</span>
+    
+</span>
 
     
-    </section>
+</a>
+        
+        <div class="article-meta">
+            <p class="category">
+            <a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a>
+            </p>
+            <p class="date"><time datetime="2017-01-02T04:58:10.000Z" itemprop="datePublished">2017-01-02</time></p>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2017/01/02/iOS-Layout-Event/">Layout事件调用</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            
+这是一篇对偶然看的一段讲解Layout事件调用顺序的英文文章的大致翻译。原文链接：http://www.devdiv.com/layout_-blog-6399-51990.html，好像已经打开不了，囧。讲解的还算比较清晰，记录下来，留着以后查看~
+
+updateConstraints在用autoLayout时，要立即出发updateConstraints，调用updateConstraint
+        </p>
+    </div>
+</article>
+    
+        </div>
+    
+
+    
+    
+        
+            </div></section>
+        
+        
+        <section class="archives-wrap">
+            <div class="archive-year-wrap">
+                <a href="/archives/2016" class="archive-year"><i class="icon fa fa-calendar-o"></i>2016</a>
+            </div>
+            <div class="archives">
+    
+    
+    
+        <div class="article-row">
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2016/06/19/iOS-Watch-3/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/iOS-Watch-3.png)" alt="watchOS 2 - WatchConnectivity" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-url="http://shinancao.github.io/2016/06/19/iOS-Watch-3/">0</span>
+    
+</span>
+
+    
+</a>
+        
+        <div class="article-meta">
+            <p class="category">
+            <a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a>
+            </p>
+            <p class="date"><time datetime="2016-06-19T03:44:23.000Z" itemprop="datePublished">2016-06-19</time></p>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2016/06/19/iOS-Watch-3/">watchOS 2 - WatchConnectivity</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            写在前面虽然watchOS 2实现了可以脱离iPhone进行网络请求，但是也不可以避免的要跟iPhone进行一些数据通信。相信你对WatchConnectivity并不陌生了，只要你去Google一下就会有大把讲WatchConnectivity是怎么用的博客。但是我还是打算写一下我用下来的一些感受。当时准备开发时，也是看了很多博客的介绍，但是并没有通过看这些博客就理解透了WatchConnect
+        </p>
+    </div>
+</article>
+    
+
+    
+    
+    
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2016/06/02/iOS-Watch-2/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/iOS-Watch-2.png)" alt="WatchKit相关的" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-url="http://shinancao.github.io/2016/06/02/iOS-Watch-2/">0</span>
+    
+</span>
+
+    
+</a>
+        
+        <div class="article-meta">
+            <p class="category">
+            <a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a>
+            </p>
+            <p class="date"><time datetime="2016-06-02T13:17:56.000Z" itemprop="datePublished">2016-06-02</time></p>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2016/06/02/iOS-Watch-2/">WatchKit相关的</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            1.WatchKit布局WatchKit的布局不同于iOS Apps的布局方式，你必须在storyboard中布局好界面，并且不能动态的添加或删除某个控件。所有可能出现的控件，你都要事先放到storyboard中。你甚至不用在代码中获取某个控件的坐标、bounds、frames，也不用再使用约束之类的东西了，系统会自动进行调整。控件不能叠加在控件上。但是你可以在代码中控制隐藏或显示某个控件，当一个
+        </p>
+    </div>
+</article>
+    
+        </div>
+    
+
+    
+    
+    
+    
+        <div class="article-row">
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2016/06/01/iOS-Watch-1/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/iOS-Watch-1.png)" alt="watchOS 2 App开发前需要了解的" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+        <span class="disqus-comment-count" data-disqus-url="http://shinancao.github.io/2016/06/01/iOS-Watch-1/">0</span>
+    
+</span>
+
+    
+</a>
+        
+        <div class="article-meta">
+            <p class="category">
+            <a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a>
+            </p>
+            <p class="date"><time datetime="2016-06-01T13:25:24.000Z" itemprop="datePublished">2016-06-01</time></p>
+        </div>
+        
+    
+        <h1 class="article-title" itemprop="name">
+        <a href="/2016/06/01/iOS-Watch-1/">watchOS 2 App开发前需要了解的</a>
+        </h1>
+    
+
+        <p class="article-excerpt">
+            天气王是在watchOS 2已经发布了一段时间才开始做Apple Watch版本的，虽然这时网上已经有大量的Blog来介绍怎么开发一个Watch App，但是在准备开发时我还是迷茫了几天，不知道从何下手，不知道一个Watch App的结构要怎样搭建。直到看到了猫神的这篇文章《30分钟开发一个简单的watchOS 2 app》，才开了点窍= =！。后来想了一下，这些文章大部分介绍的都是WatchCo
+        </p>
+    </div>
+</article>
+    
+
+
+    </div></section>
+
+
+
 
                         </div>
                     </section>
@@ -303,29 +410,6 @@
             
         </ul>
     </div>
-    
-        
-<nav id="article-nav">
-    
-        <a href="/2017/01/12/iOS-Tester-1/" id="article-nav-newer" class="article-nav-link-wrap">
-        <strong class="article-nav-caption">newer</strong>
-        <p class="article-nav-title">
-        
-            初识单元测试
-        
-        </p>
-        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
-    </a>
-    
-    
-        <a href="/2017/01/02/iOS-Layout-Event/" id="article-nav-older" class="article-nav-link-wrap">
-        <strong class="article-nav-caption">older</strong>
-        <p class="article-nav-title">Layout事件调用</p>
-        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
-        </a>
-    
-</nav>
-
     
     <div class="widgets-container">
         
@@ -508,13 +592,11 @@
     var disqus_shortname = 'shinancao';
     
     
-    var disqus_url = 'http://shinancao.github.io/2017/01/08/iOS-Behavior/';
-    
     (function() {
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     </script>
