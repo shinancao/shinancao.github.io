@@ -3,23 +3,32 @@
 <head>
     <meta charset="utf-8">
     
-    <title>WatchKit相关的 | 意林</title>
+    <title>用Reveal查看别人的App布局 | 意林</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
         <meta name="keywords" content="" />
     
-    <meta name="description" content="1.WatchKit布局WatchKit的布局不同于iOS Apps的布局方式，你必须在storyboard中布局好界面，并且不能动态的添加或删除某个控件。所有可能出现的控件，你都要事先放到storyboard中。你甚至不用在代码中获取某个控件的坐标、bounds、frames，也不用再使用约束之类的东西了，系统会自动进行调整。控件不能叠加在控件上。但是你可以在代码中控制隐藏或显示某个控件，当一个">
+    <meta name="description" content="准备材料
+一台已经越狱的iPhone。
+在Cydia源中安装OpenSSH、Cydia Substrate，OpenSSH使我们能够通过Mac终端连接到iPhone上，从而进行一些对iPhone的操作。Cydia Substrate（原来的名字叫MobileSubstrate）主要的功能是hook某个App，修改代码比如替换其中方法的实现，Cydia上的补丁都是基于它实现的。
+Mac上安装Reve">
 <meta property="og:type" content="article">
-<meta property="og:title" content="WatchKit相关的">
-<meta property="og:url" content="http://shinancao.github.io/2016/06/02/iOS-Watch-2/index.html">
+<meta property="og:title" content="用Reveal查看别人的App布局">
+<meta property="og:url" content="http://shinancao.github.io/2017/04/09/Reveal-App-Layout/index.html">
 <meta property="og:site_name" content="意林">
-<meta property="og:description" content="1.WatchKit布局WatchKit的布局不同于iOS Apps的布局方式，你必须在storyboard中布局好界面，并且不能动态的添加或删除某个控件。所有可能出现的控件，你都要事先放到storyboard中。你甚至不用在代码中获取某个控件的坐标、bounds、frames，也不用再使用约束之类的东西了，系统会自动进行调整。控件不能叠加在控件上。但是你可以在代码中控制隐藏或显示某个控件，当一个">
-<meta property="og:image" content="http://shinancao.github.io/images/iOS-Watch-2.png">
-<meta property="og:updated_time" content="2017-03-26T06:10:15.000Z">
+<meta property="og:description" content="准备材料
+一台已经越狱的iPhone。
+在Cydia源中安装OpenSSH、Cydia Substrate，OpenSSH使我们能够通过Mac终端连接到iPhone上，从而进行一些对iPhone的操作。Cydia Substrate（原来的名字叫MobileSubstrate）主要的功能是hook某个App，修改代码比如替换其中方法的实现，Cydia上的补丁都是基于它实现的。
+Mac上安装Reve">
+<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/IMG_0002.PNG">
+<meta property="og:updated_time" content="2017-04-09T11:23:00.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="WatchKit相关的">
-<meta name="twitter:description" content="1.WatchKit布局WatchKit的布局不同于iOS Apps的布局方式，你必须在storyboard中布局好界面，并且不能动态的添加或删除某个控件。所有可能出现的控件，你都要事先放到storyboard中。你甚至不用在代码中获取某个控件的坐标、bounds、frames，也不用再使用约束之类的东西了，系统会自动进行调整。控件不能叠加在控件上。但是你可以在代码中控制隐藏或显示某个控件，当一个">
-<meta name="twitter:image" content="http://shinancao.github.io/images/iOS-Watch-2.png">
+<meta name="twitter:title" content="用Reveal查看别人的App布局">
+<meta name="twitter:description" content="准备材料
+一台已经越狱的iPhone。
+在Cydia源中安装OpenSSH、Cydia Substrate，OpenSSH使我们能够通过Mac终端连接到iPhone上，从而进行一些对iPhone的操作。Cydia Substrate（原来的名字叫MobileSubstrate）主要的功能是hook某个App，修改代码比如替换其中方法的实现，Cydia上的补丁都是基于它实现的。
+Mac上安装Reve">
+<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/IMG_0002.PNG">
     
 
     
@@ -131,82 +140,67 @@
                         <div class="main-body-header">
     <h1 class="header">
     
-    <a class="page-title-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/iOS/Cocoa/">Cocoa</a>
+    uncategorized
     </h1>
 </div>
                         <div class="main-body-content">
-                            <article id="post-iOS-Watch-2" class="article article-single article-type-post" itemscope itemprop="blogPost">
+                            <article id="post-Reveal-App-Layout" class="article article-single article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
             <header class="article-header">
                 
     
         <h1 class="article-title" itemprop="name">
-        WatchKit相关的
+        用Reveal查看别人的App布局
         </h1>
     
 
             </header>
         
         <div class="article-subtitle">
-            <a href="/2016/06/02/iOS-Watch-2/" class="article-date">
-    <time datetime="2016-06-02T13:17:56.000Z" itemprop="datePublished">2016-06-02</time>
+            <a href="/2017/04/09/Reveal-App-Layout/" class="article-date">
+    <time datetime="2017-04-09T08:33:56.000Z" itemprop="datePublished">2017-04-09</time>
 </a>
             
         </div>
         <div class="article-entry" itemprop="articleBody">
-            <h2 id="1-WatchKit布局"><a href="#1-WatchKit布局" class="headerlink" title="1.WatchKit布局"></a>1.WatchKit布局</h2><p>WatchKit的布局不同于iOS Apps的布局方式，你必须在<code>storyboard</code>中布局好界面，并且不能动态的添加或删除某个控件。所有可能出现的控件，你都要事先放到<code>storyboard</code>中。你甚至不用在代码中获取某个控件的坐标、bounds、frames，也不用再使用<code>约束</code>之类的东西了，系统会自动进行调整。控件不能叠加在控件上。但是你可以在代码中控制隐藏或显示某个控件，当一个控件被隐藏后释放它所占的空间，它后面的控件会自动顶上来。你也可以在代码中设置一个控件的长、宽。还有一些其他可设置项，用的时候查一下文档即可。</p>
-<p>在做Watch上的UI布局时，就像在进行一个一个脑筋急转弯，哈哈，其实很有意思。慢慢熟悉后，你会发现它真的是比iOS上的布局先进好多~。</p>
-<h2 id="2-WatchKit中的控件"><a href="#2-WatchKit中的控件" class="headerlink" title="2.WatchKit中的控件"></a>2.WatchKit中的控件</h2><p>这里只讲几个常用的控件，其他的控件我还没有用到，用到后如果有需要注意的地方再补充到这里~~</p>
-<p><img src="/images/storyboard_layout_2x.png" width="258" height="207"></p>
-<h5 id="1-WKInterfaceGroup"><a href="#1-WKInterfaceGroup" class="headerlink" title="1) WKInterfaceGroup"></a>1) WKInterfaceGroup</h5><p><code>Group</code>在watch的布局上扮演着非常重要的角色，它就像一个盒子，它内部的控件可以指定是按照水平排布还是竖直排布。一个<code>Group</code>中还可以再放多个<code>Group</code>。当<code>Group</code>中控件隐藏或显示时，<code>Group</code>会自动调整它的宽高。超出<code>Group</code>的部分不会显示出来。其实拿过设计师给的设计图后，首先要干的事儿就是划分出主要的几个<code>Group</code>，比如下面这张图的分割：</p>
-<p><img src="/images/Watch-Group-Sample.png" width="156" height="207"></p>
-<p>每个颜色框是一个<code>Group</code>，下面介绍一下<code>Group</code>在IB中一些属性。</p>
-<p>WatchKit group 特有的属性：</p>
+            <h3 id="准备材料"><a href="#准备材料" class="headerlink" title="准备材料"></a>准备材料</h3><ol>
+<li>一台已经越狱的iPhone。</li>
+<li>在Cydia源中安装OpenSSH、Cydia Substrate，OpenSSH使我们能够通过Mac终端连接到iPhone上，从而进行一些对iPhone的操作。Cydia Substrate（原来的名字叫MobileSubstrate）主要的功能是hook某个App，修改代码比如替换其中方法的实现，Cydia上的补丁都是基于它实现的。</li>
+<li>Mac上安装Reveal App。</li>
+<li>在Cydia中安装Reveal Loader，用了这个插件后就不用再费尽的去找到想要查看的App的BundleId和创建plist了。</li>
+</ol>
+<p>我本次实验用的是iOS 8.4越狱机，Reveal 1.0.6。</p>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ul>
+<li>在iPhone的wifi设置中查看IP地址</li>
+</ul>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/IMG_0002.PNG" width="300" height="534"></p>
 <ul>
-<li><strong>Layout:</strong>指定里面的控件是水平排布还是竖直排布，如果是水平的布局，那么控件会一个挨着一个在水平方向排布，当水平方向放不下时，也不会自动换到下一行，即使竖直方向的高度是够用的。</li>
-<li><strong>Insets:</strong>指定<code>Group</code>内部上、下、左、右留出的缝隙大小。</li>
-<li><strong>Spacing:</strong>指定里面控件与控件之间的缝隙大小。</li>
-<li><strong>Background:</strong>是的，你可以给一个<code>Group</code>设置背景图片。</li>
-<li><strong>Model:</strong>与<code>Image</code>的该属性一样，指定背景图片的填充方式。</li>
-<li><strong>Animate:</strong>指定背景图片是否带动画，设置为YES时，可以设置动画执行时间，和是否在加载时开始动画。（尝试了一下，没有看到什么动画效果= =!）</li>
-<li><strong>Color:</strong>设置<code>Group</code>的背景颜色。</li>
-<li><strong>Radius:</strong>设置<code>Group</code>的圆角大小，四不四很酷！</li>
+<li>在终端中执行命令<code>ssh root@[设备IP地址]</code>，例如<code>ssh root@192.168.1.110</code>。第一次执行时会提示<code>Are you want to continue connecting (yes/no)?</code>，输入<code>yes</code>。然后会提示输入密码，OpenSSH默认的密码是<code>alpine</code>。现在已经在iPhone的环境中了。</li>
 </ul>
-<p>关于Alignment、Size的设置，是适合所有控件的属性：</p>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170409-171949@2x.png" width="431" height="50"></p>
 <ul>
-<li><p><strong>Horizontal / Vertical:</strong>指定内部元素在的对齐方式，对于<code>Group</code>就是你在里面放置的控件，对于<code>Label</code>就是上面的text。</p>
+<li>查看iPhone是否已经有一个叫<code>RHRevealLoader</code>的目录</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l /Library/ | grep RHRevealLoader</span><br></pre></td></tr></table></figure>
+<p>如果没有的话，就创建一个<code>mkdir /Library/RHRevealLoader</code></p>
+<ul>
+<li>启动Reveal，选择Help -&gt; Show Reveal Library in Finder，点击进去，会打开一个叫<code>iOS-Libraries</code>的文件夹。要把这里的<code>libReveal.dylib</code>通过scp上传到iPhone中。</li>
+</ul>
+<pre><code>scp /Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries/libReveal.dylib root@192.168.1.110:/Library/RHRevealLoader
+</code></pre><p><strong>这里要注意</strong>，我们是要把Mac上的文件上传到iPhone上，所以要确保终端在Mac的环境中，可执行<code>exit</code>退出之前的iPhone环境，否则会报找不到<code>libReveal.dylib</code>。</p>
+<ul>
+<li><p>重启iPhone，再执行<code>ssh root@[设备IP地址]</code>回到iPhone环境，然后执行<code>killall SpringBoard</code>。</p>
 </li>
-<li><p><strong>Width / Height:</strong> 1. Size To Fit Content:宽高自动调整为正好放下内部的元素。 2. Relative to Container:相对于其父控件的比例，下面可以设置比例。Adjustment是指定在按照比例计算出一个值后，再做相应的调整。比如父控件的宽度是100，下面填了0.5和10，那该控件的宽度就是100*0.5+10。3. Fixed:指定一个固定的高或宽。</p>
+<li><p>打开一个App，现在可以开始在Reveal中查看布局啦~。要确保Reveal和iPhone连的是同一个网，如果Mac上开了代理记得要退出去哦。</p>
 </li>
 </ul>
-<h5 id="2-WKInterfaceTable"><a href="#2-WKInterfaceTable" class="headerlink" title="2) WKInterfaceTable"></a>2) WKInterfaceTable</h5><p>该<code>table</code>不像<code>UITableView</code>那样需要设置<code>dataSource</code>和<code>delegate</code>，而是在代码中直接设置行数:</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[_table setNumberOfRows:count withRowType:<span class="string">@"CellIdentifier"</span>];</span><br></pre></td></tr></table></figure>
-<p>然后用一个for循环来给每行设置：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">    RowController *row = [_table rowControllerAtIndex:i];</span><br><span class="line">    [row setup:xxx];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>RowController</code>是自定义的对每一行cell的管理，可以在IB中给cell设置。</p>
-<h2 id="3-WKInterfaceController"><a href="#3-WKInterfaceController" class="headerlink" title="3.WKInterfaceController"></a>3.WKInterfaceController</h2><p><code>WKInterfaceController</code>起到了<code>UIViewController</code>的作用，每个<code>WKInterfaceController</code>都要在storyboard中设置<code>Identifier</code>。<code>WKInterfaceController</code>在代码中使用时不需要直接调用init方法进行初始化，可直接用下面这些方法展示页面：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)pushControllerWithName:(<span class="built_in">NSString</span> *)name</span><br><span class="line">                       context:(<span class="keyword">id</span>)context;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)presentControllerWithName:(<span class="built_in">NSString</span> *)name</span><br><span class="line">                          context:(<span class="keyword">id</span>)context;</span><br><span class="line">                          </span><br><span class="line">- (<span class="keyword">void</span>)presentControllerWithNames:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSString</span> *&gt; *)names</span><br><span class="line">                          contexts:(<span class="built_in">NSArray</span> *)contexts;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)reloadRootControllersWithNames:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSString</span> *&gt; *)names</span><br><span class="line">                              contexts:(<span class="built_in">NSArray</span> *)contexts;</span><br><span class="line">                              </span><br></pre></td></tr></table></figure>
-<p>其中<code>name</code>就是这个<code>Identifier</code>，还有一个<code>context</code>参数，它主要是带过去参数给下个页面。在<code>WKInterfaceController</code>的生命周期中有这样一个方法：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)awakeWithContext:(<span class="keyword">id</span>)context;</span><br></pre></td></tr></table></figure>
-<p>会在init执行后执行，可以来处理传过来的<code>context</code>。</p>
-<p>对于Page-Based App，要使用到<code>+ (void)reloadRootControllersWithNames:contexts:</code>来更新界面，<code>WKInterfaceController</code>并没有提供移除或添加一页的方法，所以每次有变动，都要调用一次这个reload方法。</p>
-<p>有controller的地方，就会有生命周期，能Google出一大把文章，还有官方文档的介绍比较详细，还是要在开发中自己去感受呀，哈哈~</p>
-<h2 id="4-图片资源的放置"><a href="#4-图片资源的放置" class="headerlink" title="4.图片资源的放置"></a>4.图片资源的放置</h2><p>创建完Apple Watch项目，会发现在AppleWatch组中和在AppleWatch Extension组中都会有一个<code>Assets.xcassets</code>，这2个地方都可以放置图片，但是在用的时候要注意一下:</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//加载AppleWatch组中的图片</span></span><br><span class="line">[_wkInterfaceImage setImageNamed:<span class="string">@"imgName"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//加载AppleWatch Extension组中的图片</span></span><br><span class="line"><span class="built_in">UIImage</span> *imageInExtension = [<span class="built_in">UIImage</span> imageNamed:<span class="string">@"imgName"</span>];</span><br><span class="line">[_wkInterfaceImage setImage:imageInExtension];</span><br></pre></td></tr></table></figure>
-<h2 id="5-实践"><a href="#5-实践" class="headerlink" title="5.实践"></a>5.实践</h2><p>我将天气王Watch版本的主界面抽出来弄了个<a href="https://github.com/shinancao/WatchKitDemo" target="_blank" rel="external">Demo</a>，如果对这些控件的使用还不是很清晰，可以去一下~</p>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
-<li><p><a href="http://code.tutsplus.com/tutorials/understanding-the-watchkit-layout-system--cms-23569" target="_blank" rel="external">http://code.tutsplus.com/tutorials/understanding-the-watchkit-layout-system--cms-23569</a></p>
-</li>
-<li><p><a href="https://developer.apple.com/library/ios/documentation/WatchKit/Reference/WKInterfaceController_class/" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/WatchKit/Reference/WKInterfaceController_class/</a></p>
-</li>
-<li><p><a href="https://developer.apple.com/library/ios/documentation/WatchKit/Reference/WKInterfaceGroup_class/" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/WatchKit/Reference/WKInterfaceGroup_class/</a></p>
-</li>
-<li><p><a href="https://developer.apple.com/library/watchos/documentation/General/Conceptual/WatchKitProgrammingGuide/CreatingtheUserInterface.html#//apple_ref/doc/uid/TP40014969-CH4-SW1" target="_blank" rel="external">https://developer.apple.com/library/watchos/documentation/General/Conceptual/WatchKitProgrammingGuide/CreatingtheUserInterface.html#//apple_ref/doc/uid/TP40014969-CH4-SW1</a></p>
-</li>
-</ul>
-<p>–End–</p>
-<p><em>以上如果有说的不严谨的地方，希望在下面的留言中指出哦，如果对你有一些帮助，也希望能在下面的留言中给一些鼓励^_^</em></p>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170409-184454@2x.png" width="400" height="252"></p>
+<p>试了几次，在不在设置 -&gt; Reveal -&gt; Enabled Applications中打开App，都是可以在Reveal中正常看到的。</p>
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><ol>
+<li><a href="http://chaosky.me/2016/07/27/iOS-Security-Defense-Reveal/" target="_blank" rel="external">http://chaosky.me/2016/07/27/iOS-Security-Defense-Reveal/</a></li>
+<li><a href="https://itony.me/433.html" target="_blank" rel="external">https://itony.me/433.html</a></li>
+</ol>
 
         </div>
         <footer class="article-footer">
@@ -214,7 +208,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/2016/06/02/iOS-Watch-2/" data-id="cj1ahqhsn0017i7stm5l45zv0" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2017/04/09/Reveal-App-Layout/" data-id="cj1ahqhro000ii7stv8q9fii7" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
@@ -310,20 +304,10 @@
         
 <nav id="article-nav">
     
-        <a href="/2016/06/10/Life-Steve-Jobs/" id="article-nav-newer" class="article-nav-link-wrap">
-        <strong class="article-nav-caption">newer</strong>
-        <p class="article-nav-title">
-        
-            读《史蒂夫•乔布斯传》
-        
-        </p>
-        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
-    </a>
     
-    
-        <a href="/2016/06/01/iOS-Watch-1/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2017/04/01/Not-Always-May/" id="article-nav-older" class="article-nav-link-wrap">
         <strong class="article-nav-caption">older</strong>
-        <p class="article-nav-title">watchOS 2 App开发前需要了解的</p>
+        <p class="article-nav-title">人生不总是阳光明媚</p>
         <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
         </a>
     
@@ -511,7 +495,7 @@
     var disqus_shortname = 'shinancao';
     
     
-    var disqus_url = 'http://shinancao.github.io/2016/06/02/iOS-Watch-2/';
+    var disqus_url = 'http://shinancao.github.io/2017/04/09/Reveal-App-Layout/';
     
     (function() {
     var dsq = document.createElement('script');
