@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Touch Event Handling、Responder Chain、Gesture Recognizers | 意林</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+        <meta name="keywords" content="" />
+    
+    <meta name="description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。
+UITouch先说UITouch，在屏幕上的每一次动作事件都是一次touch，它可以看成是整个触摸事件处理中最小的单位了，UITouch封装了一个touch所携带的基本信息。主要包括：
+
+touch发生在的view或者window">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Touch Event Handling、Responder Chain、Gesture Recognizers">
+<meta property="og:url" content="http://shinancao.github.io/2017/05/11/iOS-Event-Handling/index.html">
+<meta property="og:site_name" content="意林">
+<meta property="og:description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。
+UITouch先说UITouch，在屏幕上的每一次动作事件都是一次touch，它可以看成是整个触摸事件处理中最小的单位了，UITouch封装了一个touch所携带的基本信息。主要包括：
+
+touch发生在的view或者window">
+<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Event-Handler.jpg">
+<meta property="og:updated_time" content="2017-06-27T14:31:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Touch Event Handling、Responder Chain、Gesture Recognizers">
+<meta name="twitter:description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。
+UITouch先说UITouch，在屏幕上的每一次动作事件都是一次touch，它可以看成是整个触摸事件处理中最小的单位了，UITouch封装了一个touch所携带的基本信息。主要包括：
+
+touch发生在的view或者window">
+<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Event-Handler.jpg">
+    
+
+    
+
+    
+        <link rel="icon" href="/favicon.png" />
+    
+
+    <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/vendor/titillium-web/styles.css">
+    <link rel="stylesheet" href="/vendor/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/vendor/jquery/2.0.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/vendor/fancybox/jquery.fancybox.css">
+    
+    
+        <link rel="stylesheet" href="/vendor/scrollLoading/style.css">
+    
+    
+    
+
+</head>
+
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo"></a>
+                    </h1>
+                    
+                        <h2 class="subtitle-wrap">
+                            <p class="subtitle">Be a cool girl ~</p>
+                        </h2>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/">Home</a>
+                                </li>
+                            
+                                        <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Bakery/">Bakery</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/English/">English</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/English/Poetry/">Poetry</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/English/Presentation/">Presentation</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Life/">Life</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Git/">Git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Script/">Script</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/">iOS</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/Objective-C/">Objective-C</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/Project-Design/">Project Design</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/Unit-Tests/">Unit Tests</a></li></ul></li></ul>
+                                    
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/about/index.html">About</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a>
+    </h1>
+</div>
+                        <div class="main-body-content">
+                            <article id="post-iOS-Event-Handling" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        Touch Event Handling、Responder Chain、Gesture Recognizers
+        </h1>
+    
+
+            </header>
+        
+        <div class="article-subtitle">
+            <a href="/2017/05/11/iOS-Event-Handling/" class="article-date">
+    <time datetime="2017-05-11T09:48:58.000Z" itemprop="datePublished">2017-05-11</time>
+</a>
+            
+        </div>
+        <div class="article-entry" itemprop="articleBody">
+            <p>这篇文章将对<code>UITouch</code>、<code>UIEvent</code>、<code>UIResponder</code>、<code>UIGestureRecognizer</code>、<code>Responder Chain</code>之间相互纠葛的关系做一个梳理。</p>
+<h3 id="UITouch"><a href="#UITouch" class="headerlink" title="UITouch"></a>UITouch</h3><p>先说<code>UITouch</code>，在屏幕上的每一次动作事件都是一次touch，它可以看成是整个触摸事件处理中最小的单位了，<code>UITouch</code>封装了一个touch所携带的基本信息。主要包括：</p>
+<ul>
+<li>touch发生在的view或者window (view)</li>
+<li>touch发生在view或者window中的位置 (location)</li>
+<li>touch的近似半径</li>
+<li>touch的力度（在一些支持3D Touch的设备上或者Apple Pencil）</li>
+</ul>
+<p>还包括touch发生时的时间戳，用户点击屏幕的次数等等，具体的可以查阅苹果官方文档<a href="https://developer.apple.com/reference/uikit/uitouch" target="_blank" rel="external">UITouch</a>，就不过多翻译了。</p>
+<h3 id="UIEvent"><a href="#UIEvent" class="headerlink" title="UIEvent"></a>UIEvent</h3><p>在触摸事件中只有<code>UITouch</code>还是不够的，因为要定义是什么样的触摸事件发生时，可能已经有多个touch参与其中了，也就是说，一个或多个touch构成了一次event。触摸事件根据具体情况可以有点击事件、滑动事件、拖拽事件、双指缩放等。可以通过<code>UIEvent</code>的<code>allTouches</code>属性来获取所有与该event关联的touch。</p>
+<p>当然，touch events只是App能接收到的事件中的一种，<code>UIEvent</code>包括以下几种类型：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">enum UIEventType &#123;</span><br><span class="line">	case touches //触摸屏幕</span><br><span class="line">	case motion  //设备的运动，例如摇晃</span><br><span class="line">	case remoteControl  //例如用耳机控制音乐等</span><br><span class="line">	case presses  //点击物理按钮</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>关于<code>UIEvent</code>的更详细了解可以查阅苹果官方文档<a href="https://developer.apple.com/reference/uikit/uievent" target="_blank" rel="external">UIEvent</a>。</p>
+<h3 id="UIResponder"><a href="#UIResponder" class="headerlink" title="UIResponder"></a>UIResponder</h3><p>一个或多个touch组成了一个event，那又是谁来响应event呢？<code>UIResponder</code>出场了~。<code>UIResponder</code>是一个抽象类，定义了响应事件的一些接口，例如对于touch events，接口如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func touchesBegan(Set&lt;UITouch&gt;, with: UIEvent?)</span><br><span class="line">func touchesMoved(Set&lt;UITouch&gt;, with: UIEvent?)</span><br><span class="line">func touchesEnded(Set&lt;UITouch&gt;, with: UIEvent?)</span><br><span class="line">func touchesCancelled(Set&lt;UIToutch&gt;, with: UIEvent?)</span><br></pre></td></tr></table></figure>
+<p>如果一个<code>UIResponder</code>子类想要响应touch events，就需要实现上面这些接口。</p>
+<p>对于motion events，接口如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">func motionBegan(UIEventSubtype, with: UIEvent?)</span><br><span class="line">func motionEnded(UIEventSubtype, with: UIEvent?)</span><br><span class="line">func motionCancelled(UIEventSubtype, with: UIEvent?)</span><br></pre></td></tr></table></figure>
+<p>同时<code>UIResponder</code>还定义了管理事件响应链的一些接口：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var next: UIResponder?</span><br><span class="line">var isFirstResponder: Bool</span><br><span class="line">var canBecomeFirstResponder: Bool</span><br><span class="line">func becomeFirstResponder()</span><br><span class="line">func canResignFirstResponder: Bool</span><br><span class="line">func resignFirstResponder()</span><br></pre></td></tr></table></figure>
+<p>在事件发生时，UIKit会事件派发给first responder，不同类型的事件，first responder也不同。对于touch event来说，first responder就是事件发生在的那个view。在平时开发中出现比较多的地方就是使用<code>UITextField</code>、<code>UITextView</code>时，调起和消失键盘。我们可以自己定义一个输入控件，让它是first responder，这需要实现<code>canBecomeFirstResponder</code>，让其返回true。否则即使调用了<code>becomeFirstResponder</code>也不会成为first responder。那first responder更多的会用来干什么呢？苹果的文档中有这样一句描述：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UIKit dispatches some types of events, such as motion events, to the first responder initially.</span><br></pre></td></tr></table></figure>
+<p>UIKit会把设备摇动这样的事件派发给第一响应者。</p>
+<p>next responder好理解一些，当前的responder也许并不想或者不能处理某个事件，那这时可以把事件传出去，交给下一个响应者。<code>UIResponder</code>子类需要实现该方法，指明自己合适的下一个响应者。</p>
+<h3 id="Response-Chain"><a href="#Response-Chain" class="headerlink" title="Response Chain"></a>Response Chain</h3><p>UIKit中的<code>UIApplication</code>、<code>UIViewController</code>、<code>UIView</code>、<code>UIWindow</code>都已经继承了<code>UIResponder</code>。在上面讲到了<code>UIResponder</code>子类必须实现nextResponder，那这些类是如何实现的呢？</p>
+<ul>
+<li>UIView</li>
+<li>如果view是一个viewController的root view，它的next responder是viewController。</li>
+<li>如果view不是一个viewController的root view，它的next responder是它的superview。</li>
+<li>UIViewController</li>
+<li>如果viewController的view是一个window的root view，它的next responder是该window。</li>
+<li>如果viewController是由另一个viewController展示出来的，它的next responder是展示它出来的这个viewController。</li>
+<li>UIWindow. 它的next responder是application对象。</li>
+<li>UIApplication. 它的next responder是app delegate，但是这个app delegate要继承<code>UIResponder</code>，还不能是view、viewController或者application自己。</li>
+</ul>
+<p>当然，如果一个对象自己能够处理响应事件，它的next responder可以设置为nil的，不将事件传递出去，比如<code>UIButton</code>、<code>UITextFiled</code>等。</p>
+<p>明确了这些，一个事件的传递过程，最终会由谁来处理基本就明了了，下面这张图来自苹果的官方文档，描述了整个事件传递的过程：</p>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/responder_chain_overview_2x.png" width="400" height="256"></p>
+<p>在重写<code>touchesXXX</code>等方法时，由两种方式可以将事件传递给下一个响应者，一个是调用<code>self.next?.touchesXXX</code>，此时一定能将事件传递出去，一个是调用<code>super.touchesXXX</code>，能不能传递出去，就看你重写的那个控件支不支持将事件传递出去了。</p>
+<p>当然，这个响应链是可以被打破的，我们可以重写一个UIKit中的<code>UIResponder</code>对象，实现它的nextResponder。</p>
+<h4 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h4><p>了解这些在实际开发中有什么帮助呢？有一个关于<code>UIScrollView</code>的例子，假如我们在其中放了一些<code>UITextField</code>，在用户输入完成后，想让用户点击一下空白背景就将键盘消失，就可以利用响应链来巧妙的实现了。因为<code>UIScrollView</code>默认是不会把触摸事件传递出去的，我们可以重写touch的那一系列方法将事件传递出去，然后它的nextResponder的touch方法就可以得到响应了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">class ScrollView: UIScrollView &#123;</span><br><span class="line">	override func touchesBegan(_ touches: Set&lt;UITouch&gt;, with event: UIEvent?) &#123;</span><br><span class="line">		if !isDragging &#123;</span><br><span class="line">            self.next?.touchesBegan(touches, with: event)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            super.touchesBegan(touches, with: event)</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	override func touchesMoved(_ touches: Set&lt;UITouch&gt;, with event: UIEvent?) &#123;</span><br><span class="line">		if !isDragging &#123;</span><br><span class="line">            self.next?.touchesMoved(touches, with: event)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            super.touchesMoved(touches, with: event)</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	override func touchesEnded(_ touches: Set&lt;UITouch&gt;, with event: UIEvent?) &#123;</span><br><span class="line">		if !isDragging &#123;</span><br><span class="line">            self.next?.touchesEnded(touches, with: event)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            super.touchesEnded(touches, with: event)</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	override func touchesCancelled(_ touches: Set&lt;UITouch&gt;, with event: UIEvent?) &#123;</span><br><span class="line">        if !isDragging &#123;</span><br><span class="line">            self.next?.touchesCancelled(touches, with: event)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            super.touchesCancelled(touches, with: event)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果这个scrollView是放在viewController的view中的，那touch事件是可以传递到viewController中的，于是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">override func touchesBegan(_ touches: Set&lt;UITouch&gt;, with event: UIEvent?) &#123;</span><br><span class="line">        textfield.resignFirstResponder()</span><br><span class="line">        super.touchesBegan(touches, with: event)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>当然，这个问题的解决方式不止这一种。</p>
+<h3 id="寻找发生Event的view"><a href="#寻找发生Event的view" class="headerlink" title="寻找发生Event的view"></a>寻找发生Event的view</h3><p>事件的传递过程了解了，那UIKit是怎么来确定事件到底是发生在哪个view上呢？这就用到了如下两个方法，有点像游戏场景里所讲的碰撞检测：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">func point(inside point: CGPoint, with event: UIEvent?) -&gt; Bool</span><br><span class="line">func hitTest(_ point: CGPoint, with event: UIEvent?) -&gt; UIView?</span><br></pre></td></tr></table></figure>
+<p><code>pointInside</code>用来返回事件发生的点是否在当前的view内，<code>hitTest</code>用来返回事件所在的view。对于同一个view来说，如果它的<code>pointInside</code>返回false，那它的<code>hitTest</code>将返回nil。如果它的<code>pointInside</code>返回true，<code>hitTest</code>会继续去遍历它的子view，它的子view依然会走这个逻辑，直到找到事件最终发生的view，再层层返回。</p>
+<p>具体的看一下这张苹果官方文档里的布局，控件添加的顺序是A-&gt;B-&gt;C-&gt;D-&gt;E，点击E后的整个寻找过程是：</p>
+<pre><code>A--- pointInside withEvent --- isInside:true
+C--- pointInside withEvent --- isInside:true
+E--- pointInside withEvent --- isInside:true
+E--- hitTest withEvent ---hitTestView:E
+C--- hitTest withEvent ---hitTestView:E
+A--- hitTest withEvent ---hitTestView:E
+</code></pre><ul>
+<li>一旦在某个分支<code>pointInside</code>返回了true，那其他分支就不去遍历了。</li>
+<li>一旦父view的<code>pointInside</code>返回了false，不会再继续遍历它的子view了。</li>
+<li>在同一个视图层级，先遍历后添加的视图。</li>
+</ul>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/144142-3afc2c85792ade41.png" width="200" height="275"></p>
+<h4 id="应用-1"><a href="#应用-1" class="headerlink" title="应用"></a>应用</h4><p>有两个比较常见的场景可以利用到上面的这个寻找过程：</p>
+<ul>
+<li>扩展<code>UIButton</code>的点击区域，有的时候为了视觉效果<code>UIButton</code>并没有那么大，但是为了能更好的响应用户的点击，需要隐形的扩展它的点击区域。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class ExpandedButton: UIButton &#123;</span><br><span class="line"></span><br><span class="line">    public var padding = CGFloat(0)</span><br><span class="line">    </span><br><span class="line">    override func point(inside point: CGPoint, with event: UIEvent?) -&gt; Bool &#123;</span><br><span class="line">        let extendedBounds = bounds.insetBy(dx: -padding, dy: -padding)</span><br><span class="line">        return extendedBounds.contains(point)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>渗透点击事件，两个视图叠放在一起，并不是作为子视图嵌套的，这时想要在点击上面的视图时，下面的视图得到相应的响应，就可以重写上面视图的<code>pointInside</code>，让其返回false，下面的视图就可以得到响应了。</li>
+</ul>
+<h3 id="UIGestureRecognizer"><a href="#UIGestureRecognizer" class="headerlink" title="UIGestureRecognizer"></a>UIGestureRecognizer</h3><p>每个<code>UIResponder</code>对象都可以重写touch event那一套接口，来监听触摸的动作，那为什么还需要<code>UIGestureRecognizer</code>呢？一般我们会处理到的手势有<code>Tap</code>、<code>Swipe</code>、<code>Pan</code>、<code>LongPress</code>等等，要识别出用户究竟正在进行哪种手势操作，需要在touch event的接口中进行各种计算才判断的出来，这显然在使用时非常麻烦，于是就有了系统为我们封装好的各种手势。<code>UIGestureRecognizer</code>还是造福了广大的开发者。</p>
+<p>那如果即重写了touch event的接口，又添加了<code>UIGestureRecognizer</code>会怎么样呢？</p>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170626-142848.png" width="218" height="30"></p>
+<p>写了个小测试，自定义一个view，重写了touch event的一套接口，然后再添加一个<code>UITapGestureRecognizer</code>，点击一下，发现<code>touchesCancelled</code>被执行了，如果长按，<code>touchesEnded</code>仍然执行了。找到了官方的这段解释：</p>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170626-150629.png" width="380" height="97"></p>
+<p>window会把touch事件先派发给gesture recognizer，如果gesture recognizer识别不出该手势，view会接收到全部的touch事件。如果能识别出该手势，view的其余touch事件就会被取消。此外，<code>UIGestureRecognizer</code>也不会按照上面所说的事件传递链去传递，加在哪个view上就肯定是那个view去响应。</p>
+<h3 id="不能接收触摸事件的情况"><a href="#不能接收触摸事件的情况" class="headerlink" title="不能接收触摸事件的情况"></a>不能接收触摸事件的情况</h3><p>对一个view设置下面任意一种情况时，该view不能接收触摸事件了：</p>
+<ul>
+<li>userInteractionEnabled = NO</li>
+<li>hidden = YES</li>
+<li>alpha = 0</li>
+</ul>
+<p><em>从设备接收到用户触摸，到系统将其处理成UIEvent再下发到应用层，这个过程先个挖坑，然后明白了再总结~</em></p>
+<blockquote>
+<p>转载请注明出处：</p>
+<p>作者：意林</p>
+<p>原文链接：<a href="http://shinancao.github.io/2017/05/11/iOS-Event-Handling/">http://shinancao.github.io/2017/05/11/iOS-Event-Handling/</a></p>
+</blockquote>
+<p>–End–</p>
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://shinancao.github.io/2017/05/11/iOS-Event-Handling/" data-id="cj4bajnx6000pzestca4pvbia" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>follow:</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="github" href="https://github.com/shinancao/" target="_blank">
+                        <i class="icon fa fa-github"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/06/24/English-L-To-I/" id="article-nav-newer" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">newer</strong>
+        <p class="article-nav-title">
+        
+            A Letter to Myself
+        
+        </p>
+        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
+    </a>
+    
+    
+        <a href="/2017/04/09/Reveal-App-Layout/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">older</strong>
+        <p class="article-nav-title">用Reveal查看别人的App布局</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">recents</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/06/24/English-L-To-I/" class="thumbnail">
+    
+    
+        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/ALetterToMe.jpg)" alt="A Letter to Myself" class="thumbnail-image"></span>
+    
+    
+</a>
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/English/">English</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/English/Presentation/">Presentation</a></p>
+                            <p class="item-title"><a href="/2017/06/24/English-L-To-I/" class="title">A Letter to Myself</a></p>
+                            <p class="item-date"><time datetime="2017-06-24T09:48:58.000Z" itemprop="datePublished">2017-06-24</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/05/11/iOS-Event-Handling/" class="thumbnail">
+    
+    
+        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/iOS-Event-Handler.jpg)" alt="Touch Event Handling、Responder Chain、Gesture Recognizers" class="thumbnail-image"></span>
+    
+    
+</a>
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a></p>
+                            <p class="item-title"><a href="/2017/05/11/iOS-Event-Handling/" class="title">Touch Event Handling、Responder Chain、Gesture Recognizers</a></p>
+                            <p class="item-date"><time datetime="2017-05-11T09:48:58.000Z" itemprop="datePublished">2017-05-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/04/09/Reveal-App-Layout/" class="thumbnail">
+    
+    
+        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/Reveal-App-Layout.jpg)" alt="用Reveal查看别人的App布局" class="thumbnail-image"></span>
+    
+    
+</a>
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a></p>
+                            <p class="item-title"><a href="/2017/04/09/Reveal-App-Layout/" class="title">用Reveal查看别人的App布局</a></p>
+                            <p class="item-date"><time datetime="2017-04-09T08:33:56.000Z" itemprop="datePublished">2017-04-09</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/04/01/Not-Always-May/" class="thumbnail">
+    
+    
+        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/Not-Always-May.jpg)" alt="人生不总是阳光明媚" class="thumbnail-image"></span>
+    
+    
+</a>
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/English/">English</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/English/Poetry/">Poetry</a></p>
+                            <p class="item-title"><a href="/2017/04/01/Not-Always-May/" class="title">人生不总是阳光明媚</a></p>
+                            <p class="item-date"><time datetime="2017-04-01T15:23:35.000Z" itemprop="datePublished">2017-04-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/04/01/Me-Pressent-Future/" class="thumbnail">
+    
+    
+        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/Me-Pressent-Future.jpg)" alt="于我，现在和未来" class="thumbnail-image"></span>
+    
+    
+</a>
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/English/">English</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/English/Poetry/">Poetry</a></p>
+                            <p class="item-title"><a href="/2017/04/01/Me-Pressent-Future/" class="title">于我，现在和未来</a></p>
+                            <p class="item-date"><time datetime="2017-04-01T14:46:51.000Z" itemprop="datePublished">2017-04-01</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Bakery/">Bakery</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/English/">English</a><span class="category-list-count">10</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/English/Poetry/">Poetry</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/English/Presentation/">Presentation</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/Script/">Script</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">12</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Objective-C/">Objective-C</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Project-Design/">Project Design</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Unit-Tests/">Unit Tests</a><span class="category-list-count">1</span></li></ul></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a><span class="archive-list-count">8</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+
+            
+                
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://www.jianshu.com/users/5ec2077b2e63/latest_articles">冬季的Blog</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://blog.csdn.net/shinancao666">意林的CSDN Blog</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <h1 class="logo-wrap">
+                    <a href="/" class="logo"></a>
+                </h1>
+                <p>&copy; 2017 Zhang Nan</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_shortname = 'shinancao';
+    
+    
+    var disqus_url = 'http://shinancao.github.io/2017/05/11/iOS-Event-Handling/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+    
+        <script src="/vendor/fancybox/jquery.fancybox.pack.js"></script>
+    
+
+    
+        <script src="/vendor/scrollLoading/jquery.scrollLoading.js"></script>
+        <script src="/vendor/scrollLoading/main.js"></script>
+    
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
