@@ -3,29 +3,26 @@
 <head>
     <meta charset="utf-8">
     
-    <title>Introduce Software Development Engineers | 意林</title>
+    <title>一个Swift工具类App的设计 | 意林</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
         <meta name="keywords" content="" />
     
-    <meta name="description" content="This is my presentation from B level to L level in Web International English.
-
-Nowadays people nearly can’t live without the internet. It is many engineers who develop these products. After graduatin">
+    <meta name="description" content="从开始接触iOS开发，几乎都是自己在从零开始搭建一个App，每一次都有较大的收获，都会比上一次好一点。业务的复杂度不一样，对架构设计的考验也不一样，框架也会随着功能模块的不断增加，用户量的不断增加，一点点成长。（好像说了段废话😅）这是一款Swift开发的万年历App，大致描述了一下当初的结构设计。以后再从头搭建App或是重构也都来记录一下，毕竟岁数越来越大了，总要留点过往思考的回忆😄。
+项目的">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Introduce Software Development Engineers">
-<meta property="og:url" content="http://shinancao.github.io/2016/11/27/English-B-To-L/index.html">
+<meta property="og:title" content="一个Swift工具类App的设计">
+<meta property="og:url" content="http://shinancao.github.io/2017/07/02/Project-Design-2/index.html">
 <meta property="og:site_name" content="意林">
-<meta property="og:description" content="This is my presentation from B level to L level in Web International English.
-
-Nowadays people nearly can’t live without the internet. It is many engineers who develop these products. After graduatin">
-<meta property="og:image" content="http://shinancao.github.io/images/English-B-To-L.jpg">
-<meta property="og:updated_time" content="2017-06-23T12:47:33.000Z">
+<meta property="og:description" content="从开始接触iOS开发，几乎都是自己在从零开始搭建一个App，每一次都有较大的收获，都会比上一次好一点。业务的复杂度不一样，对架构设计的考验也不一样，框架也会随着功能模块的不断增加，用户量的不断增加，一点点成长。（好像说了段废话😅）这是一款Swift开发的万年历App，大致描述了一下当初的结构设计。以后再从头搭建App或是重构也都来记录一下，毕竟岁数越来越大了，总要留点过往思考的回忆😄。
+项目的">
+<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg">
+<meta property="og:updated_time" content="2017-07-02T15:13:16.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Introduce Software Development Engineers">
-<meta name="twitter:description" content="This is my presentation from B level to L level in Web International English.
-
-Nowadays people nearly can’t live without the internet. It is many engineers who develop these products. After graduatin">
-<meta name="twitter:image" content="http://shinancao.github.io/images/English-B-To-L.jpg">
+<meta name="twitter:title" content="一个Swift工具类App的设计">
+<meta name="twitter:description" content="从开始接触iOS开发，几乎都是自己在从零开始搭建一个App，每一次都有较大的收获，都会比上一次好一点。业务的复杂度不一样，对架构设计的考验也不一样，框架也会随着功能模块的不断增加，用户量的不断增加，一点点成长。（好像说了段废话😅）这是一款Swift开发的万年历App，大致描述了一下当初的结构设计。以后再从头搭建App或是重构也都来记录一下，毕竟岁数越来越大了，总要留点过往思考的回忆😄。
+项目的">
+<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg">
     
 
     
@@ -137,42 +134,53 @@ Nowadays people nearly can’t live without the internet. It is many engineers w
                         <div class="main-body-header">
     <h1 class="header">
     
-    <a class="page-title-link" href="/categories/English/">English</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/English/Presentation/">Presentation</a>
+    <a class="page-title-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/iOS/Project-Design/">Project Design</a>
     </h1>
 </div>
                         <div class="main-body-content">
-                            <article id="post-English-B-To-L" class="article article-single article-type-post" itemscope itemprop="blogPost">
+                            <article id="post-Project-Design-2" class="article article-single article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
             <header class="article-header">
                 
     
         <h1 class="article-title" itemprop="name">
-        Introduce Software Development Engineers
+        一个Swift工具类App的设计
         </h1>
     
 
             </header>
         
         <div class="article-subtitle">
-            <a href="/2016/11/27/English-B-To-L/" class="article-date">
-    <time datetime="2016-11-27T13:30:37.000Z" itemprop="datePublished">2016-11-27</time>
+            <a href="/2017/07/02/Project-Design-2/" class="article-date">
+    <time datetime="2017-07-02T03:43:10.000Z" itemprop="datePublished">2017-07-02</time>
 </a>
             
         </div>
         <div class="article-entry" itemprop="articleBody">
-            <blockquote>
-<p>This is my presentation from B level to L level in Web International English.</p>
-</blockquote>
-<p>Nowadays people nearly can’t live without the internet. It is many engineers who develop these products. After graduating from college I decided to become one of them. And since then I have worked on developing mobil applications for several years. In China, people are used to calling us programmer. Today I want to say something about these programmers.</p>
-<p><img src="/images/programmers-1.jpg" width="400" height="293"></p>
-<p>You may already read some articles about programmers. They say programmers are stiff with poor communication skills. Most of them don’t have enough time to find a romantic partner. The way they hit on girls is to help theme repair the computer. They often have to work overtime, and when they are not at work, they love to play computer games at home.</p>
-<p><img src="/images/programmers-2.jpg" width="400" height="298"></p>
-<p>Some people like to make fun of programmers’ appearance. They say if you see someone wearing a pair of jeans、a plaid T-shirt, a pair of black-rimmed glasses, and carrying a backpack. And his hair is messy. Then he must be a programmer. Some people even are surprised to see that female programmers dress up nicely.</p>
-<p>You may think that’s all about programmers if you don’t know them very well. But today I want to tell you what a group of lovely people the programmers are. They are clever and love learning. As you see, there are many programmers learning English here. They have to do a lot of self study to enhance their professional skills, and spend lot of time on practice. That’s why they always work on the computer. They love sharing what they have learned. Most of them have a technology blog. (I also have one.) They are still humorous. </p>
-<p><img src="/images/programmers-3.jpg" width="400" height="285"></p>
-<p>These pictures show how they make fun of themselves. Surly programming is not the only thing they like to do. They also have many hobbies. Among the programmers I know some like traveling、some like taking photos、some like playing guitar、some sing songs very well, and so on. In addition, a good programmer is always creative and hard-working and responsible in their work.</p>
-<p>I hope people don’t hold their prejudice against programmers. In fact, we shouldn’t stereotype anyone. </p>
+            <p>从开始接触iOS开发，几乎都是自己在从零开始搭建一个App，每一次都有较大的收获，都会比上一次好一点。业务的复杂度不一样，对架构设计的考验也不一样，框架也会随着功能模块的不断增加，用户量的不断增加，一点点成长。（好像说了段废话😅）这是一款Swift开发的万年历App，大致描述了一下当初的结构设计。以后再从头搭建App或是重构也都来记录一下，毕竟岁数越来越大了，总要留点过往思考的回忆😄。</p>
+<h2 id="项目的整体概括"><a href="#项目的整体概括" class="headerlink" title="项目的整体概括"></a>项目的整体概括</h2><p>大体上采用<code>MVVM</code>架构，用<code>ReactiveSwift</code>进行模块之间的交互响应。数据存储用<code>CoreData</code>，JSON到Model的映射使用<code>Argo</code>，网络请求用的<code>Alamofire</code>。使用<code>Carthage</code>进行第三方库的集成。</p>
+<h2 id="项目的结构图"><a href="#项目的结构图" class="headerlink" title="项目的结构图"></a>项目的结构图</h2><p><img src="http://ojx1pmrk7.bkt.clouddn.com/%E4%B8%87%E5%B9%B4%E5%8E%86%E7%BB%93%E6%9E%84%E5%9B%BE.jpg" width="400" height="227"></p>
+<h2 id="项目中每个Group中放置的内容"><a href="#项目中每个Group中放置的内容" class="headerlink" title="项目中每个Group中放置的内容"></a>项目中每个<code>Group</code>中放置的内容</h2><ul>
+<li>Application: 整个App一些通用的配置，基本上是一些<code>struct</code>的常量定义。</li>
+<li>Communication: 网络请求基础模块部分，如果有新的接口，在<code>Urls</code>中加上定义，新的请求要实现<code>RequestProtocol</code></li>
+<li>CoreDataStore: 对<code>CoreData</code>封装的基础模块部分，对<code>ManagedObject</code>的操作封装在<code>Managed</code>中。</li>
+<li>Extensions: 对<code>Foundation</code>和<code>UIKit</code>扩展的一些工具方法，特别地，像图片、StoryBoard等资源文件的名称都定义在相应的<code>extension</code>中，这样在后面资源文件变动时要更改一些。</li>
+<li>Managers: <code>CalendarManager</code>是对每个网络接口的请求过程和对结果的处理，<code>MemoryCacheManager</code>是对日历模块上的数据的缓存。谨慎定义Manager类，能分散到其他模块就分散到其他模块去。</li>
+<li>ThirdParty: 手动集成代码的第三方库，其余第三方库通过<code>Carthage</code>集成。</li>
+<li>Models: App的数据模型和每个请求接口的Request。注意，这些Model都是<code>struct</code>定义的，在使用<code>CoreData</code>的项目中实际上是有<code>ManagedObject</code>可用于模块之间的数据交互的，但为了便于json的解析，其他地方的方便使用，以及<code>struct</code>本身的一些优势，所以对<code>ManagedObject</code>的使用只停留在对db的操作上。在每个Model中会封装对db的操作，以及与<code>ManagedObject</code>之间的转换。在<code>xcdatamodel</code>中定义Entity时，要将Class Name指定为<code>Managed</code>+ModelName。</li>
+<li>Views: 各模块的视图，<code>UIViewController</code>也放置在这里。</li>
+<li>ViewModels: 各模块的视图模型。</li>
+<li>Utils: 包括日期计算、黄历计算等工具类。</li>
+<li>Resources: App中用到的一些资源文件集合。</li>
+<li>Tests: 放了一些在调试用的test case。</li>
+</ul>
+<p>最后说一下Actions、State、Stores: </p>
+<p>这几个模块之间相互配合，是对<code>Delta</code>这个库的使用。<code>Delta</code>主要对App的State进行管理，<br>这里的State指的是App在运行过程中的一些数据的State的。Actions放的就是对这些数据的改变，所有的改变都集中在Action中，这样使得整个App在运行过程中数据的变化变得非常明了。任何地方都可以对State进行监听，在变化时做出响应。本App中State中定义了主界面需要常驻内存中的数据，在从数据库中加载后和从服务器拉取到时，对其进行更改。放在内存中避免了业务逻辑操作中多次对db的读取，用<code>Delta</code>使得对这些数据的管理方便集中。</p>
+<h2 id="后续可优化点"><a href="#后续可优化点" class="headerlink" title="后续可优化点"></a>后续可优化点</h2><ul>
+<li>ViewModel部分可以考虑定义相应的<code>Protocol</code>，这样便于在单元测试中打桩。</li>
+<li>想使模块更加清晰话，可以用<code>Framework</code>进行管理。</li>
+</ul>
 
         </div>
         <footer class="article-footer">
@@ -180,7 +188,7 @@ Nowadays people nearly can’t live without the internet. It is many engineers w
 
 
 
-    <a data-url="http://shinancao.github.io/2016/11/27/English-B-To-L/" data-id="cj4muwlpq0000custrlbr8adg" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2017/07/02/Project-Design-2/" data-id="cj4muwltt000jcustt4bbbmd1" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
@@ -276,20 +284,10 @@ Nowadays people nearly can’t live without the internet. It is many engineers w
         
 <nav id="article-nav">
     
-        <a href="/2016/12/15/iOS-UIButton-EdgeInsets/" id="article-nav-newer" class="article-nav-link-wrap">
-        <strong class="article-nav-caption">newer</strong>
-        <p class="article-nav-title">
-        
-            理解UIButton的各种EdgeInsets
-        
-        </p>
-        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
-    </a>
     
-    
-        <a href="/2016/07/05/iOS-Project-Design-1/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2017/06/24/English-L-To-I/" id="article-nav-older" class="article-nav-link-wrap">
         <strong class="article-nav-caption">older</strong>
-        <p class="article-nav-title">用Static Library进行代码组织的一次实践</p>
+        <p class="article-nav-title">A Letter to Myself</p>
         <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
         </a>
     
@@ -477,7 +475,7 @@ Nowadays people nearly can’t live without the internet. It is many engineers w
     var disqus_shortname = 'shinancao';
     
     
-    var disqus_url = 'http://shinancao.github.io/2016/11/27/English-B-To-L/';
+    var disqus_url = 'http://shinancao.github.io/2017/07/02/Project-Design-2/';
     
     (function() {
     var dsq = document.createElement('script');
