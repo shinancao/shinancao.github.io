@@ -17,7 +17,7 @@
 <meta property="og:description" content="几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：https://github.com/shinancao/ImageCycleScrollView，以供参考。下面记录一下这个过程中踩到的坑。
 目录结构的设计一开始把目录结构设计好很重要，否则在后面发现不对的时候，很有可能就要在github中把原来的仓库删掉，再重头新建一次，我就在实施的过程中删除了3">
 <meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg">
-<meta property="og:updated_time" content="2017-07-16T03:36:07.000Z">
+<meta property="og:updated_time" content="2017-07-16T03:49:18.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使开源库同时支持CocoaPods和Carthage集成">
 <meta name="twitter:description" content="几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：https://github.com/shinancao/ImageCycleScrollView，以供参考。下面记录一下这个过程中踩到的坑。
@@ -200,8 +200,8 @@
 <h3 id="支持Carthage"><a href="#支持Carthage" class="headerlink" title="支持Carthage"></a>支持Carthage</h3><ul>
 <li>将需要Carthage编译的schemes设置为<code>Shared</code>：</li>
 </ul>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-153649.png" width="100" height="107"></p>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-153630.png" width="300" height="136"></p>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-153649.png" width="352" height="160"></p>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-153630.png" width="257" height="276"></p>
 <ul>
 <li>验证编译是否有错误：<code>carthage build --no-skip-current</code>。</li>
 <li>提交tag到远程服务器，Carthage会自动来检测可以编译成功的tag，tag的命名用简单的数字即可，夹杂着字符Carthage有可能识别不出来。</li>
@@ -216,7 +216,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/2017/07/16/Project-Design-4/" data-id="cj56665yr000melstchskmeyk" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2017/07/16/Project-Design-4/" data-id="cj566mrxd000phpstwjeenxdg" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
