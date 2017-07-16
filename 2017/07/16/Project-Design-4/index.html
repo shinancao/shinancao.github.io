@@ -17,7 +17,7 @@
 <meta property="og:description" content="几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：https://github.com/shinancao/ImageCycleScrollView，以供参考。下面记录一下这个过程中踩到的坑。
 目录结构的设计一开始把目录结构设计好很重要，否则在后面发现不对的时候，很有可能就要在github中把原来的仓库删掉，再重头新建一次，我就在实施的过程中删除了3">
 <meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg">
-<meta property="og:updated_time" content="2017-07-16T03:28:05.000Z">
+<meta property="og:updated_time" content="2017-07-16T03:36:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使开源库同时支持CocoaPods和Carthage集成">
 <meta name="twitter:description" content="几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：https://github.com/shinancao/ImageCycleScrollView，以供参考。下面记录一下这个过程中踩到的坑。
@@ -188,7 +188,7 @@
 <li><p>提交spect文件到CocoaPods的官方库：</p>
 <ul>
 <li><p>如果是第一次使用，需要先注册：</p>
-<figure class="highlight ruby"><figcaption><span>[]</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod trunk register *youremail*@gmail.com <span class="string">'*yourname*'</span> --description=<span class="string">'iMac'</span> --verbose</span><br></pre></td></tr></table></figure>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod trunk register *youremail*@gmail.com <span class="string">'*yourname*'</span> --description=<span class="string">'iMac'</span> --verbose</span><br></pre></td></tr></table></figure>
 <p>然后到邮箱中验证一下，注册成功后，可以用<code>pod trunk me</code>查看注册信息和发布过的Pods。</p>
 </li>
 <li><p>提交{project}.podspec文件：<code>pod trunk push ImageCycleScrollView.podspec</code></p>
@@ -216,7 +216,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/2017/07/16/Project-Design-4/" data-id="cj565ysqf000mbkstbb0mobh2" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2017/07/16/Project-Design-4/" data-id="cj56665yr000melstchskmeyk" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
