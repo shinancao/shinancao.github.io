@@ -17,7 +17,7 @@
 <meta property="og:description" content="从开始接触iOS开发，几乎都是自己在从零开始搭建一个App，每一次都有较大的收获，都会比上一次好一点。业务的复杂度不一样，对架构设计的考验也不一样，框架也会随着功能模块的不断增加，用户量的不断增加，一点点成长。（好像说了段废话😅）这是一款Swift开发的万年历App，大致描述了一下当初的结构设计。以后再从头搭建App或是重构也都来记录一下，毕竟岁数越来越大了，总要留点过往思考的回忆😄。
 项目的">
 <meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg">
-<meta property="og:updated_time" content="2017-07-02T15:20:16.000Z">
+<meta property="og:updated_time" content="2017-07-05T14:51:05.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一个Swift工具类App的设计">
 <meta name="twitter:description" content="从开始接触iOS开发，几乎都是自己在从零开始搭建一个App，每一次都有较大的收获，都会比上一次好一点。业务的复杂度不一样，对架构设计的考验也不一样，框架也会随着功能模块的不断增加，用户量的不断增加，一点点成长。（好像说了段废话😅）这是一款Swift开发的万年历App，大致描述了一下当初的结构设计。以后再从头搭建App或是重构也都来记录一下，毕竟岁数越来越大了，总要留点过往思考的回忆😄。
@@ -159,7 +159,7 @@
         </div>
         <div class="article-entry" itemprop="articleBody">
             <p>从开始接触iOS开发，几乎都是自己在从零开始搭建一个App，每一次都有较大的收获，都会比上一次好一点。业务的复杂度不一样，对架构设计的考验也不一样，框架也会随着功能模块的不断增加，用户量的不断增加，一点点成长。（好像说了段废话😅）这是一款Swift开发的万年历App，大致描述了一下当初的结构设计。以后再从头搭建App或是重构也都来记录一下，毕竟岁数越来越大了，总要留点过往思考的回忆😄。</p>
-<h2 id="项目的整体概括"><a href="#项目的整体概括" class="headerlink" title="项目的整体概括"></a>项目的整体概括</h2><p>大体上采用<code>MVVM</code>架构，用<code>ReactiveSwift</code>进行模块之间的交互响应。数据存储用<code>CoreData</code>，JSON到Model的映射使用<code>Argo</code>，网络请求用的<code>Alamofire</code>。使用<code>Carthage</code>进行第三方库的集成。</p>
+<h2 id="项目的整体概括"><a href="#项目的整体概括" class="headerlink" title="项目的整体概括"></a>项目的整体概括</h2><p>这是一个万年历App，大体上采用<code>MVVM</code>架构，用<code>ReactiveSwift</code>进行模块之间的交互响应。数据存储用<code>CoreData</code>，JSON到Model的映射使用<code>Argo</code>，网络请求用的<code>Alamofire</code>。使用<code>Carthage</code>进行第三方库的集成。</p>
 <h2 id="项目的结构图"><a href="#项目的结构图" class="headerlink" title="项目的结构图"></a>项目的结构图</h2><p><img src="http://ojx1pmrk7.bkt.clouddn.com/calendar-design.jpg" width="500" height="284"></p>
 <h2 id="项目中每个Group中放置的内容"><a href="#项目中每个Group中放置的内容" class="headerlink" title="项目中每个Group中放置的内容"></a>项目中每个<code>Group</code>中放置的内容</h2><ul>
 <li>Application: 整个App一些通用的配置，基本上是一些<code>struct</code>的常量定义。</li>
@@ -188,7 +188,7 @@
 
 
 
-    <a data-url="http://shinancao.github.io/2017/07/02/Project-Design-2/" data-id="cj4mv5fzj000mfdst5ea4wcqc" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://shinancao.github.io/2017/07/02/Project-Design-2/" data-id="cj565ysqr000tbkstbp39anwo" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         $('body').on('click', function() {
@@ -284,6 +284,16 @@
         
 <nav id="article-nav">
     
+        <a href="/2017/07/05/Project-Design-3/" id="article-nav-newer" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">newer</strong>
+        <p class="article-nav-title">
+        
+            什么样的开源界面控件才最好用
+        
+        </p>
+        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
+    </a>
+    
     
         <a href="/2017/06/24/English-L-To-I/" id="article-nav-older" class="article-nav-link-wrap">
         <strong class="article-nav-caption">older</strong>
@@ -302,6 +312,44 @@
         <h3 class="widget-title">recents</h3>
         <div class="widget">
             <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/07/16/Project-Design-4/" class="thumbnail">
+    
+    
+        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg)" alt="使开源库同时支持CocoaPods和Carthage集成" class="thumbnail-image"></span>
+    
+    
+</a>
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Project-Design/">Project Design</a></p>
+                            <p class="item-title"><a href="/2017/07/16/Project-Design-4/" class="title">使开源库同时支持CocoaPods和Carthage集成</a></p>
+                            <p class="item-date"><time datetime="2017-07-16T03:23:20.000Z" itemprop="datePublished">2017-07-16</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/07/05/Project-Design-3/" class="thumbnail">
+    
+    
+        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg)" alt="什么样的开源界面控件才最好用" class="thumbnail-image"></span>
+    
+    
+</a>
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Project-Design/">Project Design</a></p>
+                            <p class="item-title"><a href="/2017/07/05/Project-Design-3/" class="title">什么样的开源界面控件才最好用</a></p>
+                            <p class="item-date"><time datetime="2017-07-05T14:36:02.000Z" itemprop="datePublished">2017-07-05</time></p>
+                        </div>
+                    </li>
                 
                     <li>
                         
@@ -360,44 +408,6 @@
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2017/04/09/Reveal-App-Layout/" class="thumbnail">
-    
-    
-        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/Reveal-App-Layout.jpg)" alt="用Reveal查看别人的App布局" class="thumbnail-image"></span>
-    
-    
-</a>
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a></p>
-                            <p class="item-title"><a href="/2017/04/09/Reveal-App-Layout/" class="title">用Reveal查看别人的App布局</a></p>
-                            <p class="item-date"><time datetime="2017-04-09T08:33:56.000Z" itemprop="datePublished">2017-04-09</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2017/04/01/Not-Always-May/" class="thumbnail">
-    
-    
-        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/Not-Always-May.jpg)" alt="人生不总是阳光明媚" class="thumbnail-image"></span>
-    
-    
-</a>
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/English/">English</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/English/Poetry/">Poetry</a></p>
-                            <p class="item-title"><a href="/2017/04/01/Not-Always-May/" class="title">人生不总是阳光明媚</a></p>
-                            <p class="item-date"><time datetime="2017-04-01T15:23:35.000Z" itemprop="datePublished">2017-04-01</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -407,7 +417,7 @@
     <div class="widget-wrap widget-list">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Bakery/">Bakery</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/English/">English</a><span class="category-list-count">10</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/English/Poetry/">Poetry</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/English/Presentation/">Presentation</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/Script/">Script</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">13</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Objective-C/">Objective-C</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Project-Design/">Project Design</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Unit-Tests/">Unit Tests</a><span class="category-list-count">1</span></li></ul></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Bakery/">Bakery</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/English/">English</a><span class="category-list-count">10</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/English/Poetry/">Poetry</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/English/Presentation/">Presentation</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/Script/">Script</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Objective-C/">Objective-C</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Project-Design/">Project Design</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Unit-Tests/">Unit Tests</a><span class="category-list-count">1</span></li></ul></li></ul>
         </div>
     </div>
 
@@ -417,7 +427,7 @@
     <div class="widget-wrap widget-list">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a><span class="archive-list-count">8</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a><span class="archive-list-count">8</span></li></ul>
         </div>
     </div>
 

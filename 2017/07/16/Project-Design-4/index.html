@@ -3,18 +3,26 @@
 <head>
     <meta charset="utf-8">
     
-    <title>Category: Programming | 意林</title>
+    <title>使开源库同时支持CocoaPods和Carthage集成 | 意林</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
-    <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="意林">
-<meta property="og:url" content="http://shinancao.github.io/categories/Programming/index.html">
+        <meta name="keywords" content="" />
+    
+    <meta name="description" content="几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：https://github.com/shinancao/ImageCycleScrollView，以供参考。下面记录一下这个过程中踩到的坑。
+目录结构的设计一开始把目录结构设计好很重要，否则在后面发现不对的时候，很有可能就要在github中把原来的仓库删掉，再重头新建一次，我就在实施的过程中删除了3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使开源库同时支持CocoaPods和Carthage集成">
+<meta property="og:url" content="http://shinancao.github.io/2017/07/16/Project-Design-4/index.html">
 <meta property="og:site_name" content="意林">
-<meta property="og:description">
+<meta property="og:description" content="几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：https://github.com/shinancao/ImageCycleScrollView，以供参考。下面记录一下这个过程中踩到的坑。
+目录结构的设计一开始把目录结构设计好很重要，否则在后面发现不对的时候，很有可能就要在github中把原来的仓库删掉，再重头新建一次，我就在实施的过程中删除了3">
+<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg">
+<meta property="og:updated_time" content="2017-07-16T03:28:05.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="意林">
-<meta name="twitter:description">
+<meta name="twitter:title" content="使开源库同时支持CocoaPods和Carthage集成">
+<meta name="twitter:description" content="几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：https://github.com/shinancao/ImageCycleScrollView，以供参考。下面记录一下这个过程中踩到的坑。
+目录结构的设计一开始把目录结构设计好很重要，否则在后面发现不对的时候，很有可能就要在github中把原来的仓库删掉，再重头新建一次，我就在实施的过程中删除了3">
+<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg">
     
 
     
@@ -126,132 +134,161 @@
                         <div class="main-body-header">
     <h1 class="header">
     
-    <i class="icon fa fa-folder-open"></i>Category: <em class="page-title-link">Programming</em>
+    <a class="page-title-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/iOS/Project-Design/">Project Design</a>
     </h1>
 </div>
                         <div class="main-body-content">
-                            
-
-    
-    
+                            <article id="post-Project-Design-4" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
         
-        
-        <section class="archives-wrap">
-            <div class="archive-year-wrap">
-                <a href="/archives/2017" class="archive-year"><i class="icon fa fa-calendar-o"></i>2017</a>
-            </div>
-            <div class="archives">
-    
-    
-    
-        <div class="article-row">
-    
-        <article class="article article-summary">
-    <div class="article-summary-inner">
-        
-        <a href="/2017/01/28/Script-Plist-Version/" class="thumbnail">
-    
-    
-        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/Script-Plist-Version.jpg)" alt="通过Shell一键修改target的版本号" class="thumbnail-image"></span>
-    
-    
-        
-<span class="comment-counter">
-    <i class="fa fa-comments-o"></i>
-    
-        <span class="disqus-comment-count" data-disqus-url="http://shinancao.github.io/2017/01/28/Script-Plist-Version/">0</span>
-    
-</span>
-
-    
-</a>
-        
-        <div class="article-meta">
-            <p class="category">
-            <a class="article-category-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Programming/Script/">Script</a>
-            </p>
-            <p class="date"><time datetime="2017-01-28T14:05:23.000Z" itemprop="datePublished">2017-01-28</time></p>
-        </div>
-        
+            <header class="article-header">
+                
     
         <h1 class="article-title" itemprop="name">
-        <a href="/2017/01/28/Script-Plist-Version/">通过Shell一键修改target的版本号</a>
+        使开源库同时支持CocoaPods和Carthage集成
         </h1>
     
 
-        <p class="article-excerpt">
-            脚本的由来随着项目的发展，目前我们项目已经有5个target了，一个主target，2个Today Widget的target，2个Apple Watch的target。这些target的版本号必须一模一样才能编译通过，也就是Info.plist中的CFBundleShortVersionString。每次版本迭代的时候都要手动一个一个改一点，实在太麻烦，而且对于一个程序员，怎么能忍这种很机械的操
-        </p>
-    </div>
-</article>
-    
-
-    
-    
+            </header>
         
-            </div></section>
-        
-        
-        <section class="archives-wrap">
-            <div class="archive-year-wrap">
-                <a href="/archives/2016" class="archive-year"><i class="icon fa fa-calendar-o"></i>2016</a>
-            </div>
-            <div class="archives">
-    
-    
-    
-        <div class="article-row">
-    
-        <article class="article article-summary">
-    <div class="article-summary-inner">
-        
-        <a href="/2016/12/18/Programming-Git-1/" class="thumbnail">
-    
-    
-        <span style="background-image:url(/images/Programming-Git-Account.jpg)" alt="同一个Mac，配置多个SSH Key" class="thumbnail-image"></span>
-    
-    
-        
-<span class="comment-counter">
-    <i class="fa fa-comments-o"></i>
-    
-        <span class="disqus-comment-count" data-disqus-url="http://shinancao.github.io/2016/12/18/Programming-Git-1/">0</span>
-    
-</span>
-
-    
+        <div class="article-subtitle">
+            <a href="/2017/07/16/Project-Design-4/" class="article-date">
+    <time datetime="2017-07-16T03:23:20.000Z" itemprop="datePublished">2017-07-16</time>
 </a>
-        
-        <div class="article-meta">
-            <p class="category">
-            <a class="article-category-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Programming/Git/">Git</a>
-            </p>
-            <p class="date"><time datetime="2016-12-18T12:41:03.000Z" itemprop="datePublished">2016-12-18</time></p>
+            
         </div>
-        
-    
-        <h1 class="article-title" itemprop="name">
-        <a href="/2016/12/18/Programming-Git-1/">同一个Mac，配置多个SSH Key</a>
-        </h1>
-    
+        <div class="article-entry" itemprop="articleBody">
+            <p>几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：<a href="https://github.com/shinancao/ImageCycleScrollView" target="_blank" rel="external">https://github.com/shinancao/ImageCycleScrollView</a>，以供参考。下面记录一下这个过程中踩到的坑。</p>
+<h3 id="目录结构的设计"><a href="#目录结构的设计" class="headerlink" title="目录结构的设计"></a>目录结构的设计</h3><p>一开始把目录结构设计好很重要，否则在后面发现不对的时候，很有可能就要在github中把原来的仓库删掉，再重头新建一次，我就在实施的过程中删除了3、4次，最后才弄好。下面是几点要注意的：</p>
+<ul>
+<li>确定你的这个开源库的名字是否已经被用于发布到CocoaPods中，如果是，需要再重新想一个。运行<code>pod setup</code>，更新一下本地的CocoaPods Specs，然后运行<code>pod search 项目名</code>，看名字是否在其中。</li>
+<li>一开始创建项目的时候，就创建一个<code>Cocoa Touch Framework</code>的项目，开源库的名字叫什么，项目的名字就叫什么，不要创建<code>Single View Application</code>的。如果创建了<code>Single View Application</code>的，命名还叫项目的名字，那后面Framework就没得叫了。如果命名为<code>XXXDemo</code>，虽然Framework可以正常的叫，但是会在涉及到项目路径配置的地方都来个<code>xxxDemo.git</code>，难免不爽。创建一个<code>Cocoa Touch Framework</code>的项目后，可以再添加一个<code>Single View Application</code>类型的Target叫<code>XXXDemo</code>。</li>
+</ul>
+<p>那么，在开始进行CocoaPods和Carthage集成前，我摸索出的，目前认为比较好的目录结构如下：</p>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/document-struct@2x.jpg" width="400" height="209"></p>
+<p>注意文件要选择到相应的Target中，不要弄错了。</p>
+<h3 id="依赖第三方库"><a href="#依赖第三方库" class="headerlink" title="依赖第三方库"></a>依赖第三方库</h3><p>如果你的库没有依赖其他第三方的库，那就变得容易多了，上面的目录结构搭建好后可以直接进行CocoaPods和Carthage的相应操作了。如果依赖了其他库，这里要注意一下，<strong>用Carthage来集成该第三方库</strong>，不要用CocoaPods。对于CocoaPods，在podspec（还不知道podspec是啥？最后面会再说一下支持CocoaPods和Carthage集成的操作过程。）中可以指定<code>s.dependency &quot;&quot;</code>，这样在别人用CocoaPods集成时，CocoaPods会将依赖的第三方库一同下载下来并配置好。但是对于Carthage没有地方可以这样指定，所以只能曲线救国一下，在集成第三方库时，使用<code>carthage update --use-submodules</code>。加上了<code>--use-submodules</code>标志后，Carthage在下载完成后，会将其作为git submodules进行依赖。然后把原工程的xcodeproj和第三方库的xcodeproj合并成一个xcworkspace，这样在别人用Carthage集成时，除了会把自己的开源库下载下来，也会把依赖的第三方库同时下载下来。</p>
+<h3 id="加入Travis-CI"><a href="#加入Travis-CI" class="headerlink" title="加入Travis CI"></a>加入Travis CI</h3><p>你一定已经在很多github上的项目里看到过这个图标吧。</p>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-142114.png" width="55" height="19"></p>
+<p>Travis可以对github上的项目进行持续构建，集成它的步骤也很简单，到官网注册：<a href="https://travis-ci.org/" target="_blank" rel="external">https://travis-ci.org/</a>，进行github帐号关联，然后在项目里添加<code>.travis.yml</code>文件，在该文件中指定编译环境等。我在尝试的过程中，改了好多次才最终编译成功了。配置这个文件有几个要注意的坑：</p>
+<ul>
+<li>Travis默认使用xctool进行编译，但是xcode的版本指定的是8.0以上，xctool已经不支持了。需要指定用xcodebuild编译。</li>
+<li><code>/Users/travis/.travis/job_stages: line 156: shell_session_update: command not found</code>这个错误可以忽略，如果编译失败，先排查一下其他问题。</li>
+<li>如果用Carthage集成第三方库了，要进行Carthage的相关指定。</li>
+</ul>
+<p>下面是我这个用Swift开发的库的<code>.travis.yml</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">language: objective-c</span><br><span class="line">osx_image: xcode8.3</span><br><span class="line">xcode_workspace: ImageCycleScrollView</span><br><span class="line">xcode_scheme: ImageCycleScrollView</span><br><span class="line">xcode_sdk: iphonesimulator10.3</span><br><span class="line">before_install:</span><br><span class="line">  - xcodebuild -showsdks</span><br><span class="line">  - brew update</span><br><span class="line">  - brew outdated carthage || brew upgrade carthage</span><br><span class="line">before_script:</span><br><span class="line">  - carthage bootstrap</span><br><span class="line">before_deploy:</span><br><span class="line">  - carthage build --no-skip-current</span><br><span class="line">  - carthage archive $FRAMEWORK_NAME</span><br><span class="line">script:</span><br><span class="line">    - xcodebuild clean build -sdk iphonesimulator10.3 -workspace ImageCycleScrollView.xcworkspace -scheme ImageCycleScrollView CODE_SIGNING_REQUIRED=NO</span><br></pre></td></tr></table></figure>
+<h3 id="支持CocoaPods"><a href="#支持CocoaPods" class="headerlink" title="支持CocoaPods"></a>支持CocoaPods</h3><ul>
+<li>添加{project}.podspec文件：<code>pod spec create ImageCycleScrollView</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Pod::Spec.new do |s|</span><br><span class="line"></span><br><span class="line">  s.name         = &quot;ImageCycleScrollView&quot;</span><br><span class="line">  s.version      = &quot;2.0&quot;</span><br><span class="line">  s.summary      = &quot;A cycle scrollview in swift supporting autoplay and manual play.&quot;</span><br><span class="line">  s.homepage     = &quot;https://github.com/shinancao/ImageCycleScrollView&quot;</span><br><span class="line">  s.license      = &#123; :type =&gt; &quot;MIT&quot;, :file =&gt; &quot;LICENSE&quot; &#125;</span><br><span class="line">  s.author       = &#123; &quot;shinancao&quot; =&gt; &quot;shinancao666@163.com&quot; &#125;</span><br><span class="line">  s.platform     = :ios, &quot;8.0&quot;</span><br><span class="line">  s.source       = &#123; :git =&gt; &quot;https://github.com/shinancao/ImageCycleScrollView.git&quot;, :tag =&gt; &quot;#&#123;s.version&#125;&quot; &#125; # 用tag作为发布版，远程服务器上一定要有这个tag。</span><br><span class="line">  s.source_files = &quot;Sources/*.&#123;swift,h&#125;&quot;  # 一定要保证Sources文件夹中有文件</span><br><span class="line">  s.frameworks   = &quot;UIKit&quot;, &quot;Foundation&quot; </span><br><span class="line">  s.requires_arc = true</span><br><span class="line">  s.dependency &quot;Kingfisher&quot;, &quot;~&gt; 3.0&quot;  # 上面提到的指定其他依赖库</span><br><span class="line">  </span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>验证是否配置正确：<code>pod lib lint</code>。</li>
+<li>打一个spec文件中配置的tag，然后推送到远程服务器。</li>
+<li><p>提交spect文件到CocoaPods的官方库：</p>
+<ul>
+<li><p>如果是第一次使用，需要先注册：</p>
+<figure class="highlight ruby"><figcaption><span>[]</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod trunk register *youremail*@gmail.com <span class="string">'*yourname*'</span> --description=<span class="string">'iMac'</span> --verbose</span><br></pre></td></tr></table></figure>
+<p>然后到邮箱中验证一下，注册成功后，可以用<code>pod trunk me</code>查看注册信息和发布过的Pods。</p>
+</li>
+<li><p>提交{project}.podspec文件：<code>pod trunk push ImageCycleScrollView.podspec</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<p>至此，操作完毕，可以像使用其他Pods那样使用自己的啦。</p>
+<h3 id="支持Carthage"><a href="#支持Carthage" class="headerlink" title="支持Carthage"></a>支持Carthage</h3><ul>
+<li>将需要Carthage编译的schemes设置为<code>Shared</code>：</li>
+</ul>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-153649.png" width="100" height="107"></p>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-153630.png" width="300" height="136"></p>
+<ul>
+<li>验证编译是否有错误：<code>carthage build --no-skip-current</code>。</li>
+<li>提交tag到远程服务器，Carthage会自动来检测可以编译成功的tag，tag的命名用简单的数字即可，夹杂着字符Carthage有可能识别不出来。</li>
+</ul>
+<p>至此，就操作完毕啦。</p>
+<h3 id="完善README"><a href="#完善README" class="headerlink" title="完善README"></a>完善README</h3><p>最后，再美化一下README.md，看起来会正宗一些，哈哈。</p>
+<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-155047.png" width="400" height="323"></p>
 
-        <p class="article-excerpt">
-            缕清思路网上关于这方面的文章已经挺多的了，但是每次要配置的时候，还是要靠搜索引擎找半天才搞定，索性自己记录一下。之前我遇到了下面几种情况：
+        </div>
+        <footer class="article-footer">
+            
 
-自己github上项目，即要在自己的Mac上能提交代码，也要在公司的Mac上能提交代码。
-公司的Mac上，要能往公司自己的git服务器上对应项目提交代码，也要能往自己github上的项目提交代码。
-别人github上项目，在自己的Mac上能往上面提交代码。
 
-        </p>
+
+    <a data-url="http://shinancao.github.io/2017/07/16/Project-Design-4/" data-id="cj565ysqf000mbkstbb0mobh2" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
     </div>
 </article>
+
+    <section id="comments">
     
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
 
-
-    </div></section>
-
-
-
+    
+    </section>
 
                         </div>
                     </section>
@@ -271,6 +308,19 @@
             
         </ul>
     </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2017/07/05/Project-Design-3/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">older</strong>
+        <p class="article-nav-title">什么样的开源界面控件才最好用</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
     
     <div class="widgets-container">
         
@@ -453,11 +503,13 @@
     var disqus_shortname = 'shinancao';
     
     
+    var disqus_url = 'http://shinancao.github.io/2017/07/16/Project-Design-4/';
+    
     (function() {
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     </script>

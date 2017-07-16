@@ -3,18 +3,26 @@
 <head>
     <meta charset="utf-8">
     
-    <title>Category: Programming | 意林</title>
+    <title>什么样的开源界面控件才最好用 | 意林</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
-    <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="意林">
-<meta property="og:url" content="http://shinancao.github.io/categories/Programming/index.html">
+        <meta name="keywords" content="" />
+    
+    <meta name="description" content="前段时间做了一个万年历App，在github中搜索了一下日历，果然不出所料，一大批开源的日历控件。纠结了一下，要是自己从头写要考虑的东西很多，而且用的思路基本上也是这些开源控件的思路（后面会总结一下大致有几种思路来实现一个日历）。于是最终决定用现有的轮子，没成想就掉到深坑里去了。后来上线了第一个版本后，赶紧自己写了一个。同时不免思考了一下，怎么样设计一个开源的界面控件，别人用起来才舒服呢。
+对于开">
+<meta property="og:type" content="article">
+<meta property="og:title" content="什么样的开源界面控件才最好用">
+<meta property="og:url" content="http://shinancao.github.io/2017/07/05/Project-Design-3/index.html">
 <meta property="og:site_name" content="意林">
-<meta property="og:description">
+<meta property="og:description" content="前段时间做了一个万年历App，在github中搜索了一下日历，果然不出所料，一大批开源的日历控件。纠结了一下，要是自己从头写要考虑的东西很多，而且用的思路基本上也是这些开源控件的思路（后面会总结一下大致有几种思路来实现一个日历）。于是最终决定用现有的轮子，没成想就掉到深坑里去了。后来上线了第一个版本后，赶紧自己写了一个。同时不免思考了一下，怎么样设计一个开源的界面控件，别人用起来才舒服呢。
+对于开">
+<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg">
+<meta property="og:updated_time" content="2017-07-15T15:23:59.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="意林">
-<meta name="twitter:description">
+<meta name="twitter:title" content="什么样的开源界面控件才最好用">
+<meta name="twitter:description" content="前段时间做了一个万年历App，在github中搜索了一下日历，果然不出所料，一大批开源的日历控件。纠结了一下，要是自己从头写要考虑的东西很多，而且用的思路基本上也是这些开源控件的思路（后面会总结一下大致有几种思路来实现一个日历）。于是最终决定用现有的轮子，没成想就掉到深坑里去了。后来上线了第一个版本后，赶紧自己写了一个。同时不免思考了一下，怎么样设计一个开源的界面控件，别人用起来才舒服呢。
+对于开">
+<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg">
     
 
     
@@ -126,132 +134,124 @@
                         <div class="main-body-header">
     <h1 class="header">
     
-    <i class="icon fa fa-folder-open"></i>Category: <em class="page-title-link">Programming</em>
+    <a class="page-title-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/iOS/Project-Design/">Project Design</a>
     </h1>
 </div>
                         <div class="main-body-content">
-                            
-
-    
-    
+                            <article id="post-Project-Design-3" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
         
-        
-        <section class="archives-wrap">
-            <div class="archive-year-wrap">
-                <a href="/archives/2017" class="archive-year"><i class="icon fa fa-calendar-o"></i>2017</a>
-            </div>
-            <div class="archives">
-    
-    
-    
-        <div class="article-row">
-    
-        <article class="article article-summary">
-    <div class="article-summary-inner">
-        
-        <a href="/2017/01/28/Script-Plist-Version/" class="thumbnail">
-    
-    
-        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/Script-Plist-Version.jpg)" alt="通过Shell一键修改target的版本号" class="thumbnail-image"></span>
-    
-    
-        
-<span class="comment-counter">
-    <i class="fa fa-comments-o"></i>
-    
-        <span class="disqus-comment-count" data-disqus-url="http://shinancao.github.io/2017/01/28/Script-Plist-Version/">0</span>
-    
-</span>
-
-    
-</a>
-        
-        <div class="article-meta">
-            <p class="category">
-            <a class="article-category-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Programming/Script/">Script</a>
-            </p>
-            <p class="date"><time datetime="2017-01-28T14:05:23.000Z" itemprop="datePublished">2017-01-28</time></p>
-        </div>
-        
+            <header class="article-header">
+                
     
         <h1 class="article-title" itemprop="name">
-        <a href="/2017/01/28/Script-Plist-Version/">通过Shell一键修改target的版本号</a>
+        什么样的开源界面控件才最好用
         </h1>
     
 
-        <p class="article-excerpt">
-            脚本的由来随着项目的发展，目前我们项目已经有5个target了，一个主target，2个Today Widget的target，2个Apple Watch的target。这些target的版本号必须一模一样才能编译通过，也就是Info.plist中的CFBundleShortVersionString。每次版本迭代的时候都要手动一个一个改一点，实在太麻烦，而且对于一个程序员，怎么能忍这种很机械的操
-        </p>
-    </div>
-</article>
-    
-
-    
-    
+            </header>
         
-            </div></section>
-        
-        
-        <section class="archives-wrap">
-            <div class="archive-year-wrap">
-                <a href="/archives/2016" class="archive-year"><i class="icon fa fa-calendar-o"></i>2016</a>
-            </div>
-            <div class="archives">
-    
-    
-    
-        <div class="article-row">
-    
-        <article class="article article-summary">
-    <div class="article-summary-inner">
-        
-        <a href="/2016/12/18/Programming-Git-1/" class="thumbnail">
-    
-    
-        <span style="background-image:url(/images/Programming-Git-Account.jpg)" alt="同一个Mac，配置多个SSH Key" class="thumbnail-image"></span>
-    
-    
-        
-<span class="comment-counter">
-    <i class="fa fa-comments-o"></i>
-    
-        <span class="disqus-comment-count" data-disqus-url="http://shinancao.github.io/2016/12/18/Programming-Git-1/">0</span>
-    
-</span>
-
-    
+        <div class="article-subtitle">
+            <a href="/2017/07/05/Project-Design-3/" class="article-date">
+    <time datetime="2017-07-05T14:36:02.000Z" itemprop="datePublished">2017-07-05</time>
 </a>
-        
-        <div class="article-meta">
-            <p class="category">
-            <a class="article-category-link" href="/categories/Programming/">Programming</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Programming/Git/">Git</a>
-            </p>
-            <p class="date"><time datetime="2016-12-18T12:41:03.000Z" itemprop="datePublished">2016-12-18</time></p>
+            
         </div>
-        
-    
-        <h1 class="article-title" itemprop="name">
-        <a href="/2016/12/18/Programming-Git-1/">同一个Mac，配置多个SSH Key</a>
-        </h1>
-    
+        <div class="article-entry" itemprop="articleBody">
+            <p>前段时间做了一个万年历App，在<code>github</code>中搜索了一下日历，果然不出所料，一大批开源的日历控件。纠结了一下，要是自己从头写要考虑的东西很多，而且用的思路基本上也是这些开源控件的思路（后面会总结一下大致有几种思路来实现一个日历）。于是最终决定用现有的轮子，没成想就掉到深坑里去了。后来上线了第一个版本后，赶紧自己写了一个。同时不免思考了一下，怎么样设计一个开源的界面控件，别人用起来才舒服呢。</p>
+<p>对于开源的界面控件，我认为可以大致分两种，一种像是<code>Toaster</code>这样的，只是App的一个附着品、点缀，不需要对UI进行很大的深度定制。一种像是日历这样的，对于日历App，日历控件必然是它的重要部分，一般都需要对它进行很大的改造才能达到想要的样子。下面分别针对这两种控件，谈一谈自己的一点反思。</p>
+<p>对于前者，因为别人在集成时不需要进行太大的改动，所以最好做到能够不去改动控件的源代码，就能定制想要的效果。这其实比较考验想象能力，你能想到哪些可以让别人去定制的呢？控件的背景颜色、字的颜色、字体、icon、位置、动画的有无等等。根据过往经验，总结了一下在封装时的几个要点： </p>
+<ul>
+<li>隐藏实现的细节，对于<code>Objective-C</code>就是将公开的接口放到<code>.h</code>文件中，其余的实现过程中的辅助方法放到<code>.m</code>文件中。对于<code>Swift</code>就是利用<code>fileprivate</code>、<code>private</code>、<code>public</code>等域关键字来做限制。</li>
+<li>公开接口的设计，我目前想到有3种方式：<ol>
+<li>将可定制的控件暴露出去，比如有一个<code>label</code>，公开后，使用这就可以通过<code>xxView.label.textColor = UIColor.yellow</code>这样来设置。但是 </li>
+</ol>
+</li>
+</ul>
+<p>隐藏实现的细节，将所有可能进行的定制通过接口暴露出来，比如颜色、字体、icon、位置、动画效果等等。</p>
+<p>最后最好再提供<code>CocoaPods</code>和<code>Cathage</code>集成。最终达到在需要时查一下公开的API接口就能找到.</p>
+<p>后者通常是要改源代码才能达到预期效果。</p>
+<p>以上都只是自己的一些看法，有不同意见可以在评论去留言哦~~                </p>
 
-        <p class="article-excerpt">
-            缕清思路网上关于这方面的文章已经挺多的了，但是每次要配置的时候，还是要靠搜索引擎找半天才搞定，索性自己记录一下。之前我遇到了下面几种情况：
+        </div>
+        <footer class="article-footer">
+            
 
-自己github上项目，即要在自己的Mac上能提交代码，也要在公司的Mac上能提交代码。
-公司的Mac上，要能往公司自己的git服务器上对应项目提交代码，也要能往自己github上的项目提交代码。
-别人github上项目，在自己的Mac上能往上面提交代码。
 
-        </p>
+
+    <a data-url="http://shinancao.github.io/2017/07/05/Project-Design-3/" data-id="cj565ysqp000rbkstcj3qxive" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
     </div>
 </article>
+
+    <section id="comments">
     
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
 
-
-    </div></section>
-
-
-
+    
+    </section>
 
                         </div>
                     </section>
@@ -271,6 +271,29 @@
             
         </ul>
     </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/07/16/Project-Design-4/" id="article-nav-newer" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">newer</strong>
+        <p class="article-nav-title">
+        
+            使开源库同时支持CocoaPods和Carthage集成
+        
+        </p>
+        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
+    </a>
+    
+    
+        <a href="/2017/07/02/Project-Design-2/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">older</strong>
+        <p class="article-nav-title">一个Swift工具类App的设计</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
     
     <div class="widgets-container">
         
@@ -453,11 +476,13 @@
     var disqus_shortname = 'shinancao';
     
     
+    var disqus_url = 'http://shinancao.github.io/2017/07/05/Project-Design-3/';
+    
     (function() {
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
     </script>
