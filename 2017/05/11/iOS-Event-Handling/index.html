@@ -1,170 +1,402 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    
-    <title>Touch Event Handling、Responder Chain、Gesture Recognizers | 意林</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    
-        <meta name="keywords" content="" />
-    
-    <meta name="description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。
-UITouch先说UITouch，在屏幕上的每一次动作事件都是一次touch，它可以看成是整个触摸事件处理中最小的单位了，UITouch封装了一个touch所携带的基本信息。主要包括：
 
-touch发生在的view或者window">
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Touch Event,Responder Chain,Gesture Recognizers," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Touch Event Handling、Responder Chain、Gesture Recognizers">
 <meta property="og:url" content="http://shinancao.github.io/2017/05/11/iOS-Event-Handling/index.html">
-<meta property="og:site_name" content="意林">
-<meta property="og:description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。
-UITouch先说UITouch，在屏幕上的每一次动作事件都是一次touch，它可以看成是整个触摸事件处理中最小的单位了，UITouch封装了一个touch所携带的基本信息。主要包括：
-
-touch发生在的view或者window">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Event-Handler.jpg">
-<meta property="og:updated_time" content="2017-06-27T14:31:14.000Z">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。">
+<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/responder_chain_overview_2x.png">
+<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/144142-3afc2c85792ade41.png">
+<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/WX20170626-142848.png">
+<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/WX20170626-150629.png">
+<meta property="og:updated_time" content="2017-07-22T10:25:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Touch Event Handling、Responder Chain、Gesture Recognizers">
-<meta name="twitter:description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。
-UITouch先说UITouch，在屏幕上的每一次动作事件都是一次touch，它可以看成是整个触摸事件处理中最小的单位了，UITouch封装了一个touch所携带的基本信息。主要包括：
+<meta name="twitter:description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。">
+<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/responder_chain_overview_2x.png">
 
-touch发生在的view或者window">
-<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/iOS-Event-Handler.jpg">
-    
 
-    
 
-    
-        <link rel="icon" href="/favicon.png" />
-    
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
 
-    <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/vendor/titillium-web/styles.css">
-    <link rel="stylesheet" href="/vendor/source-code-pro/styles.css">
 
-    <link rel="stylesheet" href="/css/style.css">
 
-    <script src="/vendor/jquery/2.0.3/jquery.min.js"></script>
-    
-    
-        <link rel="stylesheet" href="/vendor/fancybox/jquery.fancybox.css">
-    
-    
-        <link rel="stylesheet" href="/vendor/scrollLoading/style.css">
-    
-    
-    
+  <link rel="canonical" href="http://shinancao.github.io/2017/05/11/iOS-Event-Handling/"/>
+
+
+
+
+
+  <title>Touch Event Handling、Responder Chain、Gesture Recognizers | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </head>
 
-<body>
-    <div id="wrap">
-        <header id="header">
-    <div id="header-outer" class="outer">
-        <div class="container">
-            <div class="container-inner">
-                <div id="header-title">
-                    <h1 class="logo-wrap">
-                        <a href="/" class="logo"></a>
-                    </h1>
-                    
-                        <h2 class="subtitle-wrap">
-                            <p class="subtitle">Be a cool girl ~</p>
-                        </h2>
-                    
-                </div>
-                <div id="header-inner" class="nav-container">
-                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
-                    <div class="nav-container-inner">
-                        <ul id="main-nav">
-                            
-                                <li class="main-nav-list-item" >
-                                    <a class="main-nav-list-link" href="/">Home</a>
-                                </li>
-                            
-                                        <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Bakery/">Bakery</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/English/">English</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/English/Poetry/">Poetry</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/English/Presentation/">Presentation</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Life/">Life</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/">Programming</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Git/">Git</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Programming/Script/">Script</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/">iOS</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/Objective-C/">Objective-C</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/Project-Design/">Project Design</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/iOS/Unit-Tests/">Unit Tests</a></li></ul></li></ul>
-                                    
-                                <li class="main-nav-list-item" >
-                                    <a class="main-nav-list-link" href="/about/index.html">About</a>
-                                </li>
-                            
-                        </ul>
-                        <nav id="sub-nav">
-                            <div id="search-form-wrap">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
-    <form class="search-form">
-        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
-        <button type="submit" class="search-form-submit"></button>
-    </form>
-    <div class="ins-search">
-    <div class="ins-search-mask"></div>
-    <div class="ins-search-container">
-        <div class="ins-input-wrapper">
-            <input type="text" class="ins-search-input" placeholder="Type something..." />
-            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
-        </div>
-        <div class="ins-section-wrapper">
-            <div class="ins-section-container"></div>
-        </div>
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
     </div>
-</div>
-<script>
-(function (window) {
-    var INSIGHT_CONFIG = {
-        TRANSLATION: {
-            POSTS: 'Posts',
-            PAGES: 'Pages',
-            CATEGORIES: 'Categories',
-            TAGS: 'Tags',
-            UNTITLED: '(Untitled)',
-        },
-        ROOT_URL: '/',
-        CONTENT_URL: '/content.json',
-    };
-    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
-})(window);
-</script>
-<script src="/js/insight.js"></script>
+      
+        <p class="site-subtitle">Be a cool girl ~</p>
+      
+  </div>
 
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
 </div>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-        <div class="container">
-            <div class="main-body container-inner">
-                <div class="main-body-inner">
-                    <section id="main">
-                        <div class="main-body-header">
-    <h1 class="header">
-    
-    <a class="page-title-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a>
-    </h1>
-</div>
-                        <div class="main-body-content">
-                            <article id="post-iOS-Event-Handling" class="article article-single article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-            <header class="article-header">
-                
-    
-        <h1 class="article-title" itemprop="name">
-        Touch Event Handling、Responder Chain、Gesture Recognizers
-        </h1>
-    
 
-            </header>
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
         
-        <div class="article-subtitle">
-            <a href="/2017/05/11/iOS-Event-Handling/" class="article-date">
-    <time datetime="2017-05-11T09:48:58.000Z" itemprop="datePublished">2017-05-11</time>
-</a>
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
             
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2017/05/11/iOS-Event-Handling/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Touch Event Handling、Responder Chain、Gesture Recognizers</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-11T17:48:58+08:00">
+                2017-05-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/Cocoa-Touch/" itemprop="url" rel="index">
+                    <span itemprop="name">Cocoa Touch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
         </div>
-        <div class="article-entry" itemprop="articleBody">
-            <p>这篇文章将对<code>UITouch</code>、<code>UIEvent</code>、<code>UIResponder</code>、<code>UIGestureRecognizer</code>、<code>Responder Chain</code>之间相互纠葛的关系做一个梳理。</p>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这篇文章将对<code>UITouch</code>、<code>UIEvent</code>、<code>UIResponder</code>、<code>UIGestureRecognizer</code>、<code>Responder Chain</code>之间相互纠葛的关系做一个梳理。</p>
+<a id="more"></a>
 <h3 id="UITouch"><a href="#UITouch" class="headerlink" title="UITouch"></a>UITouch</h3><p>先说<code>UITouch</code>，在屏幕上的每一次动作事件都是一次touch，它可以看成是整个触摸事件处理中最小的单位了，<code>UITouch</code>封装了一个touch所携带的基本信息。主要包括：</p>
 <ul>
 <li>touch发生在的view或者window (view)</li>
@@ -175,17 +407,17 @@ touch发生在的view或者window">
 <p>还包括touch发生时的时间戳，用户点击屏幕的次数等等，具体的可以查阅苹果官方文档<a href="https://developer.apple.com/reference/uikit/uitouch" target="_blank" rel="external">UITouch</a>，就不过多翻译了。</p>
 <h3 id="UIEvent"><a href="#UIEvent" class="headerlink" title="UIEvent"></a>UIEvent</h3><p>在触摸事件中只有<code>UITouch</code>还是不够的，因为要定义是什么样的触摸事件发生时，可能已经有多个touch参与其中了，也就是说，一个或多个touch构成了一次event。触摸事件根据具体情况可以有点击事件、滑动事件、拖拽事件、双指缩放等。可以通过<code>UIEvent</code>的<code>allTouches</code>属性来获取所有与该event关联的touch。</p>
 <p>当然，touch events只是App能接收到的事件中的一种，<code>UIEvent</code>包括以下几种类型：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">enum UIEventType &#123;</span><br><span class="line">	case touches //触摸屏幕</span><br><span class="line">	case motion  //设备的运动，例如摇晃</span><br><span class="line">	case remoteControl  //例如用耳机控制音乐等</span><br><span class="line">	case presses  //点击物理按钮</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">UIEventType</span> &#123;</span></span><br><span class="line">	<span class="keyword">case</span> touches /<span class="regexp">/触摸屏幕</span><br><span class="line">	case motion  /</span><span class="regexp">/设备的运动，例如摇晃</span><br><span class="line">	case remoteControl  /</span><span class="regexp">/例如用耳机控制音乐等</span><br><span class="line">	case presses  /</span><span class="regexp">/点击物理按钮</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
 <p>关于<code>UIEvent</code>的更详细了解可以查阅苹果官方文档<a href="https://developer.apple.com/reference/uikit/uievent" target="_blank" rel="external">UIEvent</a>。</p>
 <h3 id="UIResponder"><a href="#UIResponder" class="headerlink" title="UIResponder"></a>UIResponder</h3><p>一个或多个touch组成了一个event，那又是谁来响应event呢？<code>UIResponder</code>出场了~。<code>UIResponder</code>是一个抽象类，定义了响应事件的一些接口，例如对于touch events，接口如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func touchesBegan(Set&lt;UITouch&gt;, with: UIEvent?)</span><br><span class="line">func touchesMoved(Set&lt;UITouch&gt;, with: UIEvent?)</span><br><span class="line">func touchesEnded(Set&lt;UITouch&gt;, with: UIEvent?)</span><br><span class="line">func touchesCancelled(Set&lt;UIToutch&gt;, with: UIEvent?)</span><br></pre></td></tr></table></figure>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">touchesBegan</span><span class="params">(Set&lt;UITouch&gt;, with: UIEvent?)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">touchesMoved</span><span class="params">(Set&lt;UITouch&gt;, with: UIEvent?)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">touchesEnded</span><span class="params">(Set&lt;UITouch&gt;, with: UIEvent?)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">touchesCancelled</span><span class="params">(Set&lt;UIToutch&gt;, with: UIEvent?)</span></span></span><br></pre></td></tr></table></figure>
 <p>如果一个<code>UIResponder</code>子类想要响应touch events，就需要实现上面这些接口。</p>
 <p>对于motion events，接口如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">func motionBegan(UIEventSubtype, with: UIEvent?)</span><br><span class="line">func motionEnded(UIEventSubtype, with: UIEvent?)</span><br><span class="line">func motionCancelled(UIEventSubtype, with: UIEvent?)</span><br></pre></td></tr></table></figure>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">motionBegan</span><span class="params">(UIEventSubtype, with: UIEvent?)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">motionEnded</span><span class="params">(UIEventSubtype, with: UIEvent?)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">motionCancelled</span><span class="params">(UIEventSubtype, with: UIEvent?)</span></span></span><br></pre></td></tr></table></figure>
 <p>同时<code>UIResponder</code>还定义了管理事件响应链的一些接口：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var next: UIResponder?</span><br><span class="line">var isFirstResponder: Bool</span><br><span class="line">var canBecomeFirstResponder: Bool</span><br><span class="line">func becomeFirstResponder()</span><br><span class="line">func canResignFirstResponder: Bool</span><br><span class="line">func resignFirstResponder()</span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var <span class="keyword">next</span>: UIResponder?</span><br><span class="line">var isFirstResponder: Bool</span><br><span class="line">var canBecomeFirstResponder: Bool</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">becomeFirstResponder</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">canResignFirstResponder</span>: <span class="title">Bool</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">resignFirstResponder</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
 <p>在事件发生时，UIKit会事件派发给first responder，不同类型的事件，first responder也不同。对于touch event来说，first responder就是事件发生在的那个view。在平时开发中出现比较多的地方就是使用<code>UITextField</code>、<code>UITextView</code>时，调起和消失键盘。我们可以自己定义一个输入控件，让它是first responder，这需要实现<code>canBecomeFirstResponder</code>，让其返回true。否则即使调用了<code>becomeFirstResponder</code>也不会成为first responder。那first responder更多的会用来干什么呢？苹果的文档中有这样一句描述：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UIKit dispatches some types of events, such as motion events, to the first responder initially.</span><br></pre></td></tr></table></figure>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UIKit dispatches <span class="keyword">some</span> types <span class="keyword">of</span> events, such <span class="keyword">as</span> motion events, <span class="keyword">to</span> <span class="keyword">the</span> <span class="keyword">first</span> responder initially.</span><br></pre></td></tr></table></figure>
 <p>UIKit会把设备摇动这样的事件派发给第一响应者。</p>
 <p>next responder好理解一些，当前的responder也许并不想或者不能处理某个事件，那这时可以把事件传出去，交给下一个响应者。<code>UIResponder</code>子类需要实现该方法，指明自己合适的下一个响应者。</p>
 <h3 id="Response-Chain"><a href="#Response-Chain" class="headerlink" title="Response Chain"></a>Response Chain</h3><p>UIKit中的<code>UIApplication</code>、<code>UIViewController</code>、<code>UIView</code>、<code>UIWindow</code>都已经继承了<code>UIResponder</code>。在上面讲到了<code>UIResponder</code>子类必须实现nextResponder，那这些类是如何实现的呢？</p>
@@ -205,12 +437,12 @@ touch发生在的view或者window">
 <p>在重写<code>touchesXXX</code>等方法时，由两种方式可以将事件传递给下一个响应者，一个是调用<code>self.next?.touchesXXX</code>，此时一定能将事件传递出去，一个是调用<code>super.touchesXXX</code>，能不能传递出去，就看你重写的那个控件支不支持将事件传递出去了。</p>
 <p>当然，这个响应链是可以被打破的，我们可以重写一个UIKit中的<code>UIResponder</code>对象，实现它的nextResponder。</p>
 <h4 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h4><p>了解这些在实际开发中有什么帮助呢？有一个关于<code>UIScrollView</code>的例子，假如我们在其中放了一些<code>UITextField</code>，在用户输入完成后，想让用户点击一下空白背景就将键盘消失，就可以利用响应链来巧妙的实现了。因为<code>UIScrollView</code>默认是不会把触摸事件传递出去的，我们可以重写touch的那一系列方法将事件传递出去，然后它的nextResponder的touch方法就可以得到响应了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">class ScrollView: UIScrollView &#123;</span><br><span class="line">	override func touchesBegan(_ touches: Set&lt;UITouch&gt;, with event: UIEvent?) &#123;</span><br><span class="line">		if !isDragging &#123;</span><br><span class="line">            self.next?.touchesBegan(touches, with: event)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            super.touchesBegan(touches, with: event)</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	override func touchesMoved(_ touches: Set&lt;UITouch&gt;, with event: UIEvent?) &#123;</span><br><span class="line">		if !isDragging &#123;</span><br><span class="line">            self.next?.touchesMoved(touches, with: event)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            super.touchesMoved(touches, with: event)</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	override func touchesEnded(_ touches: Set&lt;UITouch&gt;, with event: UIEvent?) &#123;</span><br><span class="line">		if !isDragging &#123;</span><br><span class="line">            self.next?.touchesEnded(touches, with: event)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            super.touchesEnded(touches, with: event)</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	override func touchesCancelled(_ touches: Set&lt;UITouch&gt;, with event: UIEvent?) &#123;</span><br><span class="line">        if !isDragging &#123;</span><br><span class="line">            self.next?.touchesCancelled(touches, with: event)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            super.touchesCancelled(touches, with: event)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">class</span> <span class="selector-tag">ScrollView</span>: <span class="selector-tag">UIScrollView</span> &#123;</span><br><span class="line">	<span class="selector-tag">override</span> <span class="selector-tag">func</span> <span class="selector-tag">touchesBegan</span>(_ <span class="attribute">touches</span>: Set&lt;UITouch&gt;, with <span class="attribute">event</span>: UIEvent?) &#123;</span><br><span class="line">		<span class="selector-tag">if</span> !<span class="selector-tag">isDragging</span> &#123;</span><br><span class="line">            <span class="selector-tag">self</span><span class="selector-class">.next</span>?<span class="selector-class">.touchesBegan</span>(touches, <span class="attribute">with</span>: event)</span><br><span class="line">        &#125; <span class="selector-tag">else</span> &#123;</span><br><span class="line">            <span class="selector-tag">super</span><span class="selector-class">.touchesBegan</span>(touches, <span class="attribute">with</span>: event)</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="selector-tag">override</span> <span class="selector-tag">func</span> <span class="selector-tag">touchesMoved</span>(_ <span class="attribute">touches</span>: Set&lt;UITouch&gt;, with <span class="attribute">event</span>: UIEvent?) &#123;</span><br><span class="line">		<span class="selector-tag">if</span> !<span class="selector-tag">isDragging</span> &#123;</span><br><span class="line">            <span class="selector-tag">self</span><span class="selector-class">.next</span>?<span class="selector-class">.touchesMoved</span>(touches, <span class="attribute">with</span>: event)</span><br><span class="line">        &#125; <span class="selector-tag">else</span> &#123;</span><br><span class="line">            <span class="selector-tag">super</span><span class="selector-class">.touchesMoved</span>(touches, <span class="attribute">with</span>: event)</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="selector-tag">override</span> <span class="selector-tag">func</span> <span class="selector-tag">touchesEnded</span>(_ <span class="attribute">touches</span>: Set&lt;UITouch&gt;, with <span class="attribute">event</span>: UIEvent?) &#123;</span><br><span class="line">		<span class="selector-tag">if</span> !<span class="selector-tag">isDragging</span> &#123;</span><br><span class="line">            <span class="selector-tag">self</span><span class="selector-class">.next</span>?<span class="selector-class">.touchesEnded</span>(touches, <span class="attribute">with</span>: event)</span><br><span class="line">        &#125; <span class="selector-tag">else</span> &#123;</span><br><span class="line">            <span class="selector-tag">super</span><span class="selector-class">.touchesEnded</span>(touches, <span class="attribute">with</span>: event)</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="selector-tag">override</span> <span class="selector-tag">func</span> <span class="selector-tag">touchesCancelled</span>(_ <span class="attribute">touches</span>: Set&lt;UITouch&gt;, with <span class="attribute">event</span>: UIEvent?) &#123;</span><br><span class="line">        <span class="selector-tag">if</span> !<span class="selector-tag">isDragging</span> &#123;</span><br><span class="line">            <span class="selector-tag">self</span><span class="selector-class">.next</span>?<span class="selector-class">.touchesCancelled</span>(touches, <span class="attribute">with</span>: event)</span><br><span class="line">        &#125; <span class="selector-tag">else</span> &#123;</span><br><span class="line">            super<span class="selector-class">.touchesCancelled</span>(touches, <span class="attribute">with</span>: event)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>如果这个scrollView是放在viewController的view中的，那touch事件是可以传递到viewController中的，于是：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">override func touchesBegan(_ touches: Set&lt;UITouch&gt;, with event: UIEvent?) &#123;</span><br><span class="line">        textfield.resignFirstResponder()</span><br><span class="line">        super.touchesBegan(touches, with: event)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">override</span> <span class="selector-tag">func</span> <span class="selector-tag">touchesBegan</span>(_ <span class="attribute">touches</span>: Set&lt;UITouch&gt;, with <span class="attribute">event</span>: UIEvent?) &#123;</span><br><span class="line">        textfield<span class="selector-class">.resignFirstResponder</span>()</span><br><span class="line">        <span class="selector-tag">super</span><span class="selector-class">.touchesBegan</span>(touches, <span class="attribute">with</span>: event)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>当然，这个问题的解决方式不止这一种。</p>
 <h3 id="寻找发生Event的view"><a href="#寻找发生Event的view" class="headerlink" title="寻找发生Event的view"></a>寻找发生Event的view</h3><p>事件的传递过程了解了，那UIKit是怎么来确定事件到底是发生在哪个view上呢？这就用到了如下两个方法，有点像游戏场景里所讲的碰撞检测：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">func point(inside point: CGPoint, with event: UIEvent?) -&gt; Bool</span><br><span class="line">func hitTest(_ point: CGPoint, with event: UIEvent?) -&gt; UIView?</span><br></pre></td></tr></table></figure>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">point</span><span class="params">(inside point: CGPoint, with event: UIEvent?)</span></span> -&gt; <span class="type">Bool</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hitTest</span><span class="params">(<span class="number">_</span> point: CGPoint, with event: UIEvent?)</span></span> -&gt; <span class="type">UIView</span>?</span><br></pre></td></tr></table></figure>
 <p><code>pointInside</code>用来返回事件发生的点是否在当前的view内，<code>hitTest</code>用来返回事件所在的view。对于同一个view来说，如果它的<code>pointInside</code>返回false，那它的<code>hitTest</code>将返回nil。如果它的<code>pointInside</code>返回true，<code>hitTest</code>会继续去遍历它的子view，它的子view依然会走这个逻辑，直到找到事件最终发生的view，再层层返回。</p>
 <p>具体的看一下这张苹果官方文档里的布局，控件添加的顺序是A-&gt;B-&gt;C-&gt;D-&gt;E，点击E后的整个寻找过程是：</p>
 <pre><code>A--- pointInside withEvent --- isInside:true
@@ -229,7 +461,7 @@ A--- hitTest withEvent ---hitTestView:E
 <ul>
 <li>扩展<code>UIButton</code>的点击区域，有的时候为了视觉效果<code>UIButton</code>并没有那么大，但是为了能更好的响应用户的点击，需要隐形的扩展它的点击区域。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class ExpandedButton: UIButton &#123;</span><br><span class="line"></span><br><span class="line">    public var padding = CGFloat(0)</span><br><span class="line">    </span><br><span class="line">    override func point(inside point: CGPoint, with event: UIEvent?) -&gt; Bool &#123;</span><br><span class="line">        let extendedBounds = bounds.insetBy(dx: -padding, dy: -padding)</span><br><span class="line">        return extendedBounds.contains(point)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExpandedButton</span>: <span class="title">UIButton</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">var</span> padding = <span class="type">CGFloat</span>(<span class="number">0</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">point</span><span class="params">(inside point: CGPoint, with event: UIEvent?)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> extendedBounds = bounds.insetBy(dx: -padding, dy: -padding)</span><br><span class="line">        <span class="keyword">return</span> extendedBounds.<span class="built_in">contains</span>(point)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
 <li>渗透点击事件，两个视图叠放在一起，并不是作为子视图嵌套的，这时想要在点击上面的视图时，下面的视图得到相应的响应，就可以重写上面视图的<code>pointInside</code>，让其返回false，下面的视图就可以得到响应了。</li>
 </ul>
@@ -253,335 +485,405 @@ A--- hitTest withEvent ---hitTestView:E
 </blockquote>
 <p>–End–</p>
 
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Touch-Event/" rel="tag"># Touch Event</a>
+          
+            <a href="/tags/Responder-Chain/" rel="tag"># Responder Chain</a>
+          
+            <a href="/tags/Gesture-Recognizers/" rel="tag"># Gesture Recognizers</a>
+          
         </div>
-        <footer class="article-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/09/Reveal-App-Layout/" rel="next" title="用Reveal查看别人的App布局">
+                <i class="fa fa-chevron-left"></i> 用Reveal查看别人的App布局
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/24/English-L-To-I/" rel="prev" title="A Letter to Myself">
+                A Letter to Myself <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="意林" />
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description">这个家伙很懒，什么也没留下...</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">35</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://salo.so/" title="冬季的杂货店" target="_blank">冬季的杂货店</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
             
 
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#UITouch"><span class="nav-number">1.</span> <span class="nav-text">UITouch</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UIEvent"><span class="nav-number">2.</span> <span class="nav-text">UIEvent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UIResponder"><span class="nav-number">3.</span> <span class="nav-text">UIResponder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Response-Chain"><span class="nav-number">4.</span> <span class="nav-text">Response Chain</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#应用"><span class="nav-number">4.1.</span> <span class="nav-text">应用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#寻找发生Event的view"><span class="nav-number">5.</span> <span class="nav-text">寻找发生Event的view</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#应用-1"><span class="nav-number">5.1.</span> <span class="nav-text">应用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UIGestureRecognizer"><span class="nav-number">6.</span> <span class="nav-text">UIGestureRecognizer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不能接收触摸事件的情况"><span class="nav-number">7.</span> <span class="nav-text">不能接收触摸事件的情况</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
 
 
-    <a data-url="http://shinancao.github.io/2017/05/11/iOS-Event-Handling/" data-id="cj566mrxm000zhpsta9q2peyx" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
+        
+      </div>
+    </main>
 
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
 
-            if ($('#' + id).length) {
-                box = $('#' + id);
 
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
 
-              box = $(html);
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
 
-              $('body').append(box);
-            }
 
-            $('.article-share-box.on').hide();
+        
 
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
+        
+      </div>
+    </footer>
 
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
 
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
 </script>
 
-        </footer>
-    </div>
-</article>
-
-    <section id="comments">
-    
-        
-    <div id="disqus_thread">
-        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    </div>
-
-    
-    </section>
-
-                        </div>
-                    </section>
-                    <aside id="sidebar">
-    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
-    <div class="sidebar-top">
-        <p>follow:</p>
-        <ul class="social-links">
-            
-                
-                <li>
-                    <a class="social-tooltip" title="github" href="https://github.com/shinancao/" target="_blank">
-                        <i class="icon fa fa-github"></i>
-                    </a>
-                </li>
-                
-            
-        </ul>
-    </div>
-    
-        
-<nav id="article-nav">
-    
-        <a href="/2017/06/24/English-L-To-I/" id="article-nav-newer" class="article-nav-link-wrap">
-        <strong class="article-nav-caption">newer</strong>
-        <p class="article-nav-title">
-        
-            A Letter to Myself
-        
-        </p>
-        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
-    </a>
-    
-    
-        <a href="/2017/04/09/Reveal-App-Layout/" id="article-nav-older" class="article-nav-link-wrap">
-        <strong class="article-nav-caption">older</strong>
-        <p class="article-nav-title">用Reveal查看别人的App布局</p>
-        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
-        </a>
-    
-</nav>
-
-    
-    <div class="widgets-container">
-        
-            
-                
-    <div class="widget-wrap">
-        <h3 class="widget-title">recents</h3>
-        <div class="widget">
-            <ul id="recent-post" class="">
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2017/07/16/Project-Design-4/" class="thumbnail">
-    
-    
-        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg)" alt="使开源库同时支持CocoaPods和Carthage集成" class="thumbnail-image"></span>
-    
-    
-</a>
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Project-Design/">Project Design</a></p>
-                            <p class="item-title"><a href="/2017/07/16/Project-Design-4/" class="title">使开源库同时支持CocoaPods和Carthage集成</a></p>
-                            <p class="item-date"><time datetime="2017-07-16T03:23:20.000Z" itemprop="datePublished">2017-07-16</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2017/07/05/Project-Design-3/" class="thumbnail">
-    
-    
-        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg)" alt="什么样的开源界面控件才最好用" class="thumbnail-image"></span>
-    
-    
-</a>
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Project-Design/">Project Design</a></p>
-                            <p class="item-title"><a href="/2017/07/05/Project-Design-3/" class="title">什么样的开源界面控件才最好用</a></p>
-                            <p class="item-date"><time datetime="2017-07-05T14:36:02.000Z" itemprop="datePublished">2017-07-05</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2017/07/02/Project-Design-2/" class="thumbnail">
-    
-    
-        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/iOS-Project-Design-2.jpg)" alt="一个Swift工具类App的设计" class="thumbnail-image"></span>
-    
-    
-</a>
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Project-Design/">Project Design</a></p>
-                            <p class="item-title"><a href="/2017/07/02/Project-Design-2/" class="title">一个Swift工具类App的设计</a></p>
-                            <p class="item-date"><time datetime="2017-07-02T03:43:10.000Z" itemprop="datePublished">2017-07-02</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2017/06/24/English-L-To-I/" class="thumbnail">
-    
-    
-        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/ALetterToMe.jpg)" alt="A Letter to Myself" class="thumbnail-image"></span>
-    
-    
-</a>
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/English/">English</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/English/Presentation/">Presentation</a></p>
-                            <p class="item-title"><a href="/2017/06/24/English-L-To-I/" class="title">A Letter to Myself</a></p>
-                            <p class="item-date"><time datetime="2017-06-24T09:48:58.000Z" itemprop="datePublished">2017-06-24</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2017/05/11/iOS-Event-Handling/" class="thumbnail">
-    
-    
-        <span style="background-image:url(http://ojx1pmrk7.bkt.clouddn.com/iOS-Event-Handler.jpg)" alt="Touch Event Handling、Responder Chain、Gesture Recognizers" class="thumbnail-image"></span>
-    
-    
-</a>
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a></p>
-                            <p class="item-title"><a href="/2017/05/11/iOS-Event-Handling/" class="title">Touch Event Handling、Responder Chain、Gesture Recognizers</a></p>
-                            <p class="item-date"><time datetime="2017-05-11T09:48:58.000Z" itemprop="datePublished">2017-05-11</time></p>
-                        </div>
-                    </li>
-                
-            </ul>
-        </div>
-    </div>
-
-            
-                
-    <div class="widget-wrap widget-list">
-        <h3 class="widget-title">categories</h3>
-        <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Bakery/">Bakery</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/English/">English</a><span class="category-list-count">10</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/English/Poetry/">Poetry</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/English/Presentation/">Presentation</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/Script/">Script</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">15</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Cocoa-Touch/">Cocoa Touch</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Objective-C/">Objective-C</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Project-Design/">Project Design</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/Unit-Tests/">Unit Tests</a><span class="category-list-count">1</span></li></ul></li></ul>
-        </div>
-    </div>
-
-
-            
-                
-    <div class="widget-wrap widget-list">
-        <h3 class="widget-title">archives</h3>
-        <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a><span class="archive-list-count">8</span></li></ul>
-        </div>
-    </div>
-
-
-            
-                
-
-            
-                
-
-            
-                
-    <div class="widget-wrap widget-list">
-        <h3 class="widget-title">links</h3>
-        <div class="widget">
-            <ul>
-                
-                    <li>
-                        <a href="http://www.jianshu.com/users/5ec2077b2e63/latest_articles">冬季的Blog</a>
-                    </li>
-                
-                    <li>
-                        <a href="http://blog.csdn.net/shinancao666">意林的CSDN Blog</a>
-                    </li>
-                
-            </ul>
-        </div>
-    </div>
-
-
-            
-        
-    </div>
-</aside>
-                </div>
-            </div>
-        </div>
-        <footer id="footer">
-    <div class="container">
-        <div class="container-inner">
-            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
-            <div class="credit">
-                <h1 class="logo-wrap">
-                    <a href="/" class="logo"></a>
-                </h1>
-                <p>&copy; 2017 Zhang Nan</p>
-                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
-            </div>
-        </div>
-    </div>
-</footer>
-        
-    
-    <script>
-    var disqus_shortname = 'shinancao';
-    
-    
-    var disqus_url = 'http://shinancao.github.io/2017/05/11/iOS-Event-Handling/';
-    
-    (function() {
-    var dsq = document.createElement('script');
-    dsq.type = 'text/javascript';
-    dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-    </script>
 
 
 
-    
-        <script src="/vendor/fancybox/jquery.fancybox.pack.js"></script>
-    
-
-    
-        <script src="/vendor/scrollLoading/jquery.scrollLoading.js"></script>
-        <script src="/vendor/scrollLoading/main.js"></script>
-    
 
 
-<!-- Custom Scripts -->
-<script src="/js/main.js"></script>
 
-    </div>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
 </body>
 </html>
