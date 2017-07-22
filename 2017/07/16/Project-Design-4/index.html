@@ -95,7 +95,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="CocoaPods,Carthage,github,开源," />
+  <meta name="keywords" content="github,开源,CocoaPods,Carthage," />
 
 
 
@@ -477,13 +477,13 @@
       
         <div class="post-tags">
           
-            <a href="/tags/CocoaPods/" rel="tag"># CocoaPods</a>
-          
-            <a href="/tags/Carthage/" rel="tag"># Carthage</a>
-          
             <a href="/tags/github/" rel="tag"># github</a>
           
             <a href="/tags/开源/" rel="tag"># 开源</a>
+          
+            <a href="/tags/CocoaPods/" rel="tag"># CocoaPods</a>
+          
+            <a href="/tags/Carthage/" rel="tag"># Carthage</a>
           
         </div>
       
@@ -529,6 +529,8 @@
 
           
   <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
     
   </div>
 
@@ -588,7 +590,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-count">12</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -599,7 +601,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">35</span>
+                <span class="site-state-item-count">33</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -827,6 +829,27 @@
 
 
 
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: '76f0fccaff77fbf5725c',
+				client_secret: '27273b3c93f76c63840c65a0f0b37cb60e3a8c17'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
 
 
   

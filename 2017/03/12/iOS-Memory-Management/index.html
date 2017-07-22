@@ -616,6 +616,8 @@
           
   <div class="comments" id="comments">
     
+      <div id="gitment_container"></div>
+    
   </div>
 
 
@@ -674,7 +676,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-count">12</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -685,7 +687,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">35</span>
+                <span class="site-state-item-count">33</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -913,6 +915,27 @@
 
 
 
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: '76f0fccaff77fbf5725c',
+				client_secret: '27273b3c93f76c63840c65a0f0b37cb60e3a8c17'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
 
 
   
