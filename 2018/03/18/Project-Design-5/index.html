@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS,MVVM,RAC,代码规范," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="工作中经常会听到这样的声音，“时间赶，先实现了再说，后面找时间再慢慢优化”。扪心自问吧，一个版本开发结束后，除了要改bug，你有多少次回头再去看写过的代码，可能早忘了你要优化什么了。就算你有心要优化，你还要去争取测试资源，如果不是一个部门的就更有难度了。再者，如果实现功能的过程中不注重细节和设计，只图快，那么到了测试阶段发现问题，或者后面的版本需求变动，改起来同样耗时多，还有可能因为缝缝补补让代码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何写出牵一发而动全身的代码">
+<meta property="og:url" content="http://shinancao.github.io/2018/03/18/Project-Design-5/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="工作中经常会听到这样的声音，“时间赶，先实现了再说，后面找时间再慢慢优化”。扪心自问吧，一个版本开发结束后，除了要改bug，你有多少次回头再去看写过的代码，可能早忘了你要优化什么了。就算你有心要优化，你还要去争取测试资源，如果不是一个部门的就更有难度了。再者，如果实现功能的过程中不注重细节和设计，只图快，那么到了测试阶段发现问题，或者后面的版本需求变动，改起来同样耗时多，还有可能因为缝缝补补让代码">
+<meta property="og:updated_time" content="2018-03-30T14:04:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何写出牵一发而动全身的代码">
+<meta name="twitter:description" content="工作中经常会听到这样的声音，“时间赶，先实现了再说，后面找时间再慢慢优化”。扪心自问吧，一个版本开发结束后，除了要改bug，你有多少次回头再去看写过的代码，可能早忘了你要优化什么了。就算你有心要优化，你还要去争取测试资源，如果不是一个部门的就更有难度了。再者，如果实现功能的过程中不注重细节和设计，只图快，那么到了测试阶段发现问题，或者后面的版本需求变动，改起来同样耗时多，还有可能因为缝缝补补让代码">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2018/03/18/Project-Design-5/"/>
+
+
+
+
+
+  <title>如何写出牵一发而动全身的代码 | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2018/03/18/Project-Design-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">如何写出牵一发而动全身的代码</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-18T21:01:19+08:00">
+                2018-03-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/Project-Design/" itemprop="url" rel="index">
+                    <span itemprop="name">Project Design</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>工作中经常会听到这样的声音，“时间赶，先实现了再说，后面找时间再慢慢优化”。扪心自问吧，一个版本开发结束后，除了要改bug，你有多少次回头再去看写过的代码，可能早忘了你要优化什么了。就算你有心要优化，你还要去争取测试资源，如果不是一个部门的就更有难度了。再者，如果实现功能的过程中不注重细节和设计，只图快，那么到了测试阶段发现问题，或者后面的版本需求变动，改起来同样耗时多，还有可能因为缝缝补补让代码变得更加糟糕。唉，小伙伴们如果有似曾相识的经历，欢迎文末留言补充。</p>
+<a id="more"></a>
+<h2 id="什么都放在ViewModel里，反正是MVVM"><a href="#什么都放在ViewModel里，反正是MVVM" class="headerlink" title="什么都放在ViewModel里，反正是MVVM"></a>什么都放在ViewModel里，反正是MVVM</h2><p>对于MVVM方式来构建代码，我们通常会封装一个<code>ModuleViewModel</code>，然后由它拉取数据，保存数据源，生成cell对应的viewModel，<strong>这里要说的被膨胀的viewModel就是ModuleViewModel</strong>。它要去调用接口、按照业务逻辑组装数据、生成cellViewModel、返回渲染tableView需要的东西，然后它里面可能又被接着放点击事件的跳转、分享逻辑、甚至是埋点相关的……因为它离数据源是最近的，所以把东西放在这里，处理起来是最方便的。但是这个viewModel也就变得越来越臃肿，非常难维护，更不要说可测试性和可复用性了。</p>
+<p>给viewController瘦身没错，那也不能把所有东西都转移到<code>ModuleviewModel</code>中，或其他某个地方。所以要怎么做呢？我建议的做法是<strong>分离、封装</strong>，把一类事件的处理从viewModel或viewController中分离出去，如果跟某个业务相关的就封装成一个helper，如果是所有业务可以通用的就封装成一个manager。最终达到的目的就是让viewMoodel或viewController成为一个调度中心。</p>
+<p>保存数据源的地方，在实现功能的过程中，如果不多加思考，代码量很容易就变得越来越庞大。这样的代码几乎就是一次性的，后面的人在接手时，为了改一个小地方，要把前前后后所有的逻辑都缕清楚，然后改完了还怕牵扯到什么其他的功能。</p>
+<h2 id="与具体的DataModel相关的逻辑，都散落在外面"><a href="#与具体的DataModel相关的逻辑，都散落在外面" class="headerlink" title="与具体的DataModel相关的逻辑，都散落在外面"></a>与具体的DataModel相关的逻辑，都散落在外面</h2><p>再来说一下用来刷新某一块view的viewModel，比如<code>cellViewModel</code>。它不是简单的数据结构呀，它里面也可以放方法！它的职责其实是把从服务器拿回来的数据，转换成UI所需要的。所以这个处理过程不要放在生成它的地方，也不要放在view的<code>updateUI</code>中。比如从服务器拉取到的是商品的状态，然后根据商品状态button展示不同的title。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//写法一 处理过程放在UI中</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">XXCellViewModel</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) kGoodsState state;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">XXCell</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)updateUI:(X<span class="built_in">XCellViewModel</span> *)viewModel &#123;</span><br><span class="line">	swith(viewModel.state) &#123;</span><br><span class="line">	<span class="keyword">case</span> kGoodsStateBuy:</span><br><span class="line">		[<span class="keyword">self</span>.btn setTitle:<span class="string">@"购买"</span> forState:<span class="built_in">UIControlStateNormal</span>];</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> kGoodsStateCollect:</span><br><span class="line">		[<span class="keyword">self</span>.btn setTitle:<span class="string">@"收藏"</span> forState:<span class="built_in">UIControlStateNormal</span>];</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//写法二 处理过程放在生成cellViewModel的地方</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">XXPageViewModel</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)transformServerModel:(ServerModel *)serverModel &#123;</span><br><span class="line">	X<span class="built_in">XCellViewModel</span> *cellModel = [[X<span class="built_in">XCellViewModel</span> alloc] init];</span><br><span class="line">	swith(serverModel.state) &#123;</span><br><span class="line">	<span class="keyword">case</span> kGoodsStateBuy:</span><br><span class="line">		cellModel.btnTitle = <span class="string">@"购买"</span>;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> kGoodsStateCollect:</span><br><span class="line">		cellModel.btnTitle = <span class="string">@"收藏"</span>;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//写法三 处理过程放在UI对应的viewModel中</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">XXCellViewModel</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *btnTitle;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">XXCellViewModel</span></span></span><br><span class="line">- (instancetype)initWithServerModel:(ServerModel *)serverModel &#123;</span><br><span class="line">	swith(serverModel.state) &#123;</span><br><span class="line">	<span class="keyword">case</span> kGoodsStateBuy:</span><br><span class="line">		_btnTitle = <span class="string">@"购买"</span>;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> kGoodsStateCollect:</span><br><span class="line">		_btnTitle = <span class="string">@"收藏"</span>;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	...</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//如果处理过程比较耗时，也可以用懒加载，重写get方法</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">XXCell</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)updateUI:(X<span class="built_in">XCellViewModel</span> *)viewModel &#123;</span><br><span class="line">	[<span class="keyword">self</span>.btn setTitle:viewModel.btnTitle forState:<span class="built_in">UIControlStateNormal</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>显然第三种写法，是最好维护的，也是最好测试的。cellViewModel要为UI展示做好准备，而这个处理过程最好封装在其内部。</p>
+<h2 id="一个方法里处理不止一件事"><a href="#一个方法里处理不止一件事" class="headerlink" title="一个方法里处理不止一件事"></a>一个方法里处理不止一件事</h2><p>如果你想让你的代码只有你一个人能搞懂，那这是个极好的技巧，这么干，说不定有一天你自己都不明白了。在一个方法里处理不止一件事，我总结大致有两种情况，一种是几件事有一个共同的处理逻辑，于是放在了一个方法里，把不同的部分用if else区分。一种情况是你处理着某个逻辑呢，正好顺便把其他的事情也一起干了，不知不觉就干了几件事。</p>
+<figure class="highlight fsharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//第一种情况</span></span><br><span class="line">- (<span class="keyword">void</span>)doSomethingWithType:(SomeType)<span class="class"><span class="keyword">type</span> &#123;</span></span><br><span class="line">	NSString *str = <span class="string">@""</span>;</span><br><span class="line">	<span class="keyword">if</span> (<span class="class"><span class="keyword">type</span> </span>== SomeType1) &#123;</span><br><span class="line">		str = <span class="string">@"123"</span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="class"><span class="keyword">type</span> </span>== SomeType2) &#123;</span><br><span class="line">		str = <span class="string">@"456"</span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//use `str` to do the common things</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//第二种情况，比如获取缓存数据</span></span><br><span class="line">- (NSArray *)getCachedData &#123;</span><br><span class="line">	<span class="keyword">if</span> (currentUserId == cachedUserId) &#123;</span><br><span class="line">		<span class="keyword">return</span> cachedData;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		[self clearCachedData];</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>针对第一种情况，可以将共同的部分封装成一个方法，留出参数让调用者去传。不同的情况封装成不同的有针对性的方法，然后使用时，在各自情况处调用各自的方法。不要嫌麻烦，你应该尽可能减少if else的出现。</p>
+<p>对于第二种情况，正如你的方法名一样，它是要干什么的就只干什么，不要偷偷的又做了其他事情。像上面例子中的，如果要清除之前登录过的用户的数据，可以选择其他时机处理，比如登录之后，或者初始化时比对一下。如果非要做两件事，那要把方法名取好，以免误导调用者。</p>
+<h2 id="方法用NSDictionary包装不同的参数"><a href="#方法用NSDictionary包装不同的参数" class="headerlink" title="方法用NSDictionary包装不同的参数"></a>方法用NSDictionary包装不同的参数</h2><p>这也是一种非常容易把人搞的一头雾水的办法，你的dictionary里放的什么，如果没有注释，不看方法实现过程，别人根本猜不到。用代码来展示一下这种情况吧.</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)<span class="string">doSomethingWithDict:</span>(NSDictionary *)dict &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> ([dict[@<span class="string">"type"</span>] <span class="string">isEqualToString:</span>@<span class="string">"1"</span>]) &#123;</span><br><span class="line">		NSString *param1 = dict[@<span class="string">"param1"</span>];</span><br><span class="line">		<span class="comment">//use param1 to do something here</span></span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> ([dict[@<span class="string">"type"</span>] <span class="string">isEqualToString:</span>@<span class="string">"1"</span>]) &#123;</span><br><span class="line">		NSString *param2 = dict[@<span class="string">"param2"</span>];</span><br><span class="line">		<span class="comment">//use param2 to do another thing here</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		....</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// do the some common things</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种情况其实也可以像上面提到的第一种情况那样，将该方法进行拆分，如果觉得实在没必要或者只能这样做，也请把方法的参数都有啥一一在方法定义中列清楚，有type时，用enum定义好。</p>
+<h2 id="弄一个魔法全局变量，在几个方法中改变其值"><a href="#弄一个魔法全局变量，在几个方法中改变其值" class="headerlink" title="弄一个魔法全局变量，在几个方法中改变其值"></a>弄一个魔法全局变量，在几个方法中改变其值</h2><p>如果是一个全局的BOOL变量，为了做某种情况的标识，在几个方法中改变其值，是可以理解的。但是如果弄一个变量用来统计计数，你还在好几个方法中去改变其值就比较糟糕了。这让别人看你代码时会很蒙，都没办法预料到你在哪还会改变它的值。这些方法变得不够纯粹，如果不小心被调用了多次，那伴随着这个魔法值也有可能被计算错。</p>
+<p>如果发生了这种情况，请自检一下整体解决问题的思路是否合理，还能不能通过其他手段来得到这个统计值，以及这个值存在的必要性。</p>
+<h2 id="不管界面由几部分数据源组成，都只用一个Section"><a href="#不管界面由几部分数据源组成，都只用一个Section" class="headerlink" title="不管界面由几部分数据源组成，都只用一个Section"></a>不管界面由几部分数据源组成，都只用一个Section</h2><p>可以有100种方法，把设计稿上的样式开发出来，但我们仍然要去思考其最优解。项目中常用到的就是<code>tableView</code>和<code>collectionView</code>，如果你不管界面是由几部分数据源组成的，都只用一个section去做，有时往往会把事情变得很复杂。</p>
+<ul>
+<li>可能要把本可以作为<code>sectionHeader</code>和<code>sectionFooter</code>的部分包装成cell，而这些cell可能根本不需要数据来刷新，展示的内容是死的。</li>
+<li>两个部分的model不同，所以<code>dataSourceArray</code>只能存id类型，再用的时候要一直去if else来判断。</li>
+<li>由于数据源来自不同的接口，为了保证<code>dataSourceArray</code>中的顺序，要把不同的接口有顺序的去请求，但是如果是分开的section，就可以回来一部分数据刷新一部分界面了。</li>
+<li>在做曝光买点时，涉及到一些计算，由于不知道每一块数据在<code>dataSourceArray</code>什么位置，又增加了计算的复杂度。</li>
+<li>…..</li>
+</ul>
+<p>如果界面是由几部分不同数据源组成的，多数情况下还是用不同的<code>dataSourceArray</code>来存储，界面用不同的section去做。</p>
+<h2 id="为了方便调用，随意引用"><a href="#为了方便调用，随意引用" class="headerlink" title="为了方便调用，随意引用"></a>为了方便调用，随意引用</h2><p><strong>尽量去保证数据是单向流动的</strong>，引用也应该尽量保证是单向的，如果为了方便调用，随意引用，很可能造成你中有我我中有你的循环import。比如在moduleviewModel中去引用viewController或者在cellViewModel中去引用cell，那一定是有办法可以消除这种情况的。一旦互相引用，两者强绑定在一起，那都没办法去复用了。</p>
+<h2 id="滥用RACCommand"><a href="#滥用RACCommand" class="headerlink" title="滥用RACCommand"></a>滥用RACCommand</h2><p>我觉得RAC里最妙的就是<code>Signal</code>，它让我们省去了写<code>delegate</code>、<code>block</code>、<code>notification</code>的一堆代码。当然了，它还有很多像<code>merge</code>、<code>combine</code>这样的操作。所以RAC范畴内的东西，几乎都会和<code>Signal</code>有关，包括<code>RACCommand</code>。咱们先来看一个<code>RACCommand</code>正常来使用的姿势，然后阐明这里所说的“滥用RACCommand”。</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">self.loginCommand = [[RACCommand alloc] initWithSignalBlock:^(id sender) &#123;</span><br><span class="line">   return [client logIn]<span class="comment">;</span></span><br><span class="line">&#125;]<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">[self.loginCommand.executionSignals <span class="keyword">subscribeNext:^(RACSignal </span>*loginSignal) &#123;</span><br><span class="line">    [loginSignal <span class="keyword">subscribeCompleted:^&#123;</span><br><span class="line"></span>        NSLog(@<span class="string">"Logged in successfully!"</span>)<span class="comment">;</span></span><br><span class="line">    &#125;]<span class="comment">;</span></span><br><span class="line">&#125;]<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">self.loginButton.rac_command = self.loginCommand<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p><code>RACCommand</code>用一个<code>Signal</code>来对其初始化，在调用<code>execute</code>时也返回了<code>Signal</code>，可以对其监听执行的结果，然后把这个command跟button绑定在一起，当button被点击时就会去执行这个command。当然了，也可以手动调用<code>RACCommand</code>。可是你如果写成了下面这样……</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">XXViewModel</span>()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) RACCommand *subscribeCommand;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">XXViewModel</span></span></span><br><span class="line">- (instancetype)init &#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="keyword">self</span> = [<span class="keyword">super</span> init]) &#123;</span><br><span class="line">		_subscribeCommand = [[RACCommand alloc] initWithSignalBlock:^(<span class="keyword">id</span> sender) &#123;</span><br><span class="line">			[<span class="keyword">self</span> doSubscribe];</span><br><span class="line">   			<span class="keyword">return</span> [RACSignal empty];</span><br><span class="line">		&#125;];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>) doSubscribe &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//在调用的地方</span></span><br><span class="line">[viewModel.subscribeCommand excute:<span class="literal">nil</span>];</span><br></pre></td></tr></table></figure>
+<p>看出问题了吗？这样用，跟我直接调用<code>[viewModel doSubscribe]</code>有什么区别！在viewModel中把要执行的方法都这样用<code>RACCommand</code>包装一下，看似用RAC，实际它的一点简便性都没用到。</p>
+<h2 id="几点不成熟的小建议"><a href="#几点不成熟的小建议" class="headerlink" title="几点不成熟的小建议"></a>几点不成熟的小建议</h2><p>我们很多人在工作中可能更多的时候都是在做业务功能，业务一复杂，代码的复杂度也上来了，而且业务还是经常容易变更的，所以我们要尽可能的把代码写的清晰明了。几点不成熟的小建议吧：</p>
+<ul>
+<li>从整体中<strong>分离</strong>出去，把一类的东西进行<strong>封装</strong>，大到层与层之间，小到一个方法的实现。还是那句老话，高内聚、低耦合。</li>
+<li>避免if else的层级嵌套，一旦多了，就说明有可能你在一个方法块中处理了很多事情。</li>
+<li>不要怕多写几个类，多写几个方法，其实就按照逻辑本身的样子一点点往下走就行。</li>
+<li>不要去copy、paste，说出来都知道，可就是控制不住自己的手呢。</li>
+</ul>
+<p>最近在看一本叫《股票作手回忆录》的书，里面有这样一个注解：</p>
+<blockquote>
+<p>逆反行为和从众行为一样愚蠢。我们需要的是思考，而不是投票表决。不幸的是，伯特兰罗素对于普通生活的观察又在金融界中神奇地应验了：“大多数人宁愿去死也不愿意去思考。许多人真的这样做了。” ————巴菲特</p>
+</blockquote>
+<p>–End–</p>
+<blockquote>
+<p>转载请注明出处：</p>
+<p>作者：意林</p>
+<p>原文链接：<a href="https://shinancao.cn/2018/03/18/Project-Design-5/" target="_blank" rel="external">https://shinancao.cn/2018/03/18/Project-Design-5/</a></p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+            <a href="/tags/MVVM/" rel="tag"># MVVM</a>
+          
+            <a href="/tags/RAC/" rel="tag"># RAC</a>
+          
+            <a href="/tags/代码规范/" rel="tag"># 代码规范</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/03/Life-2012/" rel="next" title="竟然在QQ空间的日志中发现了12、13年的年终总结">
+                <i class="fa fa-chevron-left"></i> 竟然在QQ空间的日志中发现了12、13年的年终总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/29/Script-ModelMaker/" rel="prev" title="SPM开发的一个命令行工具——ModelMaker">
+                SPM开发的一个命令行工具——ModelMaker <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="意林" />
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">39</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么都放在ViewModel里，反正是MVVM"><span class="nav-number">1.</span> <span class="nav-text">什么都放在ViewModel里，反正是MVVM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#与具体的DataModel相关的逻辑，都散落在外面"><span class="nav-number">2.</span> <span class="nav-text">与具体的DataModel相关的逻辑，都散落在外面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个方法里处理不止一件事"><span class="nav-number">3.</span> <span class="nav-text">一个方法里处理不止一件事</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法用NSDictionary包装不同的参数"><span class="nav-number">4.</span> <span class="nav-text">方法用NSDictionary包装不同的参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#弄一个魔法全局变量，在几个方法中改变其值"><span class="nav-number">5.</span> <span class="nav-text">弄一个魔法全局变量，在几个方法中改变其值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不管界面由几部分数据源组成，都只用一个Section"><span class="nav-number">6.</span> <span class="nav-text">不管界面由几部分数据源组成，都只用一个Section</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为了方便调用，随意引用"><span class="nav-number">7.</span> <span class="nav-text">为了方便调用，随意引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#滥用RACCommand"><span class="nav-number">8.</span> <span class="nav-text">滥用RACCommand</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#几点不成熟的小建议"><span class="nav-number">9.</span> <span class="nav-text">几点不成熟的小建议</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
