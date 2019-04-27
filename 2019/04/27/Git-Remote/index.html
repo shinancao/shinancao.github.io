@@ -131,7 +131,7 @@
 <meta property="og:image" content="http://shinancao.github.io/images/checkout_2.png">
 <meta property="og:image" content="http://shinancao.github.io/images/fetch_1.png">
 <meta property="og:image" content="http://shinancao.github.io/images/fetch_2.png">
-<meta property="og:updated_time" content="2019-04-27T14:18:13.204Z">
+<meta property="og:updated_time" content="2019-04-27T14:24:48.104Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="说一说git的几个命令remote、checkout、fetch、pull">
 <meta name="twitter:description" content="我们从服务器上clone下来项目后，在项目的根目录都会自动生成一个.git目录，这个目录的结构如下：
@@ -413,19 +413,19 @@
 <a id="more"></a>
 <figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[core]</span><br><span class="line">	repositoryformatversion = <span class="number">0</span></span><br><span class="line">	filemode = <span class="literal">true</span></span><br><span class="line">	bare = <span class="literal">false</span></span><br><span class="line">	logallrefupdates = <span class="literal">true</span></span><br><span class="line">	ignorecase = <span class="literal">true</span></span><br><span class="line">	precomposeunicode = <span class="literal">true</span></span><br><span class="line">[remote <span class="string">"origin"</span>]</span><br><span class="line">	url = git@github.com:shinancao/Xib2ObjC.git</span><br><span class="line">	fetch = +refs<span class="regexp">/heads/</span>*:refs<span class="regexp">/remotes/origin/</span>*</span><br><span class="line">[remote <span class="string">"github"</span>]  <span class="regexp">//gi</span>thub是我给这个remote的命名</span><br><span class="line">	url = git@github.com:shinancao/Xib2ObjC.git</span><br><span class="line">	fetch = +refs<span class="regexp">/heads/</span>*:refs<span class="regexp">/remotes/github/</span>*</span><br><span class="line">[branch <span class="string">"master"</span>]</span><br><span class="line">	remote = origin</span><br><span class="line">	merge = refs/heads/master</span><br><span class="line">[user]</span><br><span class="line">	email = shinancao666@<span class="number">163.</span>com</span><br><span class="line">	name = shinancao</span><br></pre></td></tr></table></figure>
 <p>当然，<code>config</code>还可以配置其他项。</p>
-<p>再说一下<code>refs</code>文件见：<br><img src="/images/refs.png"></p>
+<p>再说一下<code>refs</code>文件夹：<br><img src="/images/refs.png"></p>
 <p><code>refs/remotes</code>存放着当前各remote在本地的，以分支命名的文件，文件中记录着拉取时最近一次的commit id，使用<code>git branch -r</code>查看的就是它下面的所有分支。</p>
 <p><img src="/images/refs_1.png"></p>
 <p><code>refs/heads</code>存放着本地已创建的分支，使用<code>git branch</code>查看的就是它下面的所有分支：</p>
 <p><img src="/images/refs_2.png"></p>
-<p>其实大部分git命令都是操作<code>.git</code>文件夹下的文件，接下来看一下<code>remote</code>、<code>checkout</code>、<code>fetch</code>、<code>pull</code>这几个命令到底改变了什么。</p>
+<p>其实大部分git命令的结果到会反馈到<code>.git</code>中相应文件的改变，那么接下来看一下<code>remote</code>、<code>checkout</code>、<code>fetch</code>、<code>pull</code>这几个命令到底改变了什么。</p>
 <h3 id="remote"><a href="#remote" class="headerlink" title="remote"></a>remote</h3><p><code>remote</code>修改的就是<code>config</code>中的<code>[remote &quot;xxx&quot;]</code>部分，添加一个叫<code>testRemote</code>的remote：</p>
 <p><img src="/images/remote.png"></p>
 <p>此时在<code>config</code>最下面多了几行，<code>git remote -v</code>列出的也是<code>config</code>中记录的所有remote：</p>
 <p><img src="/images/remote_1.png"></p>
 <h3 id="checkout"><a href="#checkout" class="headerlink" title="checkout"></a>checkout</h3><p>在<code>testRemote</code>对应的远程仓库<code>git@github.com:shinancao/Xib2ObjC.git</code>有两个分支<code>master</code>和<code>test</code>，现在要基于<code>master</code>创建一个新分支<code>test1</code>：</p>
 <p><img src="/images/checkout_1.png"></p>
-<p>报错了，提示没有<code>testRemote/master</code>这个分支。实际上执行git checkout后，会在<code>refs/</code>下找<code>testRemote</code>文件夹，然后再找<code>master</code>文件，找不到就不会报上面的错误。在<code>checkout</code>之前可以执行<code>git branch -a</code>查看一下<code>refs/remotes</code>和<code>refs/heads</code>下所有的分支，基于列出的分支创建新分支就不会有问题了。</p>
+<p>报错了，提示没有<code>testRemote/master</code>这个分支。实际上执行<code>git checkout</code>后，会在<code>refs/</code>下找<code>testRemote</code>文件夹，然后再找<code>master</code>文件，找不到就会报上面的错误。在<code>checkout</code>之前可以执行<code>git branch -a</code>查看一下<code>refs/remotes</code>和<code>refs/heads</code>下所有的分支，基于列出的分支创建新分支就不会有问题了。</p>
 <p>如果直接<code>checkout</code>一个分支名，会先查找本地是否有该分支，如果没有就会查找<code>refs/remotes</code>下是否有匹配的分支：</p>
 <p><img src="/images/checkout_2.png"></p>
 <p>有一点很重要，<strong>checkout是不会真的从远程服务器拉取下来什么的！</strong>所以像刚刚创建的<code>test</code>分支，它当前最新的代码取决于<code>refs/remotes/github/test</code>记录的commit id，并不能保证就是服务器上最新的代码。因为可能它很早之前就被拉取了，现在远程该分支又有了新的提交。</p>
