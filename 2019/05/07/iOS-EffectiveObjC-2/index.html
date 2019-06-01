@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Objective-C,编程规范,读书笔记," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="这是《Effective Objective-C 2.0》英文版的Chapter2和Chapter4的笔记
+
+理解Property
+Property能够带来以下几点好处：
+
+
+声明Property后，编译器会在编译期间自动为你在代码中添加一个以下划线为前缀的实例变量，和该实例变量的getter/setter方法。这样在外部调用时，就可以通过getter/setter来读和写对象的实例变量了，而不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Effective Objective-C 2.0》——Object, Protocol and Categories  ">
+<meta property="og:url" content="http://shinancao.github.io/2019/05/07/iOS-EffectiveObjC-2/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="这是《Effective Objective-C 2.0》英文版的Chapter2和Chapter4的笔记
+
+理解Property
+Property能够带来以下几点好处：
+
+
+声明Property后，编译器会在编译期间自动为你在代码中添加一个以下划线为前缀的实例变量，和该实例变量的getter/setter方法。这样在外部调用时，就可以通过getter/setter来读和写对象的实例变量了，而不">
+<meta property="og:updated_time" content="2019-06-01T10:40:31.026Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Effective Objective-C 2.0》——Object, Protocol and Categories  ">
+<meta name="twitter:description" content="这是《Effective Objective-C 2.0》英文版的Chapter2和Chapter4的笔记
+
+理解Property
+Property能够带来以下几点好处：
+
+
+声明Property后，编译器会在编译期间自动为你在代码中添加一个以下划线为前缀的实例变量，和该实例变量的getter/setter方法。这样在外部调用时，就可以通过getter/setter来读和写对象的实例变量了，而不">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2019/05/07/iOS-EffectiveObjC-2/"/>
+
+
+
+
+
+  <title>《Effective Objective-C 2.0》——Object, Protocol and Categories   | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/05/07/iOS-EffectiveObjC-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">《Effective Objective-C 2.0》——Object, Protocol and Categories  </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-07T06:40:32+08:00">
+                2019-05-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/Effective-Objective-C/" itemprop="url" rel="index">
+                    <span itemprop="name">Effective Objective-C</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>这是《Effective Objective-C 2.0》英文版的Chapter2和Chapter4的笔记</p>
+</blockquote>
+<h3 id="理解Property"><a href="#理解Property" class="headerlink" title="理解Property"></a>理解Property</h3><ul>
+<li>Property能够带来以下几点好处：</li>
+</ul>
+<ol>
+<li>声明Property后，编译器会在编译期间自动为你在代码中添加一个以下划线为前缀的实例变量，和该实例变量的getter/setter方法。这样在外部调用时，就可以通过getter/setter来读和写对象的实例变量了，而不是直接使用实例变量本身。</li>
+<li>外部可以用<code>.</code>的形式使用一个Property，这样比较接近大多数编程语言的调用风格，编译器会自动把它转换成中括号调用的形式。</li>
+</ol>
+<a id="more"></a>
+<ul>
+<li>用<code>@synthesize</code>告诉编译器给实例变量起一个其他的名字，但最好就用默认的。</li>
+</ul>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">@implementation</span> EOCPerson</span><br><span class="line"><span class="variable">@synthesize</span> firstName = _myFirstName;</span><br><span class="line"><span class="variable">@synthesize</span> lastName = _myLastName;</span><br><span class="line"><span class="variable">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>用<code>@dynamic</code>告诉编译器不用自动生成实例变量的getter/setter方法，编译器认为程序员会自己实现这两个方法，所以其他地方还是可以调用的，编译期间不会报错，但在运行时如果没有，就会报错了。</li>
+</ul>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">@implementation</span> EOCPerson</span><br><span class="line"><span class="variable">@synthesize</span> firstName, lastName;</span><br><span class="line"><span class="variable">@end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>nonatomic</code>和<code>atomic</code>说的是对实例变量的读写是否为<code>原子操作</code>，默认情况下是<code>atomic</code>，即<code>原子操作</code>。<code>原子操作</code>是一个线程在对变量读/写时，其他线程也想对该变量读/写则必须等待，线程A正在进行setter，线程B想要setter或getter都必须等待，保证变量不会被损坏。指定<code>atomic</code>只能保证在读/写的执行过程是线程安全的，在使用的变量时就不能保证是线程安全的了。</p>
+</li>
+<li><p><code>atomic</code>使用了锁来保证原子操作，所以比较耗性能，所以在声明Property时最好指定为<code>nonatomic</code>。</p>
+</li>
+</ul>
+<p>关于<code>atomic</code>的内部实现可以看这篇文章：<a href="https://objccn.io/issue-2-4/" target="_blank" rel="external">线程安全类的设计</a></p>
+<p>关于<code>atomic</code>线程安全与不安全可以看这篇文章：<a href="http://mrpeak.cn/blog/ios-thread-safety/" target="_blank" rel="external">iOS多线程到底不安全在哪里？</a></p>
+<ul>
+<li><p>在Property中指定的内存管理方式，在类中的任何地方给该实例变量赋值时，也同样要遵循。尤其是在initializer方法中，不能通过Property的形式调用实例变量，只能直接用内部的实例变量，所以在赋值时要注意。</p>
+</li>
+<li><p>总结在一起，一个比较好的类的定义如下：</p>
+</li>
+</ul>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">EOCPerson</span> : <span class="title">NSObject</span>&lt;<span class="title">NSCopying</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义对象的不可变性</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>, <span class="keyword">readonly</span>) <span class="built_in">NSString</span> *firstName;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>, <span class="keyword">readonly</span>) <span class="built_in">NSString</span> *lastName;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) <span class="built_in">NSSet</span> *friends;</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithFirstName:(<span class="built_in">NSString</span> *)firstName</span><br><span class="line">                      andLastName:(<span class="built_in">NSString</span> *)lastName;</span><br><span class="line">- (<span class="keyword">void</span>)addFriend:(EOCPerson *)person;</span><br><span class="line">- (<span class="keyword">void</span>)removeFriend:(EOCPerson *)person;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">EOCPerson</span>()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>, <span class="keyword">readwrite</span>) <span class="built_in">NSString</span> *firstName;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>, <span class="keyword">readwrite</span>) <span class="built_in">NSString</span> *lastName;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">EOCPerson</span> </span>&#123;</span><br><span class="line">    <span class="built_in">NSMutableSet</span> *_internalFriends;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSSet</span> *)friends &#123;</span><br><span class="line">    <span class="keyword">return</span> [_internalFriends <span class="keyword">copy</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)addFriend:(EOCPerson *)person &#123;</span><br><span class="line">    [_internalFriends addObject:person];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)removeFriend:(EOCPerson *)person &#123;</span><br><span class="line">    [_internalFriends removeObject:person];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithFirstName:(<span class="built_in">NSString</span> *)firstName andLastName:(<span class="built_in">NSString</span> *)lastName &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span> = [<span class="keyword">super</span> init]) &#123;</span><br><span class="line">    	 <span class="comment">// 采用property中指定的内存管理方式</span></span><br><span class="line">        _firstName = [firstName <span class="keyword">copy</span>];</span><br><span class="line">        _lastName = [lastName <span class="keyword">copy</span>];</span><br><span class="line">        _internalFriends = [[<span class="built_in">NSMutableSet</span> alloc] init];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)description &#123;</span><br><span class="line">    <span class="keyword">return</span> [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%@"</span>,</span><br><span class="line">            @&#123;<span class="string">@"firstName"</span>: _firstName,</span><br><span class="line">              <span class="string">@"lastName"</span>: _lastName</span><br><span class="line">              &#125;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)debugDescription &#123;</span><br><span class="line">    <span class="keyword">return</span> [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"&lt;%@: %p, %@&gt;"</span>,</span><br><span class="line">            [<span class="keyword">self</span> class],</span><br><span class="line">            <span class="keyword">self</span>,</span><br><span class="line">            @&#123;<span class="string">@"firstName"</span>: _firstName,</span><br><span class="line">              <span class="string">@"lastName"</span>: _lastName</span><br><span class="line">              &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="在内部直接读取实例变量"><a href="#在内部直接读取实例变量" class="headerlink" title="在内部直接读取实例变量"></a>在内部直接读取实例变量</h3><ul>
+<li>在类的内部直接读取实例变量，而不是通过property来获得，这样读取效率会高些。但是对于懒初始化的变量，还是要用getter方法。</li>
+<li>在类的内部使用property提供的setter方法给变量赋值，这样可以统一对变量的控制。</li>
+<li>但是在<code>initializers</code>和<code>dealloc</code>中，要直接读和写实例变量。因为子类可能重写setter方法做一些针对该子类的特殊处理，如果父类在初始化方法中用了setter，就会污染了父类。</li>
+</ul>
+<h3 id="理解对象的相等性"><a href="#理解对象的相等性" class="headerlink" title="理解对象的相等性"></a>理解对象的相等性</h3><ul>
+<li>判断两个对象是否相等的两个核心方法是<code>isEqual</code>和<code>hash</code>，两个对象相等，那他们的hash值一定相等，但是hash值相等的两个对象，则不一定相等。</li>
+<li>对于<code>hash</code>方法不要对所有对象都返回一样值的，这样会降低比较的效率。根据上一条，如果hash值都不相等就可以不用再去调用<code>isEqual</code>比较了。尤其是对于<code>NSSet</code>，为了保证插入对象的唯一性，每次插入对象时都要去遍历已有的对象集合，而set的做法就是用hash作为索引，如果所有对象的hash值都一样，那就丧失了set的特性。</li>
+</ul>
+<p>关于set内部实现的算法可以参考：<a href="http://ios.jobbole.com/90323/" target="_blank" rel="external">NSArray,NSDictionary,NSSet 当中的算法知识</a></p>
+<ul>
+<li>书中给出的计算hash值的最佳实践：</li>
+</ul>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSUInteger</span>)hash &#123;</span><br><span class="line">    <span class="built_in">NSUInteger</span> firstNameHash = [_firstName hash];</span><br><span class="line">    <span class="built_in">NSUInteger</span> lastNameHash = [_lastName hash];</span><br><span class="line">    <span class="built_in">NSUInteger</span> ageHash = _age;</span><br><span class="line">    <span class="keyword">return</span> firstNameHash ^ lastNameHash ^ ageHash;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="使用Delegate和Data-Source协议进行对象间交流"><a href="#使用Delegate和Data-Source协议进行对象间交流" class="headerlink" title="使用Delegate和Data Source协议进行对象间交流"></a>使用Delegate和Data Source协议进行对象间交流</h3><ul>
+<li>如果要频繁判断一个delegate对象是否实现了某些方法，可以使用bitfield struct缓存判断结果来提高性能。可以将该struct定义在类扩展中：</li>
+</ul>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"EOCNetworkFetcher.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">EOCNetworkFetcher</span>() </span>&#123;</span><br><span class="line">    <span class="keyword">struct</span> &#123;</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> didReceiveData     : <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> didFailWithError   : <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> didUpdateProgressTo: <span class="number">1</span>;</span><br><span class="line">    &#125; _delegateFlags;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">EOCNetworkFetcher</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setDelegate:(<span class="keyword">id</span>&lt;EOCNetworFetcherDelegate&gt;)delegate &#123;</span><br><span class="line">    _delegate = delegate;</span><br><span class="line">    _delegateFlags.didReceiveData = [delegate respondsToSelector:<span class="keyword">@selector</span>(didReceiveData:)];</span><br><span class="line">    _delegateFlags.didFailWithError = [delegate respondsToSelector:<span class="keyword">@selector</span>(didFailWithError:)];</span><br><span class="line">    _delegateFlags.didUpdateProgressTo = [delegate respondsToSelector:<span class="keyword">@selector</span>(didUpdateProgressTo:)];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="用Categories将类中的方法按功能分割"><a href="#用Categories将类中的方法按功能分割" class="headerlink" title="用Categories将类中的方法按功能分割"></a>用Categories将类中的方法按功能分割</h3><ul>
+<li>创建一个叫<code>Private</code>的category类来隐藏私有方法的实现细节，尤其在提供给别人library用时。可以不将该private category导出去，这样调用者是看不见这些私有方法的。</li>
+</ul>
+<h3 id="总是给第三方类的Category加上前缀"><a href="#总是给第三方类的Category加上前缀" class="headerlink" title="总是给第三方类的Category加上前缀"></a>总是给第三方类的Category加上前缀</h3><ul>
+<li>因为Category中的方法会覆盖原有的方法，所以如果不是给自己写的类实现Category，最好在给该Category和其中定义的方法命名时，名字前加上前缀。</li>
+</ul>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSString</span> (<span class="title">ABC_HTTP</span>)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Encode a string with URL encoding</span></span><br><span class="line">- (<span class="built_in">NSString</span> *)abc_urlEncodedString;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Decode a URL encoded string</span></span><br><span class="line">- (<span class="built_in">NSString</span> *)abc_urlDecodedString;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="避免在Categories中使用properties"><a href="#避免在Categories中使用properties" class="headerlink" title="避免在Categories中使用properties"></a>避免在Categories中使用properties</h3><ul>
+<li>应该尽量避免在category中声明properties，因为category不支持给类添加实例变量，所以只声明properties编译器会报错，找不到实例变量的setter和getter方法。</li>
+<li>可以通过associated object在category中声明properties，但是也应尽量避免这样做。因为property中会指明weak/strong等内存管理方式，在用associated object实现setter方法时也要指明变量的内存管理方式，两个必须是一直的。在后续的开发中，如果需要修改property的内存管理方式，而那时你可能已经忘记了该property是这样实现的，在associated object处就没有对应的改，就有可能发生错误。</li>
+<li>最好在category中直接声明实例变量的getter方法，而不要通过property readonly的方式去做。</li>
+</ul>
+<blockquote>
+<p>转载请注明出处：</p>
+<p>作者：意林</p>
+<p>原文链接：<a href="http://www.shinancao.cn/2019/05/07/iOS-EffectiveObjC-2" target="_blank" rel="external">http://www.shinancao.cn/2019/05/07/iOS-EffectiveObjC-2</a><br>–End–</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Objective-C/" rel="tag"># Objective-C</a>
+          
+            <a href="/tags/编程规范/" rel="tag"># 编程规范</a>
+          
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/05/iOS-EffectiveObjC-1/" rel="next" title="《Effective Objective-C 2.0》——Interface and API Design  ">
+                <i class="fa fa-chevron-left"></i> 《Effective Objective-C 2.0》——Interface and API Design  
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="意林" />
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">50</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#理解Property"><span class="nav-number">1.</span> <span class="nav-text">理解Property</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在内部直接读取实例变量"><span class="nav-number">2.</span> <span class="nav-text">在内部直接读取实例变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#理解对象的相等性"><span class="nav-number">3.</span> <span class="nav-text">理解对象的相等性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Delegate和Data-Source协议进行对象间交流"><span class="nav-number">4.</span> <span class="nav-text">使用Delegate和Data Source协议进行对象间交流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用Categories将类中的方法按功能分割"><span class="nav-number">5.</span> <span class="nav-text">用Categories将类中的方法按功能分割</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总是给第三方类的Category加上前缀"><span class="nav-number">6.</span> <span class="nav-text">总是给第三方类的Category加上前缀</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#避免在Categories中使用properties"><span class="nav-number">7.</span> <span class="nav-text">避免在Categories中使用properties</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
