@@ -117,15 +117,15 @@
 <meta property="og:url" content="http://shinancao.github.io/2017/05/11/iOS-Event-Handling/index.html">
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/responder_chain_overview_2x.png">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/144142-3afc2c85792ade41.png">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/WX20170626-142848.png">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/WX20170626-150629.png">
-<meta property="og:updated_time" content="2017-07-22T10:25:20.000Z">
+<meta property="og:image" content="http://shinancao.github.io/images/responder_chain_overview_2x.png">
+<meta property="og:image" content="http://shinancao.github.io/images/144142-3afc2c85792ade41.png">
+<meta property="og:image" content="http://shinancao.github.io/images/WX20170626-142848.png">
+<meta property="og:image" content="http://shinancao.github.io/images/WX20170626-150629.png">
+<meta property="og:updated_time" content="2019-06-30T11:25:17.875Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Touch Event Handling、Responder Chain、Gesture Recognizers">
 <meta name="twitter:description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。">
-<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/responder_chain_overview_2x.png">
+<meta name="twitter:image" content="http://shinancao.github.io/images/responder_chain_overview_2x.png">
 
 
 
@@ -433,7 +433,7 @@
 </ul>
 <p>当然，如果一个对象自己能够处理响应事件，它的next responder可以设置为nil的，不将事件传递出去，比如<code>UIButton</code>、<code>UITextFiled</code>等。</p>
 <p>明确了这些，一个事件的传递过程，最终会由谁来处理基本就明了了，下面这张图来自苹果的官方文档，描述了整个事件传递的过程：</p>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/responder_chain_overview_2x.png" width="400" height="256"></p>
+<p><img src="/images/responder_chain_overview_2x.png" width="400" height="256"></p>
 <p>在重写<code>touchesXXX</code>等方法时，由两种方式可以将事件传递给下一个响应者，一个是调用<code>self.next?.touchesXXX</code>，此时一定能将事件传递出去，一个是调用<code>super.touchesXXX</code>，能不能传递出去，就看你重写的那个控件支不支持将事件传递出去了。</p>
 <p>当然，这个响应链是可以被打破的，我们可以重写一个UIKit中的<code>UIResponder</code>对象，实现它的nextResponder。</p>
 <h4 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h4><p>了解这些在实际开发中有什么帮助呢？有一个关于<code>UIScrollView</code>的例子，假如我们在其中放了一些<code>UITextField</code>，在用户输入完成后，想让用户点击一下空白背景就将键盘消失，就可以利用响应链来巧妙的实现了。因为<code>UIScrollView</code>默认是不会把触摸事件传递出去的，我们可以重写touch的那一系列方法将事件传递出去，然后它的nextResponder的touch方法就可以得到响应了。</p>
@@ -456,7 +456,7 @@ A--- hitTest withEvent ---hitTestView:E
 <li>一旦父view的<code>pointInside</code>返回了false，不会再继续遍历它的子view了。</li>
 <li>在同一个视图层级，先遍历后添加的视图。</li>
 </ul>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/144142-3afc2c85792ade41.png" width="200" height="275"></p>
+<p><img src="/images/144142-3afc2c85792ade41.png" width="200" height="275"></p>
 <h4 id="应用-1"><a href="#应用-1" class="headerlink" title="应用"></a>应用</h4><p>有两个比较常见的场景可以利用到上面的这个寻找过程：</p>
 <ul>
 <li>扩展<code>UIButton</code>的点击区域，有的时候为了视觉效果<code>UIButton</code>并没有那么大，但是为了能更好的响应用户的点击，需要隐形的扩展它的点击区域。</li>
@@ -467,9 +467,9 @@ A--- hitTest withEvent ---hitTestView:E
 </ul>
 <h3 id="UIGestureRecognizer"><a href="#UIGestureRecognizer" class="headerlink" title="UIGestureRecognizer"></a>UIGestureRecognizer</h3><p>每个<code>UIResponder</code>对象都可以重写touch event那一套接口，来监听触摸的动作，那为什么还需要<code>UIGestureRecognizer</code>呢？一般我们会处理到的手势有<code>Tap</code>、<code>Swipe</code>、<code>Pan</code>、<code>LongPress</code>等等，要识别出用户究竟正在进行哪种手势操作，需要在touch event的接口中进行各种计算才判断的出来，这显然在使用时非常麻烦，于是就有了系统为我们封装好的各种手势。<code>UIGestureRecognizer</code>还是造福了广大的开发者。</p>
 <p>那如果即重写了touch event的接口，又添加了<code>UIGestureRecognizer</code>会怎么样呢？</p>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170626-142848.png" width="218" height="30"></p>
+<p><img src="/images/WX20170626-142848.png" width="218" height="30"></p>
 <p>写了个小测试，自定义一个view，重写了touch event的一套接口，然后再添加一个<code>UITapGestureRecognizer</code>，点击一下，发现<code>touchesCancelled</code>被执行了，如果长按，<code>touchesEnded</code>仍然执行了。找到了官方的这段解释：</p>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170626-150629.png" width="380" height="97"></p>
+<p><img src="/images/WX20170626-150629.png" width="380" height="97"></p>
 <p>window会把touch事件先派发给gesture recognizer，如果gesture recognizer识别不出该手势，view会接收到全部的touch事件。如果能识别出该手势，view的其余touch事件就会被取消。此外，<code>UIGestureRecognizer</code>也不会按照上面所说的事件传递链去传递，加在哪个view上就肯定是那个view去响应。</p>
 <h3 id="不能接收触摸事件的情况"><a href="#不能接收触摸事件的情况" class="headerlink" title="不能接收触摸事件的情况"></a>不能接收触摸事件的情况</h3><p>对一个view设置下面任意一种情况时，该view不能接收触摸事件了：</p>
 <ul>

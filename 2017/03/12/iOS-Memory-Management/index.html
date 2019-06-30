@@ -117,14 +117,14 @@
 <meta property="og:url" content="http://shinancao.github.io/2017/03/12/iOS-Memory-Management/index.html">
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="引用计数说到iOS的内存管理方式，相信开发过的人都能多多少少说出来一些，但是我发现它在我的脑子中还是没有一个很清晰的框架，所以花了些时间整理一下。Obj-C使用的是引用计数的方式来管理内存中的对象，对象的引用计数为0时会被销毁，大于0时会还停留在内存中。">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/memory_management_2x.png">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/QQ20170325-124125@2x.png">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/QQ20170325-131018@2x.png">
-<meta property="og:updated_time" content="2017-07-22T10:28:48.000Z">
+<meta property="og:image" content="http://shinancao.github.io/images/memory_management_2x.png">
+<meta property="og:image" content="http://shinancao.github.io/images/QQ20170325-124125@2x.png">
+<meta property="og:image" content="http://shinancao.github.io/images/QQ20170325-131018@2x.png">
+<meta property="og:updated_time" content="2019-06-30T11:24:17.270Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS内存管理小结">
 <meta name="twitter:description" content="引用计数说到iOS的内存管理方式，相信开发过的人都能多多少少说出来一些，但是我发现它在我的脑子中还是没有一个很清晰的框架，所以花了些时间整理一下。Obj-C使用的是引用计数的方式来管理内存中的对象，对象的引用计数为0时会被销毁，大于0时会还停留在内存中。">
-<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/memory_management_2x.png">
+<meta name="twitter:image" content="http://shinancao.github.io/images/memory_management_2x.png">
 
 
 
@@ -397,7 +397,7 @@
         <h3 id="引用计数"><a href="#引用计数" class="headerlink" title="引用计数"></a>引用计数</h3><p>说到iOS的内存管理方式，相信开发过的人都能多多少少说出来一些，但是我发现它在我的脑子中还是没有一个很清晰的框架，所以花了些时间整理一下。Obj-C使用的是引用计数的方式来管理内存中的对象，对象的引用计数为0时会被销毁，大于0时会还停留在内存中。</p>
 <a id="more"></a>
 <p>如官方文档中的图所示：</p>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/memory_management_2x.png" width="330" height="195"></p>
+<p><img src="/images/memory_management_2x.png" width="330" height="195"></p>
 <p>（琢磨了好半天，觉得这张图的表示有点点问题，前面2个圆圈下面的数字表示的是经过上面箭头上的操作后得到的，但是后面的两个release的圆圈下的数字表示的却是当前的retain count，下一步的数字表示的才是上一步的结果，一个图里这样不统一，真的有点让人费解唉(´･_･`)）</p>
 <p>Obj-C提供了两种内存管理方式：</p>
 <ul>
@@ -452,11 +452,11 @@
 <p>通过<code>__strong</code>我们不需要再键入<code>retain</code>和<code>release</code>啦。</p>
 <p><strong>__weak</strong></p>
 <p>但是光有<code>__strong</code>还是不够的，循环引用的问题还是会发生，所以<code>__weak</code>出现了。用<code>__weak</code>修饰变量，明确的告诉编译器，这个变量对引用的对象是弱引用，不会持有对象。<code>__weak</code>还有一个优点，在持有某对象的弱引用时，若该对象被废弃，则此弱引用自动失效且处于nil被赋值的状态。</p>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/QQ20170325-124125@2x.png" width="330" height="272"></p>
+<p><img src="/images/QQ20170325-124125@2x.png" width="330" height="272"></p>
 <p>使用<code>__weak</code>可以避免循环引用，通过检查附有<code>__weak</code>修饰符的变量是否为nil，可以判断被赋值的对象是否已废弃。这一点可以在开发中好好利用一下~</p>
 <p><strong>__unsafe_unretained</strong></p>
 <p>这个修饰符我们在日常的开发中可能并不常用，因为<code>__weak</code>是在iOS5及以上的版本中才可用，那在之前就需要用到<code>__unsafe_unretained</code>。它的作用与<code>__weak</code>一样，都是不会强引用对象，但是它修饰的变量不属于编译器管理的内存对象。</p>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/QQ20170325-131018@2x.png" width="400" height="250"></p>
+<p><img src="/images/QQ20170325-131018@2x.png" width="400" height="250"></p>
 <p>啊哈，崩溃掉了！最后一行，obj1表示的变量在离开作用域后因为没有变量对其引用了，所以已经被废弃掉了，访问一个被废弃的对象，所以崩溃了。但是偶尔也可能会正常访问，因为被废弃的对象所占用的那块空间，可能系统还没有来的及清理或分配给其他对象。所以在使用<code>__unsafe_retained</code>修饰符时，赋值给附有<code>__strong</code>的变量时有必要确保被赋值的对象确实存在。</p>
 <p>现在App应该都不会兼容iOS5之前的系统，所以我觉得忘掉<code>__unsafe_unretained</code>吧，有<code>__weak</code>即可，用着省心呐~</p>
 <p><strong>__autoreleasing</strong></p>
