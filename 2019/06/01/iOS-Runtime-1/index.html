@@ -120,7 +120,7 @@
 <meta property="og:image" content="http://shinancao.github.io/images/class_hierarchy.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/message_invoked.png">
 <meta property="og:image" content="http://shinancao.github.io/images/message_forwarding.jpg">
-<meta property="og:updated_time" content="2019-06-16T01:23:01.006Z">
+<meta property="og:updated_time" content="2019-07-07T09:59:34.368Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="通过源码看Objective-C的动态性  ">
 <meta name="twitter:description" content="写过Objective-C的同学都应该知道，Objective-C里有一个id类型，可以在编写程序时指代任何对象类型，在程序运行起来后再具体确定到底是什么类型。给一个对象发送一个未定义在它的类中的方法在编译期间也不会报错，因为在运行时可以给类再添加方法，也可以改变方法的接收者，甚至是交换两个方法的实现过程。还有一点，我们一直在用，但可能忽略了它也是动态性的一个基础特性，就是可以根据不同的屏幕尺寸加">
@@ -448,16 +448,11 @@
 <figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- <span class="params">(void)</span>forwardInvocation:<span class="params">(NSInvocation *)</span>anInvocation;</span><br></pre></td></tr></table></figure>
 <p>经过了上面3个阶段依旧没有找到消息要怎么被处理，就抛错了。上面的过程可以用图表示如下：</p>
 <p><img src="/images/message_forwarding.jpg"></p>
-<p>参考链接：</p>
-<p><a href="https://onevcat.com/2012/04/objective-c-runtime/" target="_blank" rel="external">https://onevcat.com/2012/04/objective-c-runtime/</a></p>
-<p><a href="https://blog.csdn.net/hou_manager/article/details/79373616" target="_blank" rel="external">https://blog.csdn.net/hou_manager/article/details/79373616</a></p>
-<p>《Effective Objective-C 2.0》</p>
-<blockquote>
-<p>转载请注明出处：</p>
-<p>作者：意林</p>
-<p>原文链接：<a href="http://www.shinancao.cn/2019/06/01/iOS-Runtime-1" target="_blank" rel="external">http://www.shinancao.cn/2019/06/01/iOS-Runtime-1</a><br>–End–</p>
-</blockquote>
-
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><strong>[1]</strong> <a href="https://onevcat.com/2012/04/objective-c-runtime/" target="_blank" rel="external">https://onevcat.com/2012/04/objective-c-runtime/</a></p>
+<p><strong>[2]</strong> <a href="https://blog.csdn.net/hou_manager/article/details/79373616" target="_blank" rel="external">https://blog.csdn.net/hou_manager/article/details/79373616</a></p>
+<p><strong>[3]</strong>《Effective Objective-C 2.0》</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://www.shinancao.cn/2019/06/01/iOS-Runtime-1" target="_blank" rel="external">http://www.shinancao.cn/2019/06/01/iOS-Runtime-1</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
       
     </div>
 
@@ -588,7 +583,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-count">45</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -610,7 +605,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">52</span>
+                <span class="site-state-item-count">53</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -668,7 +663,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#动态类型"><span class="nav-number">1.</span> <span class="nav-text">动态类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#类和对象的原型"><span class="nav-number">1.1.</span> <span class="nav-text">类和对象的原型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类的层次结构"><span class="nav-number">1.2.</span> <span class="nav-text">类的层次结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#用内省检查判断对象所属的类"><span class="nav-number">1.3.</span> <span class="nav-text">用内省检查判断对象所属的类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态绑定"><span class="nav-number">2.</span> <span class="nav-text">动态绑定</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#消息是如何发送的"><span class="nav-number">2.1.</span> <span class="nav-text">消息是如何发送的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#消息转发"><span class="nav-number">2.2.</span> <span class="nav-text">消息转发</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#动态类型"><span class="nav-number">1.</span> <span class="nav-text">动态类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#类和对象的原型"><span class="nav-number">1.1.</span> <span class="nav-text">类和对象的原型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类的层次结构"><span class="nav-number">1.2.</span> <span class="nav-text">类的层次结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#用内省检查判断对象所属的类"><span class="nav-number">1.3.</span> <span class="nav-text">用内省检查判断对象所属的类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态绑定"><span class="nav-number">2.</span> <span class="nav-text">动态绑定</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#消息是如何发送的"><span class="nav-number">2.1.</span> <span class="nav-text">消息是如何发送的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#消息转发"><span class="nav-number">2.2.</span> <span class="nav-text">消息转发</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number"></span> <span class="nav-text">参考</span></a></div>
             
 
           </div>

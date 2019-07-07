@@ -120,7 +120,7 @@
 <meta property="og:image" content="http://shinancao.github.io/images/memory_management_2x.png">
 <meta property="og:image" content="http://shinancao.github.io/images/QQ20170325-124125@2x.png">
 <meta property="og:image" content="http://shinancao.github.io/images/QQ20170325-131018@2x.png">
-<meta property="og:updated_time" content="2019-06-30T11:24:17.270Z">
+<meta property="og:updated_time" content="2019-07-07T10:08:03.612Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS内存管理小结">
 <meta name="twitter:description" content="引用计数说到iOS的内存管理方式，相信开发过的人都能多多少少说出来一些，但是我发现它在我的脑子中还是没有一个很清晰的框架，所以花了些时间整理一下。Obj-C使用的是引用计数的方式来管理内存中的对象，对象的引用计数为0时会被销毁，大于0时会还停留在内存中。">
@@ -448,7 +448,7 @@
 </ul>
 <p><strong>__strong</strong></p>
 <p><code>__strong</code>顾名思义是对对象的强引用，通常我们创建的id类型和对象类型变量默认都是<code>__strong</code>修饰符，只是不需要显示的写出来。<code>__strong</code>修饰的变量会在离开作用域时，即该变量被废弃时，会释放其被赋予的对象。另外，<code>__strong</code>以及<code>__weak``__autoreleasing</code>可以保证将附有这些修饰符的变量初始化为nil。</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span> __<span class="keyword">strong</span> obj0;</span><br><span class="line"><span class="keyword">id</span> __<span class="keyword">strong</span> obj1;</span><br><span class="line"><span class="keyword">id</span> __<span class="keyword">strong</span> obj2;</span><br><span class="line"></span><br><span class="line"><span class="comment">//下面的与上面的相同</span></span><br><span class="line"><span class="keyword">id</span> __<span class="keyword">strong</span> obj0 = <span class="literal">nil</span>;</span><br><span class="line"><span class="keyword">id</span> __<span class="keyword">weak</span> obj1 = <span class="literal">nil</span>;</span><br><span class="line"><span class="keyword">id</span> __autoreleasing = <span class="literal">nil</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">id</span> __<span class="keyword">strong</span> obj0;</span><br><span class="line"><span class="keyword">id</span> __<span class="keyword">weak</span> obj1;</span><br><span class="line"><span class="keyword">id</span> __autoreleasing obj2;</span><br><span class="line"></span><br><span class="line"><span class="comment">//下面的与上面的相同</span></span><br><span class="line"><span class="keyword">id</span> __<span class="keyword">strong</span> obj0 = <span class="literal">nil</span>;</span><br><span class="line"><span class="keyword">id</span> __<span class="keyword">weak</span> obj1 = <span class="literal">nil</span>;</span><br><span class="line"><span class="keyword">id</span> __autoreleasing obj2 = <span class="literal">nil</span>;</span><br></pre></td></tr></table></figure>
 <p>通过<code>__strong</code>我们不需要再键入<code>retain</code>和<code>release</code>啦。</p>
 <p><strong>__weak</strong></p>
 <p>但是光有<code>__strong</code>还是不够的，循环引用的问题还是会发生，所以<code>__weak</code>出现了。用<code>__weak</code>修饰变量，明确的告诉编译器，这个变量对引用的对象是弱引用，不会持有对象。<code>__weak</code>还有一个优点，在持有某对象的弱引用时，若该对象被废弃，则此弱引用自动失效且处于nil被赋值的状态。</p>
@@ -530,12 +530,8 @@
 <li><a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html#//apple_ref/doc/uid/10000011-SW1" target="_blank" rel="external">https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html#//apple_ref/doc/uid/10000011-SW1</a></li>
 </ul>
 <p><em>先挖两个坑，后面分析一下autoreleasepool的内部实现，和retain/release的内部实现~</em></p>
-<blockquote>
-<p>转载请注明出处：</p>
-<p>作者：意林</p>
-<p>原文链接：<a href="http://shinancao.github.io/2017/03/12/iOS-Memory-Management/">http://shinancao.github.io/2017/03/12/iOS-Memory-Management/</a></p>
-</blockquote>
-<p>–End–</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.github.io/2017/03/12/iOS-Memory-Management/">http://shinancao.github.io/2017/03/12/iOS-Memory-Management/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
 
       
     </div>
@@ -665,7 +661,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-count">45</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -687,7 +683,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">52</span>
+                <span class="site-state-item-count">53</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

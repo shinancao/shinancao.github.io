@@ -125,7 +125,7 @@
 使用前缀避免命名空间冲突
 前缀以至少3个字母定义，因为Apple有权使用任何两个字母组合作为自己类、方法和框架等等的命名前缀。
 在.m中定义的C函数或常量也要在前面加上前缀，因为尽管它在实现文件中，而不是在头文件中声明的，但编译后它仍会出现在top-level symbol中，所以容易发生冲突。">
-<meta property="og:updated_time" content="2019-05-11T14:42:14.195Z">
+<meta property="og:updated_time" content="2019-07-07T10:01:03.643Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="《Effective Objective-C 2.0》——Interface and API Design  ">
 <meta name="twitter:description" content="这是《Effective Objective-C 2.0》英文版的Chapter3的笔记
@@ -456,12 +456,8 @@
 <li>如果要做深拷贝，可以加上一个deep-copy方法。</li>
 </ul>
 <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (instancetype)deepCopy &#123;</span><br><span class="line">    EOCPerson *<span class="keyword">copy</span> = [[[<span class="keyword">self</span> class] alloc] initWithFirstName:_firstName andLastName:_lastName];</span><br><span class="line">    <span class="keyword">copy</span>-&gt;_internalFriends = [[<span class="built_in">NSMutableSet</span> alloc] initWithSet:_internalFriends copyItems:<span class="literal">YES</span>];</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">copy</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>转载请注明出处：</p>
-<p>作者：意林</p>
-<p>原文链接：<a href="http://www.shinancao.cn/2019/05/05/iOS-EffectiveObjC-1" target="_blank" rel="external">http://www.shinancao.cn/2019/05/05/iOS-EffectiveObjC-1</a><br>–End–</p>
-</blockquote>
-
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://www.shinancao.cn/2019/05/05/iOS-EffectiveObjC-1" target="_blank" rel="external">http://www.shinancao.cn/2019/05/05/iOS-EffectiveObjC-1</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
       
     </div>
 
@@ -594,7 +590,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-count">45</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -616,7 +612,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">52</span>
+                <span class="site-state-item-count">53</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

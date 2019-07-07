@@ -129,7 +129,7 @@ Property能够带来以下几点好处：
 
 
 声明Property后，编译器会在编译期间自动为你在代码中添加一个以下划线为前缀的实例变量，和该实例变量的getter/setter方法。这样在外部调用时，就可以通过getter/setter来读和写对象的实例变量了，而不">
-<meta property="og:updated_time" content="2019-06-01T10:40:31.026Z">
+<meta property="og:updated_time" content="2019-07-07T10:01:30.193Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="《Effective Objective-C 2.0》——Object, Protocol and Categories  ">
 <meta name="twitter:description" content="这是《Effective Objective-C 2.0》英文版的Chapter2和Chapter4的笔记
@@ -472,11 +472,8 @@ Property能够带来以下几点好处：
 <li>可以通过associated object在category中声明properties，但是也应尽量避免这样做。因为property中会指明weak/strong等内存管理方式，在用associated object实现setter方法时也要指明变量的内存管理方式，两个必须是一直的。在后续的开发中，如果需要修改property的内存管理方式，而那时你可能已经忘记了该property是这样实现的，在associated object处就没有对应的改，就有可能发生错误。</li>
 <li>最好在category中直接声明实例变量的getter方法，而不要通过property readonly的方式去做。</li>
 </ul>
-<blockquote>
-<p>转载请注明出处：</p>
-<p>作者：意林</p>
-<p>原文链接：<a href="http://www.shinancao.cn/2019/05/07/iOS-EffectiveObjC-2" target="_blank" rel="external">http://www.shinancao.cn/2019/05/07/iOS-EffectiveObjC-2</a><br>–End–</p>
-</blockquote>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://www.shinancao.cn/2019/05/07/iOS-EffectiveObjC-2" target="_blank" rel="external">http://www.shinancao.cn/2019/05/07/iOS-EffectiveObjC-2</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
 
       
     </div>
@@ -610,7 +607,7 @@ Property能够带来以下几点好处：
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-count">45</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -632,7 +629,7 @@ Property能够带来以下几点好处：
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">52</span>
+                <span class="site-state-item-count">53</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
