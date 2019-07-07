@@ -95,7 +95,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="github,开源,CocoaPods,Carthage," />
+  <meta name="keywords" content="github,CocoaPods,Carthage,开源," />
 
 
 
@@ -117,16 +117,16 @@
 <meta property="og:url" content="http://shinancao.github.io/2017/07/16/Project-Design-4/index.html">
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：https://github.com/shinancao/ImageCycleScrollView，以供参考。下面记录一下这个过程中踩到的坑。">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/document-struct@2x.jpg">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-142114.png">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-153649.png">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-153630.png">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-155047.png">
-<meta property="og:updated_time" content="2017-11-01T15:23:12.000Z">
+<meta property="og:image" content="http://shinancao.github.io/images/document-struct@2x.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/WX20170710-142114.png">
+<meta property="og:image" content="http://shinancao.github.io/images/WX20170710-153649.png">
+<meta property="og:image" content="http://shinancao.github.io/images/WX20170710-153630.png">
+<meta property="og:image" content="http://shinancao.github.io/images/WX20170710-155047.png">
+<meta property="og:updated_time" content="2019-07-07T14:27:20.956Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使开源库同时支持CocoaPods和Carthage集成">
 <meta name="twitter:description" content="几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：https://github.com/shinancao/ImageCycleScrollView，以供参考。下面记录一下这个过程中踩到的坑。">
-<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/document-struct@2x.jpg">
+<meta name="twitter:image" content="http://shinancao.github.io/images/document-struct@2x.jpg">
 
 
 
@@ -404,11 +404,11 @@
 <li>一开始创建项目的时候，就创建一个<code>Cocoa Touch Framework</code>的项目，开源库的名字叫什么，项目的名字就叫什么，不要创建<code>Single View Application</code>的。如果创建了<code>Single View Application</code>的，命名还叫项目的名字，那后面Framework就没得叫了。如果命名为<code>XXXDemo</code>，虽然Framework可以正常的叫，但是会在涉及到项目路径配置的地方都来个<code>xxxDemo.git</code>，难免不爽。创建一个<code>Cocoa Touch Framework</code>的项目后，可以再添加一个<code>Single View Application</code>类型的Target叫<code>XXXDemo</code>。</li>
 </ul>
 <p>那么，在开始进行CocoaPods和Carthage集成前，我摸索出的，目前认为比较好的目录结构如下：</p>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/document-struct@2x.jpg" width="400" height="209"></p>
+<p><img src="/images/document-struct@2x.jpg" width="400" height="209"></p>
 <p>注意文件要选择到相应的Target中，不要弄错了。</p>
 <h3 id="依赖第三方库"><a href="#依赖第三方库" class="headerlink" title="依赖第三方库"></a>依赖第三方库</h3><p>如果你的库没有依赖其他第三方的库，那就变得容易多了，上面的目录结构搭建好后可以直接进行CocoaPods和Carthage的相应操作了。如果依赖了其他库，这里要注意一下，<strong>用Carthage来集成该第三方库</strong>，不要用CocoaPods。对于CocoaPods，在podspec（还不知道podspec是啥？最后面会再说一下支持CocoaPods和Carthage集成的操作过程。）中可以指定<code>s.dependency &quot;&quot;</code>，这样在别人用CocoaPods集成时，CocoaPods会将依赖的第三方库一同下载下来并配置好。但是对于Carthage没有地方可以这样指定，所以只能曲线救国一下，在集成第三方库时，使用<code>carthage update --use-submodules</code>。加上了<code>--use-submodules</code>标志后，Carthage在下载完成后，会将其作为git submodules进行依赖。然后把原工程的xcodeproj和第三方库的xcodeproj合并成一个xcworkspace，这样在别人用Carthage集成时，除了会把自己的开源库下载下来，也会把依赖的第三方库同时下载下来。</p>
 <h3 id="加入Travis-CI"><a href="#加入Travis-CI" class="headerlink" title="加入Travis CI"></a>加入Travis CI</h3><p>你一定已经在很多github上的项目里看到过这个图标吧。</p>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-142114.png" width="55" height="19"></p>
+<p><img src="/images/WX20170710-142114.png" width="55" height="19"></p>
 <p>Travis可以对github上的项目进行持续构建，集成它的步骤也很简单，到官网注册：<a href="https://travis-ci.org/" target="_blank" rel="external">https://travis-ci.org/</a>，进行github帐号关联，然后在项目里添加<code>.travis.yml</code>文件，在该文件中指定编译环境等。我在尝试的过程中，改了好多次才最终编译成功了。配置这个文件有几个要注意的坑：</p>
 <ul>
 <li>Travis默认使用xctool进行编译，但是xcode的版本指定的是8.0以上，xctool已经不支持了。需要指定用xcodebuild编译。</li>
@@ -439,15 +439,15 @@
 <h3 id="支持Carthage"><a href="#支持Carthage" class="headerlink" title="支持Carthage"></a>支持Carthage</h3><ul>
 <li>将需要Carthage编译的schemes设置为<code>Shared</code>：</li>
 </ul>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-153649.png" width="352" height="160"></p>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-153630.png" width="257" height="276"></p>
+<p><img src="/images/WX20170710-153649.png" width="352" height="160"></p>
+<p><img src="/images/WX20170710-153630.png" width="257" height="276"></p>
 <ul>
 <li>验证编译是否有错误：<code>carthage build --no-skip-current</code>。</li>
 <li>提交tag到远程服务器，Carthage会自动来检测可以编译成功的tag，tag的命名用简单的数字即可，夹杂着字符Carthage有可能识别不出来。</li>
 </ul>
 <p>至此，就操作完毕啦。</p>
 <h3 id="完善README"><a href="#完善README" class="headerlink" title="完善README"></a>完善README</h3><p>最后，再美化一下README.md，看起来会正宗一些，哈哈。</p>
-<p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170710-155047.png" width="400" height="323"></p>
+<p><img src="/images/WX20170710-155047.png" width="400" height="323"></p>
 <p>=========================11月1日更新==========================</p>
 <p>弄了一个生成同时支持Cocoapods和Carthage的工程模板，一键生成，让自己专注在源码上：<br><a href="https://github.com/shinancao/pod-carthage-template" target="_blank" rel="external">https://github.com/shinancao/pod-carthage-template</a></p>
 
@@ -481,11 +481,11 @@
           
             <a href="/tags/github/" rel="tag"># github</a>
           
-            <a href="/tags/开源/" rel="tag"># 开源</a>
-          
             <a href="/tags/CocoaPods/" rel="tag"># CocoaPods</a>
           
             <a href="/tags/Carthage/" rel="tag"># Carthage</a>
+          
+            <a href="/tags/开源/" rel="tag"># 开源</a>
           
         </div>
       
