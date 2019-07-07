@@ -117,12 +117,12 @@
 <meta property="og:url" content="http://shinancao.github.io/2017/07/02/Project-Design-2/index.html">
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="从开始接触iOS开发，几乎都是自己在从零开始搭建一个App，每一次都有较大的收获，都会比上一次好一点。业务的复杂度不一样，对架构设计的考验也不一样，框架也会随着功能模块的不断增加，用户量的不断增加，一点点成长。（好像说了段废话😅）这是一款Swift开发的万年历App，大致描述了一下当初的结构设计。以后再从头搭建App或是重构也都来记录一下，毕竟岁数越来越大了，总要留点过往思考的回忆😄。">
-<meta property="og:image" content="http://ojx1pmrk7.bkt.clouddn.com/calendar-design.jpg">
-<meta property="og:updated_time" content="2017-07-22T10:20:19.000Z">
+<meta property="og:image" content="http://shinancao.github.io/images/calendar-design.jpg">
+<meta property="og:updated_time" content="2019-07-07T13:49:57.738Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一个Swift工具类App的设计">
 <meta name="twitter:description" content="从开始接触iOS开发，几乎都是自己在从零开始搭建一个App，每一次都有较大的收获，都会比上一次好一点。业务的复杂度不一样，对架构设计的考验也不一样，框架也会随着功能模块的不断增加，用户量的不断增加，一点点成长。（好像说了段废话😅）这是一款Swift开发的万年历App，大致描述了一下当初的结构设计。以后再从头搭建App或是重构也都来记录一下，毕竟岁数越来越大了，总要留点过往思考的回忆😄。">
-<meta name="twitter:image" content="http://ojx1pmrk7.bkt.clouddn.com/calendar-design.jpg">
+<meta name="twitter:image" content="http://shinancao.github.io/images/calendar-design.jpg">
 
 
 
@@ -395,7 +395,7 @@
         <p>从开始接触iOS开发，几乎都是自己在从零开始搭建一个App，每一次都有较大的收获，都会比上一次好一点。业务的复杂度不一样，对架构设计的考验也不一样，框架也会随着功能模块的不断增加，用户量的不断增加，一点点成长。（好像说了段废话😅）这是一款Swift开发的万年历App，大致描述了一下当初的结构设计。以后再从头搭建App或是重构也都来记录一下，毕竟岁数越来越大了，总要留点过往思考的回忆😄。</p>
 <a id="more"></a>
 <h2 id="项目的整体概括"><a href="#项目的整体概括" class="headerlink" title="项目的整体概括"></a>项目的整体概括</h2><p>这是一个万年历App，大体上采用<code>MVVM</code>架构，用<code>ReactiveSwift</code>进行模块之间的交互响应。数据存储用<code>CoreData</code>，JSON到Model的映射使用<code>Argo</code>，网络请求用的<code>Alamofire</code>。使用<code>Carthage</code>进行第三方库的集成。</p>
-<h2 id="项目的结构图"><a href="#项目的结构图" class="headerlink" title="项目的结构图"></a>项目的结构图</h2><p><img src="http://ojx1pmrk7.bkt.clouddn.com/calendar-design.jpg" width="500" height="284"></p>
+<h2 id="项目的结构图"><a href="#项目的结构图" class="headerlink" title="项目的结构图"></a>项目的结构图</h2><p><img src="/images/calendar-design.jpg" width="500" height="284"></p>
 <h2 id="项目中每个Group中放置的内容"><a href="#项目中每个Group中放置的内容" class="headerlink" title="项目中每个Group中放置的内容"></a>项目中每个<code>Group</code>中放置的内容</h2><ul>
 <li>Application: 整个App一些通用的配置，基本上是一些<code>struct</code>的常量定义。</li>
 <li>Communication: 网络请求基础模块部分，如果有新的接口，在<code>Urls</code>中加上定义，新的请求要实现<code>RequestProtocol</code></li>
