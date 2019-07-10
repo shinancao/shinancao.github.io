@@ -118,10 +118,10 @@
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。">
 <meta property="og:image" content="http://shinancao.github.io/images/responder_chain_overview_2x.png">
-<meta property="og:image" content="http://shinancao.github.io/images/144142-3afc2c85792ade41.png">
+<meta property="og:image" content="http://shinancao.github.io/images/hitTest.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/WX20170626-142848.png">
 <meta property="og:image" content="http://shinancao.github.io/images/WX20170626-150629.png">
-<meta property="og:updated_time" content="2019-07-07T10:02:35.871Z">
+<meta property="og:updated_time" content="2019-07-10T15:00:13.627Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Touch Event Handling、Responder Chain、Gesture Recognizers">
 <meta name="twitter:description" content="这篇文章将对UITouch、UIEvent、UIResponder、UIGestureRecognizer、Responder Chain之间相互纠葛的关系做一个梳理。">
@@ -444,7 +444,9 @@
 <h3 id="寻找发生Event的view"><a href="#寻找发生Event的view" class="headerlink" title="寻找发生Event的view"></a>寻找发生Event的view</h3><p>事件的传递过程了解了，那UIKit是怎么来确定事件到底是发生在哪个view上呢？这就用到了如下两个方法，有点像游戏场景里所讲的碰撞检测：</p>
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">point</span><span class="params">(inside point: CGPoint, with event: UIEvent?)</span></span> -&gt; <span class="type">Bool</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hitTest</span><span class="params">(<span class="number">_</span> point: CGPoint, with event: UIEvent?)</span></span> -&gt; <span class="type">UIView</span>?</span><br></pre></td></tr></table></figure>
 <p><code>pointInside</code>用来返回事件发生的点是否在当前的view内，<code>hitTest</code>用来返回事件所在的view。对于同一个view来说，如果它的<code>pointInside</code>返回false，那它的<code>hitTest</code>将返回nil。如果它的<code>pointInside</code>返回true，<code>hitTest</code>会继续去遍历它的子view，它的子view依然会走这个逻辑，直到找到事件最终发生的view，再层层返回。</p>
-<p>具体的看一下这张苹果官方文档里的布局，控件添加的顺序是A-&gt;B-&gt;C-&gt;D-&gt;E，点击E后的整个寻找过程是：</p>
+<p>具体的看一下这张苹果官方文档里的布局：</p>
+<p><img src="/images/hitTest.jpg" width="200" height="275"></p>
+<p>控件添加的顺序是A-&gt;B-&gt;C-&gt;D-&gt;E，点击E后的整个寻找过程是：</p>
 <pre><code>A--- pointInside withEvent --- isInside:true
 C--- pointInside withEvent --- isInside:true
 E--- pointInside withEvent --- isInside:true
@@ -456,7 +458,8 @@ A--- hitTest withEvent ---hitTestView:E
 <li>一旦父view的<code>pointInside</code>返回了false，不会再继续遍历它的子view了。</li>
 <li>在同一个视图层级，先遍历后添加的视图。</li>
 </ul>
-<p><img src="/images/144142-3afc2c85792ade41.png" width="200" height="275"></p>
+<p>这个过程用代码模拟如下：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">self</span>.isUserInteractionEnabled || <span class="keyword">self</span>.isHidden || <span class="keyword">self</span>.alpha &lt;= <span class="number">0.01</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> ([<span class="keyword">self</span> pointInside:point withEvent:event]) &#123;</span><br><span class="line">        <span class="comment">// 事件发生在该view或其子view上</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="built_in">UIView</span> *subview <span class="keyword">in</span> [<span class="keyword">self</span>.subviews reverseObjectEnumerator]) &#123;</span><br><span class="line">            <span class="built_in">CGPoint</span> convertedPoint = [subview convertPoint:point fromView:<span class="keyword">self</span>];</span><br><span class="line">            <span class="built_in">UIView</span> *hitTestView = [subview hitTest:convertedPoint withEvent:event];</span><br><span class="line">            <span class="keyword">if</span> (hitTestView) &#123;</span><br><span class="line">                <span class="comment">// 事件发生在子view上</span></span><br><span class="line">                <span class="keyword">return</span> hitTestView;</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 事件发生在自身</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h4 id="应用-1"><a href="#应用-1" class="headerlink" title="应用"></a>应用</h4><p>有两个比较常见的场景可以利用到上面的这个寻找过程：</p>
 <ul>
 <li>扩展<code>UIButton</code>的点击区域，有的时候为了视觉效果<code>UIButton</code>并没有那么大，但是为了能更好的响应用户的点击，需要隐形的扩展它的点击区域。</li>
@@ -478,7 +481,7 @@ A--- hitTest withEvent ---hitTestView:E
 <li>alpha = 0</li>
 </ul>
 <p><em>从设备接收到用户触摸，到系统将其处理成UIEvent再下发到应用层，这个过程先个挖坑，然后明白了再总结~</em></p>
-<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.github.io/2017/05/11/iOS-Event-Handling/">http://shinancao.github.io/2017/05/11/iOS-Event-Handling/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2017/05/11/iOS-Event-Handling/" target="_blank" rel="external">http://shinancao.cn/2017/05/11/iOS-Event-Handling/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
 </div>
       
     </div>
