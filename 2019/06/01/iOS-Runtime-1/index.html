@@ -113,16 +113,16 @@
 
 <meta name="description" content="写过Objective-C的同学都应该知道，Objective-C里有一个id类型，可以在编写程序时指代任何对象类型，在程序运行起来后再具体确定到底是什么类型。给一个对象发送一个未定义在它的类中的方法在编译期间也不会报错，因为在运行时可以给类再添加方法，也可以改变方法的接收者，甚至是交换两个方法的实现过程。还有一点，我们一直在用，但可能忽略了它也是动态性的一个基础特性，就是可以根据不同的屏幕尺寸加">
 <meta property="og:type" content="article">
-<meta property="og:title" content="通过源码看Objective-C的动态性  ">
+<meta property="og:title" content="通过Runtime源码看Objective-C的动态性  ">
 <meta property="og:url" content="http://shinancao.github.io/2019/06/01/iOS-Runtime-1/index.html">
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="写过Objective-C的同学都应该知道，Objective-C里有一个id类型，可以在编写程序时指代任何对象类型，在程序运行起来后再具体确定到底是什么类型。给一个对象发送一个未定义在它的类中的方法在编译期间也不会报错，因为在运行时可以给类再添加方法，也可以改变方法的接收者，甚至是交换两个方法的实现过程。还有一点，我们一直在用，但可能忽略了它也是动态性的一个基础特性，就是可以根据不同的屏幕尺寸加">
 <meta property="og:image" content="http://shinancao.github.io/images/class_hierarchy.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/message_invoked.png">
 <meta property="og:image" content="http://shinancao.github.io/images/message_forwarding.jpg">
-<meta property="og:updated_time" content="2019-07-07T09:59:34.368Z">
+<meta property="og:updated_time" content="2019-08-06T14:42:03.982Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="通过源码看Objective-C的动态性  ">
+<meta name="twitter:title" content="通过Runtime源码看Objective-C的动态性  ">
 <meta name="twitter:description" content="写过Objective-C的同学都应该知道，Objective-C里有一个id类型，可以在编写程序时指代任何对象类型，在程序运行起来后再具体确定到底是什么类型。给一个对象发送一个未定义在它的类中的方法在编译期间也不会报错，因为在运行时可以给类再添加方法，也可以改变方法的接收者，甚至是交换两个方法的实现过程。还有一点，我们一直在用，但可能忽略了它也是动态性的一个基础特性，就是可以根据不同的屏幕尺寸加">
 <meta name="twitter:image" content="http://shinancao.github.io/images/class_hierarchy.jpg">
 
@@ -158,7 +158,7 @@
 
 
 
-  <title>通过源码看Objective-C的动态性   | 意林的小站</title>
+  <title>通过Runtime源码看Objective-C的动态性   | 意林的小站</title>
   
 
 
@@ -314,7 +314,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">通过源码看Objective-C的动态性  </h2>
+          <h2 class="post-title" itemprop="name headline">通过Runtime源码看Objective-C的动态性  </h2>
         
 
         <div class="post-meta">
@@ -583,7 +583,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-count">46</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -605,7 +605,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-count">55</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
