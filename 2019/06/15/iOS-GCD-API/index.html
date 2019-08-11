@@ -95,7 +95,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Objective-C,GCD,多线程," />
+  <meta name="keywords" content="Objective-C,多线程,GCD," />
 
 
 
@@ -121,7 +121,7 @@
 <meta property="og:image" content="http://shinancao.github.io/images/concurrent_queue.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/target_queue.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/barrier_queue.jpg">
-<meta property="og:updated_time" content="2019-08-06T14:46:08.582Z">
+<meta property="og:updated_time" content="2019-08-11T03:31:26.787Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Objective-C and Swift GCD API  ">
 <meta name="twitter:description" content="对于iOS的多线程编程，可以使用C语言开发的POSIX 线程 API，也即pthread，或者Objective-C中提供的对该API的封装NSThread。然而线程管理是一件非常复杂的事，管理不当还会影响程序性能，为了避免开发者可能造成的对线程的糟糕的使用，也为了能更好地利用设备上的多核CPU，苹果在OS X 10.6和iOS4中引入了Grand Central Dispatch (GCD)。对">
@@ -398,14 +398,14 @@
         <p>对于iOS的多线程编程，可以使用C语言开发的<a href="https://en.wikipedia.org/wiki/POSIX_Threads" target="_blank" rel="external">POSIX 线程</a> API，也即<code>pthread</code>，或者Objective-C中提供的对该API的封装<code>NSThread</code>。然而线程管理是一件非常复杂的事，管理不当还会影响程序性能，为了避免开发者可能造成的对线程的糟糕的使用，也为了能更好地利用设备上的多核CPU，苹果在OS X 10.6和iOS4中引入了Grand Central Dispatch (GCD)。对于GCD的描述，在苹果的官方文档中有如下描述：</p>
 <p>GCD是异步执行任务的技术之一。它将开发者一般在程序中写的管理线程的代码移到了系统级中实现。你要做的事就是定义要执行的任务，然后把任务添加到合适的队列中。GCD负责创建线程执行任务。因为线程管理是系统级的一部分了，所以GCD可统一管理任务并执行，这样就比以前的线程更有效率。</p>
 <p>GCD的执行效率更高，尽管是C语言的API，但是使用起来却很方便，本篇文章将会对我们开发中经常用到的API做一总结，内容比较长，可以在右侧目录找想看的。</p>
-<p>其实Objective-C中也提供了对GCD API的封装，就是<code>NSOperation</code>，它提供了一些GCD无法直接做到的特性。下一篇文章会详细的总结一下<code>NSOperation</code>。</p>
+<p>其实Objective-C中也提供了对GCD API的封装，就是<code>NSOperationQueue</code>，它提供了一些GCD无法直接做到的特性。下一篇文章会详细的总结一下<code>NSOperationQueue</code>。</p>
 <a id="more"></a>
-<h2 id="Dispatch-Queue"><a href="#Dispatch-Queue" class="headerlink" title="Dispatch Queue"></a>Dispatch Queue</h2><p>Dispatch Queue是<strong>FIFO</strong>队列。队列中放的就是待执行的任务，这些任务用一个个Block语法块进行封装，所以实际放到队列中的是Block语法块。按照同时能执行任务的个数，GCD中有两种队列：串行队列Serial Dispatch Queue和并行队列Concurrent Dispatch Queue。串行队列一次执行只能执行一个任务，下一个任务必须等待当前的任务执行结束，才能开始执行。并行队列可以同时执行多个任务，下一个任务不用等待当前任务执行结束再开始执行，但是任务的开始顺序还是按照先进先出原则，先添加到队列中的任务先开始执行。也就是说GCD用了一个线程来处理串行队列中的任务，用了多个线程来处理并行队列中的任务。但是能并行处理多少个并行队列中的任务，是由当前系统的状态决定的。</p>
+<h2 id="Dispatch-Queue"><a href="#Dispatch-Queue" class="headerlink" title="Dispatch Queue"></a>Dispatch Queue</h2><p>Dispatch Queue是<strong>FIFO</strong>队列。队列中放的就是待执行的任务，这些任务用一个个Block语法块进行封装，所以实际放到队列中的是Block语法块。按照同时能执行任务的个数，GCD中有两种队列：串行队列Serial Dispatch Queue和并发队列Concurrent Dispatch Queue。串行队列一次执行只能执行一个任务，下一个任务必须等待当前的任务执行结束，才能开始执行。并发队列可以同时执行多个任务，下一个任务不用等待当前任务执行结束再开始执行，但是任务的开始顺序还是按照先进先出原则，先添加到队列中的任务先开始执行。也就是说GCD用了一个线程来处理串行队列中的任务，用了多个线程来处理并发队列中的任务。但是能并发处理多少个并发队列中的任务，是由当前系统的状态决定的。</p>
 <p><img src="/images/serial_queue.jpg"></p>
 <p><img src="/images/concurrent_queue.jpg"></p>
 <h3 id="创建自定义队列"><a href="#创建自定义队列" class="headerlink" title="创建自定义队列"></a>创建自定义队列</h3><p>Objective-C中可以通过<code>dispatch_queue_create</code>创建一个Dispatch Queue。</p>
 <figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dispatch_queue_t </span>mySerialDispatchQueue = <span class="keyword">dispatch_queue_create("com.example.gcd.MySerialDispatchQueue", </span>NULL)<span class="comment">;</span></span><br></pre></td></tr></table></figure>
-<p>第一个参数给该Dispatch Queue指定一个唯一标识，这个标识最好采用反向域名的格式，这样在debug工具中我们可以很容易找到自定义的Dispatch Queue。第二个参数可以设置为<code>DISPATCH_QUEUE_SERIAL</code>或者NULL创建一个串行对类，或者设置为<code>DISPATCH_QUEUE_CONCURRENT</code>创建一个并行队列。</p>
+<p>第一个参数给该Dispatch Queue指定一个唯一标识，这个标识最好采用反向域名的格式，这样在debug工具中我们可以很容易找到自定义的Dispatch Queue。第二个参数可以设置为<code>DISPATCH_QUEUE_SERIAL</code>或者NULL创建一个串行对类，或者设置为<code>DISPATCH_QUEUE_CONCURRENT</code>创建一个并发队列。</p>
 <p>这里要说一下GCD的内存管理，在iOS6及之后的版本，已经将GCD对象加入到了ARC的内存管理中。在这之前，开发者还需要对自己创建的队列，调用<code>dispatch_release</code>进行释放。</p>
 <p>在Swift中可以直接通过<code>DispatchQueue</code>的构造函数创建一个Dispatch Queue。</p>
 <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let <span class="string">mySerialDispatchQueue:</span> DispatchQueue = DispatchQueue(<span class="string">label:</span> <span class="string">"com.example.gcd.MySerialDispatchQueue"</span>)</span><br></pre></td></tr></table></figure>
@@ -414,11 +414,11 @@
 <ul>
 <li>label: 指定Dispatch Queue的唯一标识，通<code>dispatch_queue_create</code>中的label。</li>
 <li>qos: 指定队列的优先级，在下面会跟Objective-C中的全局队列的优先级一起总结。</li>
-<li>attributes: 不指定该项，创建的就是串行队列。如果要创建并行队列，可以设置为<code>.concurrent</code>。</li>
+<li>attributes: 不指定该项，创建的就是串行队列。如果要创建并发队列，可以设置为<code>.concurrent</code>。</li>
 <li>autoreleaseFrequency: 指定block中创建的临时对象的释放策略。设置为<code>.inherits</code>，则该队列跟它的目标队列一样的释放策略。设置为<code>.workItem</code>，则该队列会在执行block之前创建一个autorelease pool，在执行后释放pool中的对象。设置为<code>.never</code>，则该队列不负责创建autorelease pool，交由开发者自行处理。所以最好还是设置为<code>.workItem</code>。</li>
 <li>target：设置目标队列，后面会详细说一下目标队列。</li>
 </ul>
-<h3 id="主队列和全局队列"><a href="#主队列和全局队列" class="headerlink" title="主队列和全局队列"></a>主队列和全局队列</h3><p>除了直接创建Dispatch Queue，系统还提供了两个标准队列：主队列Main Dispatch Queue和全局队列Global Dispatch Queue。主队列是在主线程中执行的Dispatch Queue，因为主线程只有一个，自然<strong>主队列就是串行队列</strong>。另一个<strong>全局队列是所有应用程序都能够使用的并行队列</strong>。全局队列有4个执行优先级，高优先级（High Priority）、默认优先级（Default Priority）、低优先级（Low Priority）、后台优先级（Background Priority）。用于管理全局队列的线程，将各自把其使用的全局队列的优先级作为自己执行任务时的优先级。将系统提供的Dispatch Queue总结如下表：</p>
+<h3 id="主队列和全局队列"><a href="#主队列和全局队列" class="headerlink" title="主队列和全局队列"></a>主队列和全局队列</h3><p>除了直接创建Dispatch Queue，系统还提供了两个标准队列：主队列Main Dispatch Queue和全局队列Global Dispatch Queue。主队列是在主线程中执行的Dispatch Queue，因为主线程只有一个，自然<strong>主队列就是串行队列</strong>。另一个<strong>全局队列是所有应用程序都能够使用的并发队列</strong>。全局队列有4个执行优先级，高优先级（High Priority）、默认优先级（Default Priority）、低优先级（Low Priority）、后台优先级（Background Priority）。用于管理全局队列的线程，将各自把其使用的全局队列的优先级作为自己执行任务时的优先级。将系统提供的Dispatch Queue总结如下表：</p>
 <table>
 <thead>
 <tr>
@@ -477,7 +477,7 @@
 <figure class="highlight fsharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取默认优先级队列</span></span><br><span class="line"><span class="keyword">let</span> globalDispatchQueue: DispatchQueue = DispatchQueue.<span class="keyword">global</span>()</span><br><span class="line"><span class="comment">// 获取高优先级队列</span></span><br><span class="line"><span class="keyword">let</span> globalDispatchQueueHigh: DispatchQueue = DispatchQueue.<span class="keyword">global</span>(qos: .userInitiated)</span><br></pre></td></tr></table></figure>
 <p>qos的取值可为<code>.userInteractive</code>、<code>userInitiated</code>、<code>.default</code>、<code>.utility</code>、<code>.background</code>、<code>.unspecified</code>。</p>
 <h3 id="目标队列"><a href="#目标队列" class="headerlink" title="目标队列"></a>目标队列</h3><p>其实在自定义队列中被调度的所有的block最终都将被放入到系统的全局队列和线程池中。默认情况下会把开发者创建的队列放入到默认优先级的全局队列中。但是也可以给自定义的队列设置一个目标队列，让其执行优先级与该目标队列的执行优先级一致。</p>
-<p>不仅能改变优先级，如果一个队列是并行的，但是其目标队列是串行的，那么实际上这个队列也会转换为串行队列。再者，不同串行队列中的任务是可以同时执行的，如果把这些串行队列的目标队列都设置为同一个串行队列，那这些串行队列中的任务将不会并行执行。ObjC中国<a href="https://objccn.io/issue-2-1/" target="_blank" rel="external">这篇文章</a>中的图，我稍稍调整了一下感觉会更合适。经过测试，如果自定义的串行队列的目标队列是并行队列，还是能保证该串行队列中的block是被串行调度的，所以目标队列设置为串行队列时才显得更有意义。</p>
+<p>不仅能改变优先级，如果一个队列是并发的，但是其目标队列是串行的，那么实际上这个队列也会转换为串行队列。再者，不同串行队列中的任务是可以同时执行的，如果把这些串行队列的目标队列都设置为同一个串行队列，那这些串行队列中的任务将不会并发执行。ObjC中国<a href="https://objccn.io/issue-2-1/" target="_blank" rel="external">这篇文章</a>中的图，我稍稍调整了一下感觉会更合适。经过测试，如果自定义的串行队列的目标队列是并发队列，还是能保证该串行队列中的block是被串行调度的，所以目标队列设置为串行队列时才显得更有意义。</p>
 <p><img src="/images/target_queue.jpg"></p>
 <p>在Objective-C中通过<code>dispatch_set_target_queue</code>给一个队列设置其目标队列。</p>
 <figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dispatch_queue_t </span>mySerialDispatchQueue = <span class="keyword">dispatch_queue_create("com.example.gcd.MySerialDispatchQueue", </span>NULL)<span class="comment">;</span></span><br><span class="line"><span class="keyword">dispatch_queue_global_t </span>globalDispatchQueueLow = <span class="keyword">dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, </span><span class="number">0</span>)<span class="comment">;</span></span><br><span class="line"><span class="keyword">dispatch_set_target_queue(mySerialDispatchQueue, </span>globalDispatchQueueLow)<span class="comment">;</span></span><br></pre></td></tr></table></figure>
@@ -508,21 +508,21 @@
 <figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dispatch_queue_t </span>myConcurrentDispatchQueue = <span class="keyword">dispatch_queue_create("com.example.gcd.MyConcurrentDispatchQueue", </span><span class="keyword">DISPATCH_QUEUE_CONCURRENT);</span><br><span class="line"></span><span class="keyword">dispatch_async(myConcurrentDispatchQueue, </span>^&#123;</span><br><span class="line">	NSLog(@<span class="string">"Task 0"</span>)<span class="comment">;</span></span><br><span class="line">&#125;)<span class="comment">;</span></span><br><span class="line"><span class="keyword">dispatch_async(myConcurrentDispatchQueue, </span>^&#123;</span><br><span class="line">	NSLog(@<span class="string">"Task 1"</span>)<span class="comment">;</span></span><br><span class="line">&#125;)<span class="comment">;</span></span><br><span class="line"><span class="keyword">dispatch_async(myConcurrentDispatchQueue, </span>^&#123;</span><br><span class="line">	NSLog(@<span class="string">"Task 2"</span>)<span class="comment">;</span></span><br><span class="line">&#125;)<span class="comment">;</span></span><br><span class="line"><span class="keyword">dispatch_barrier_async(myConcurrentDispatchQueue, </span>^&#123;</span><br><span class="line">   NSLog(@<span class="string">"barrier"</span>)<span class="comment">;</span></span><br><span class="line">&#125;)<span class="comment">;</span></span><br><span class="line"><span class="keyword">dispatch_async(myConcurrentDispatchQueue, </span>^&#123;</span><br><span class="line">   NSLog(@<span class="string">"Task 4"</span>)<span class="comment">;</span></span><br><span class="line">&#125;)<span class="comment">;</span></span><br><span class="line"><span class="keyword">dispatch_async(myConcurrentDispatchQueue, </span>^&#123;</span><br><span class="line">   NSLog(@<span class="string">"Task 5"</span>)<span class="comment">;</span></span><br><span class="line">&#125;)<span class="comment">;</span></span><br></pre></td></tr></table></figure>
 <p><img src="/images/barrier_queue.jpg"></p>
 <p>由此也可以看到，对串行队列执行<code>dispatch_barrier_async</code>是没有多大意义的。</p>
-<p><code>dispatch_barrier_async</code>非常适合用来处理对单一资源的<strong>多读单写</strong>。对于读来说，多个线程同时读没有问题，只要保证写的时候只有一个线程在操作即可。所以使用并行队列效率会更高一些，然后在写的时候用<code>dispatch_barrier_async</code>控制同时只有一个线程操作。</p>
+<p><code>dispatch_barrier_async</code>非常适合用来处理对单一资源的<strong>多读单写</strong>。对于读来说，多个线程同时读没有问题，只要保证写的时候只有一个线程在操作即可。所以使用并发队列效率会更高一些，然后在写的时候用<code>dispatch_barrier_async</code>控制同时只有一个线程操作。</p>
 <figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">_syncQueue = <span class="keyword">dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, </span><span class="number">0</span>)<span class="comment">;</span></span><br><span class="line">- (NSString *)someString &#123;</span><br><span class="line">    __block NSString *localSomeString<span class="comment">;</span></span><br><span class="line">    <span class="keyword">dispatch_sync(_syncQueue, </span>^&#123;</span><br><span class="line">        localSomeString = _someString<span class="comment">;</span></span><br><span class="line">    &#125;)<span class="comment">;</span></span><br><span class="line">    return localSomeString<span class="comment">;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)setSomeString:(NSString *)someString &#123;</span><br><span class="line">    <span class="keyword">dispatch_barrier_async(_syncQueue, </span>^&#123;</span><br><span class="line">        _someString = someString<span class="comment">;</span></span><br><span class="line">    &#125;)<span class="comment">;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在Swift 3.0中，调用<code>async</code>函数时，可以指定<code>flags</code>为<code>.barrier</code>。</p>
 <figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> myConcurrentDispatchQueue = DispatchQueue(labe<span class="variable">l:</span> <span class="string">"com.example.gcd.MySerialDispatchQueue"</span>, attribute<span class="variable">s:</span> .concurrent)</span><br><span class="line"></span><br><span class="line">myConcurrentDispatchQueue.async(flag<span class="variable">s:</span> .barrier) &#123;</span><br><span class="line">            </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="迭代执行"><a href="#迭代执行" class="headerlink" title="迭代执行"></a>迭代执行</h3><p><code>dispatch_apply</code>函数按指定的次数将指定的block追加到指定的队列中，并等待全部的block执行完毕。block带有一个参数用来告知当前迭代的index。<code>dispatch_apply</code>是同步的。</p>
-<p>用<code>dispatch_apply</code>替代对数组等的for循环，把这些block放到并行队列中可以提高执行效率。</p>
+<p>用<code>dispatch_apply</code>替代对数组等的for循环，把这些block放到并发队列中可以提高执行效率。</p>
 <figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">dispatch_async(<span class="name">myConcurrentDispatchQueue</span>, ^&#123;</span><br><span class="line">   dispatch_apply([array count], myConcurrentDispatchQueue, ^(<span class="name">size_t</span> index) &#123;</span><br><span class="line">       NSLog(@<span class="string">"%zu: %@"</span>, index, [array objectAtIndex<span class="symbol">:index</span>])<span class="comment">;</span></span><br><span class="line">   &#125;)<span class="comment">;</span></span><br><span class="line">        </span><br><span class="line">   dispatch_async(<span class="name">dispatch_get_main_queue</span>(), ^&#123;</span><br><span class="line">       NSLog(@<span class="string">"done."</span>)<span class="comment">;</span></span><br><span class="line">   &#125;)<span class="comment">;</span></span><br><span class="line">&#125;)<span class="comment">;</span></span><br></pre></td></tr></table></figure>
-<p>同样地对串行队列执行<code>dispatch_apply</code>的意义不大，所以在Swift 3.0中直接就实现为并行地执行block了。使用DispatchQueue的类方法<code>concurrentPerform</code>。</p>
+<p>同样地对串行队列执行<code>dispatch_apply</code>的意义不大，所以在Swift 3.0中直接就实现为并发地执行block了。使用DispatchQueue的类方法<code>concurrentPerform</code>。</p>
 <figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DispatchQueue.concurrentPerform(iterations: <span class="number">10</span>) &#123; (<span class="built_in">index</span>) <span class="keyword">in</span></span><br><span class="line">            </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="挂起-恢复队列"><a href="#挂起-恢复队列" class="headerlink" title="挂起/恢复队列"></a>挂起/恢复队列</h3><p><code>dispatch_suspend</code>函数挂起指定的队列，<code>dispatch_resume</code>函数恢复指定的队列。</p>
 <figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dispatch_suspend(<span class="name">queue</span>)<span class="comment">;</span></span><br><span class="line">dispatch_resume(<span class="name">queue</span>)<span class="comment">;</span></span><br></pre></td></tr></table></figure>
 <p>这两个函数不会影响已经在执行的任务，挂起后，追加到队列中的但尚未执行的处理在此之后停止执行。而恢复则使得这些处理能够继续执行。</p>
 <p>在Swift中用起来类似。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">queue</span>.suspend()</span><br><span class="line"><span class="built_in">queue</span>.resume()</span><br></pre></td></tr></table></figure>
-<h2 id="Dispatch-Group"><a href="#Dispatch-Group" class="headerlink" title="Dispatch Group"></a>Dispatch Group</h2><p>如果你想在一组并行执行的任务都完成之后再去处理其他事情，就可以使用Dispatch Group来处理。GCD提供了两种方式来实现，可以视具体情况而定用哪一种。一种是直接追加block到group中。</p>
+<h2 id="Dispatch-Group"><a href="#Dispatch-Group" class="headerlink" title="Dispatch Group"></a>Dispatch Group</h2><p>如果你想在一组并发执行的任务都完成之后再去处理其他事情，就可以使用Dispatch Group来处理。GCD提供了两种方式来实现，可以视具体情况而定用哪一种。一种是直接追加block到group中。</p>
 <figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// 创建<span class="keyword">group</span></span><br><span class="line">dispatch_group_t <span class="keyword">group</span> = dispatch_group_create();</span><br><span class="line">dispatch_group_async(<span class="keyword">group</span>, myConcurrentDispatchQueue, ^&#123;</span><br><span class="line">	NSLog(@<span class="string">"blk0"</span>);</span><br><span class="line">&#125;);</span><br><span class="line">// 相继追加block</span><br><span class="line">dispatch_group_async(<span class="keyword">group</span>, myConcurrentDispatchQueue, ^&#123;</span><br><span class="line">   NSLog(@<span class="string">"blk1"</span>);</span><br><span class="line">&#125;);</span><br><span class="line">dispatch_group_async(<span class="keyword">group</span>, myConcurrentDispatchQueue, ^&#123;</span><br><span class="line">   NSLog(@<span class="string">"blk2"</span>);</span><br><span class="line">&#125;);</span><br><span class="line">dispatch_group_notify(<span class="keyword">group</span>, myConcurrentDispatchQueue, ^&#123;</span><br><span class="line">   NSLog(@<span class="string">"done."</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 <p><code>dispatch_group_notify</code>函数的第一个参数是要监听的group，第二个参数可以是任意queue，第三个参数是在上面提交的block都执行完后要执行的block，它会被追加到第二个参数指定的queue中。</p>
 <p>也可以使用<code>dispatch_group_wait</code>函数等待前面提交到group中的block都执行完。这是个同步执行的函数，第二个参数指定要等待的group，第二个参数指定等待的超时时间，类型也是<code>dispatch_time_t</code>。</p>
@@ -706,9 +706,9 @@
           
             <a href="/tags/Objective-C/" rel="tag"># Objective-C</a>
           
-            <a href="/tags/GCD/" rel="tag"># GCD</a>
-          
             <a href="/tags/多线程/" rel="tag"># 多线程</a>
+          
+            <a href="/tags/GCD/" rel="tag"># GCD</a>
           
         </div>
       
@@ -721,8 +721,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/06/08/iOS-block-1/" rel="next" title="轻松理解Block  ">
-                <i class="fa fa-chevron-left"></i> 轻松理解Block  
+              <a href="/2019/06/15/iOS-NSOperation/" rel="next" title="开始使用Operation Queue吧  ">
+                <i class="fa fa-chevron-left"></i> 开始使用Operation Queue吧  
               </a>
             
           </div>
@@ -804,7 +804,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-count">47</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -826,7 +826,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-count">56</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
