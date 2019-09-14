@@ -95,7 +95,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Objective-C,NSRunLoop,多线程," />
+  <meta name="keywords" content="Objective-C,多线程,NSRunLoop," />
 
 
 
@@ -120,7 +120,7 @@
 <meta property="og:image" content="http://shinancao.github.io/images/runloop_2.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/mach_msg_trap.png">
 <meta property="og:image" content="http://shinancao.github.io/images/runloop_3.jpg">
-<meta property="og:updated_time" content="2019-09-14T12:32:56.221Z">
+<meta property="og:updated_time" content="2019-09-14T12:42:41.916Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="探索RunLoop ">
 <meta name="twitter:description" content="为什么要用RunLoop在深入地了解怎样用RunLoop和它的内部实现之前，先来看一下为什么需要RunLoop。我们知道一个线程在干完交给它的任务后，该线程就运行结束了，你无法在后面再让它接着处理任务了。所以如果我们需要线程过一段时间能来处理一下任务，就要想办法让线程一直活跃，至少在需要它处理任务时能唤醒它。最简单的办法就是在它的入口方法中用一个while循环一直循环着，直到遇到我们设置的终止条件">
@@ -540,7 +540,7 @@
 <p><strong>【4】</strong> <a href="http://mrpeak.cn/blog/ios-runloop/" target="_blank" rel="external">解密 Runloop</a></p>
 <p><strong>【5】</strong> <a href="http://sunshineyg888.github.io/2016/05/21/RunLoop-%E8%AF%A6%E8%A7%A3/" target="_blank" rel="external">RunLoop 详解</a></p>
 <p><strong>【6】</strong> <a href="https://juejin.im/post/5aaa15d36fb9a028d82b7d83" target="_blank" rel="external">RunLoop 源码阅读</a></p>
-<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2019/06/18/iOS-NSOperation/" target="_blank" rel="external">http://shinancao.cn/2019/06/18/iOS-NSOperation/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2019/06/22/iOS-NSRunLoop/" target="_blank" rel="external">http://shinancao.cn/2019/06/22/iOS-NSRunLoop/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
 </div>
       
     </div>
@@ -572,9 +572,9 @@
           
             <a href="/tags/Objective-C/" rel="tag"># Objective-C</a>
           
-            <a href="/tags/NSRunLoop/" rel="tag"># NSRunLoop</a>
-          
             <a href="/tags/多线程/" rel="tag"># 多线程</a>
+          
+            <a href="/tags/NSRunLoop/" rel="tag"># NSRunLoop</a>
           
         </div>
       
