@@ -544,7 +544,7 @@
 
       
         
-          <p>关于<code>__weak</code>修饰符的作用可能大家都知道，附有<code>__weak</code>修饰符的变量对对象是弱引用，对象的引用计数不会增加，在使用之前，会将该对象放到 autoreleasepool 中，等对象被释放时会将其置为nil。但是你知道objc是怎样管理weak对象的吗？《Objective-C高级编程》1.4节对<code>__weak</code>的实现做了大致的讲解，再结合源码我们可以进一步理解<code>__weak</code>的实现过程。</p>
+          <p>关于<code>__weak</code>修饰符的作用可能大家都知道，附有<code>__weak</code>修饰符的变量对对象是弱引用，对象的引用计数不会增加，在使用之前，附有<code>__weak</code>修饰符的变量指向的对象会被放到 autoreleasepool 中，等该对象被释放时会同时将其置为nil。但是你知道objc是怎样管理weak对象的吗？《Objective-C高级编程》1.4节对<code>__weak</code>的实现做了大致的讲解，再结合源码我们可以进一步理解<code>__weak</code>的实现过程。</p>
 <p>从苹果的开源网站下载objc4的源码：<a href="https://opensource.apple.com/tarballs/objc4/">https://opensource.apple.com/tarballs/objc4/</a>，我下载的是objc4-750这个版本。之后可以在工程中找到objc-weak.h和objc-weak.mm，从objc-weak.h中可以看到跟weak相关的类和函数，从objc-weak.mm中可以看到对weak对象的增加、删除等操作。weak对象的初始化和销毁等入口函数在NSObject.mm中可以找到。</p>
           <!--noindex-->
           <div class="post-button text-center">
