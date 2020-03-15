@@ -120,7 +120,7 @@
 <meta property="og:image" content="http://shinancao.github.io/images/cookie-response.png">
 <meta property="og:image" content="http://shinancao.github.io/images/cookie-request.png">
 <meta property="og:image" content="http://shinancao.github.io/images/cookie.png">
-<meta property="og:updated_time" content="2020-03-15T05:53:09.020Z">
+<meta property="og:updated_time" content="2020-03-15T06:34:33.053Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTTP cookie">
 <meta name="twitter:description" content="我们知道cookie可以用来在客户端的浏览器上存储一小戳数据，那当初行业的前辈们为什么要设计cookie这种机制呢？因为HTTP是无状态的，如果不做记录，没人知道谁来服务器上请求过，请求的一方也无法证明自己是谁。试想一下在没有cookie时使用一个需要用户登录的网站，那用户从网上发出去的每一个请求，服务器端都得要求用户先登录一遍，然后再下发所需要的数据，这真是糟透的了体验。如果这些跟每个用户相关的">
@@ -453,6 +453,7 @@
 </li>
 </ol>
 <p>通过分析日志文件就可以大概知道用户浏览过哪些页面，以及浏览频率和浏览时长。</p>
+<p>很多的广告厂商也通过cookie来追踪用户的浏览行为。如果cookie的<code>Domain</code>属性值跟当前地址栏中的域名匹配，则这样的cookie为<em>第一方cookie</em>。如果不匹配，则为<em>第三方cookie</em>。比如，用户当前正在访问<code>www.example.org</code>，这个网站里有个广告来自<code>ad.foxytracking.com</code>，当广告被加载时，创建一个cookie属于<code>ad.foxytracking.com</code>。广告厂商就可以通过所有放了他们广告的网站发送过来的cookie，分析出用户的浏览行为习惯。</p>
 <h2 id="cookie带来的安全性问题"><a href="#cookie带来的安全性问题" class="headerlink" title="cookie带来的安全性问题"></a>cookie带来的安全性问题</h2><p>如果网站使用cookie作为会话的唯一标识，那么攻击者一旦拿到了用户的cookie，就可以使用该cookie冒充用户访问网站，而服务端会把他当合法用户对待。下面列出几种常见的攻击方式：</p>
 <p><strong>网络监听</strong></p>
 <p>关于网络监听的原理，大家可以看一下<a href="https://tomcat.one/files/papers/%E7%BD%91%E7%BB%9C%E7%9B%91%E5%90%AC%E4%B8%8E%E5%8F%8D%E7%9B%91%E5%90%AC_%E8%B4%BA%E9%BE%99%E6%B6%9B.pdf" target="_blank" rel="external">这篇论文</a>介绍。网络监听一般都发生在局域网，如果跟攻击者连入了同一网络，那么在该网络中传输的数据就会被攻击者截获到，网站的cookie也就有可能被拿到。攻击者可以使用拿到的cookie去执行恶意行为，比如转移出用户银行帐号里的钱。</p>
@@ -478,7 +479,7 @@
 </li>
 </ol>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><strong>【1】</strong> <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Cookies" target="_blank" rel="external">https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Cookies</a></p>
-<p><strong>【2】</strong> <a href="https://en.wikipedia.org/wiki/HTTP_cookie#cite_note-22" target="_blank" rel="external">https://en.wikipedia.org/wiki/HTTP_cookie#cite_note-22</a></p>
+<p><strong>【2】</strong> <a href="https://en.wikipedia.org/wiki/HTTP_cookie" target="_blank" rel="external">https://en.wikipedia.org/wiki/HTTP_cookie</a></p>
 <p><strong>【3】</strong> <a href="https://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html" target="_blank" rel="external">https://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html</a></p>
 <p><strong>【4】</strong> <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie" target="_blank" rel="external">https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie</a></p>
 <div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2020/03/15/HTTP-Cookie/" target="_blank" rel="external">http://shinancao.cn/2020/03/15/HTTP-Cookie/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
@@ -609,7 +610,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-count">45</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -620,7 +621,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">11</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -631,7 +632,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">64</span>
+                <span class="site-state-item-count">63</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
