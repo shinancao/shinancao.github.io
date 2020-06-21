@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,this," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="JavaScript中的函数，除了在声明时定义的形式参数，还会有两个附件参数：this和arguments。用过面向对象编程的语言对this应该不会陌生，但是JavaScript里this到底指向什么，取决于函数调用的模式。在JavaScript中一共有4中调用模式：方法调用模式、函数调用模式、构造器调用模式、apply（或call）调用模式。在这些模式中this指向各不相同。此外，ES6新增的特">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript中的this">
+<meta property="og:url" content="http://shinancao.github.io/2019/07/28/JS-This/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="JavaScript中的函数，除了在声明时定义的形式参数，还会有两个附件参数：this和arguments。用过面向对象编程的语言对this应该不会陌生，但是JavaScript里this到底指向什么，取决于函数调用的模式。在JavaScript中一共有4中调用模式：方法调用模式、函数调用模式、构造器调用模式、apply（或call）调用模式。在这些模式中this指向各不相同。此外，ES6新增的特">
+<meta property="og:updated_time" content="2020-06-21T12:49:50.870Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JavaScript中的this">
+<meta name="twitter:description" content="JavaScript中的函数，除了在声明时定义的形式参数，还会有两个附件参数：this和arguments。用过面向对象编程的语言对this应该不会陌生，但是JavaScript里this到底指向什么，取决于函数调用的模式。在JavaScript中一共有4中调用模式：方法调用模式、函数调用模式、构造器调用模式、apply（或call）调用模式。在这些模式中this指向各不相同。此外，ES6新增的特">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2019/07/28/JS-This/"/>
+
+
+
+
+
+  <title>JavaScript中的this | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/07/28/JS-This/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">JavaScript中的this</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-28T16:40:32+08:00">
+                2019-07-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>JavaScript中的函数，除了在声明时定义的形式参数，还会有两个附件参数：<code>this</code>和<code>arguments</code>。用过面向对象编程的语言对<code>this</code>应该不会陌生，但是JavaScript里<code>this</code>到底指向什么，取决于函数调用的模式。在JavaScript中一共有4中调用模式：方法调用模式、函数调用模式、构造器调用模式、apply（或call）调用模式。在这些模式中<code>this</code>指向各不相同。此外，ES6新增的特性：<strong>箭头函数表达式</strong>，与普通函数对<code>this</code>的指向处理也不同。</p>
+<a id="more"></a>
+<h2 id="方法调用模式"><a href="#方法调用模式" class="headerlink" title="方法调用模式"></a>方法调用模式</h2><p>当一个函数被保存为对象的一个属性时，我们称它为一个<em>方法</em>。方法中的<code>this</code>指向的是它所属的对象。</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myObject = &#123;</span><br><span class="line">    value: <span class="number">0</span>,</span><br><span class="line">    increment: <span class="function"><span class="keyword">function</span> <span class="params">(inc)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 此处的 this 指向的是 myObject，所以在该方法中能通过 this 访问到 value</span></span><br><span class="line">        <span class="keyword">this</span>.value += <span class="keyword">typeof</span> inc === <span class="string">'number'</span> ? inc : <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// myObject.value 变为 1</span></span><br><span class="line">myObject.increment()</span><br><span class="line"></span><br><span class="line"><span class="comment">// myObject.value 变为 3</span></span><br><span class="line">myObject.increment(<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<p><code>this</code>是在运行时才绑定到方法所属的对象上，而不是在定义对象时。这使得如果<code>myObject</code>动态修改了其他属性，<code>this</code>依然能访问到，极大提高了<code>this</code>的复用度。</p>
+<h2 id="函数调用模式"><a href="#函数调用模式" class="headerlink" title="函数调用模式"></a>函数调用模式</h2><p>当一个函数并非一个对象的属性时，那么它就是当一个函数来调用的。函数中的<code>this</code>会指向一个全局对象，在浏览器中，这个全局对象就是<code>window</code>。</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> add = <span class="function"><span class="keyword">function</span> <span class="params">(x, y)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 打印这里的 this 可以看到，就是当前的 window 对象</span></span><br><span class="line">    <span class="keyword">return</span> x + y</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里有一个容易让人搞错的地方，对于内部函数，它的<code>this</code>也同样指向了全局对象，这就导致了一个方法里的内部函数无法访问到这个方法所属的对象的内容。Douglas Crockford认为这是JavaScript中一个设计错误。所以有时我们会看到<code>var that = this</code>这样的代码。</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">myObject.double = <span class="keyword">function</span> () &#123;</span><br><span class="line">    <span class="keyword">var</span> <span class="literal">that</span> = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">var</span> helper = <span class="keyword">function</span> () &#123;</span><br><span class="line">        <span class="regexp">// 打印这里的 this 可以看到，是当前的 window 对象</span><br><span class="line"></span><br><span class="line">        //</span> 用 <span class="literal">that</span> = <span class="keyword">this</span> 这样方式，让 helper 能访问 myObject 中的属性</span><br><span class="line">        <span class="literal">that</span>.value = add(<span class="literal">that</span>.value, <span class="literal">that</span>.value)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    helper()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">myObject.double()</span><br></pre></td></tr></table></figure>
+<h2 id="构造器调用模式"><a href="#构造器调用模式" class="headerlink" title="构造器调用模式"></a>构造器调用模式</h2><p>JavaScript里是没有真正的类的，它是基于原型继承的语言，<code>new</code> 运算符让它看起来很像<code>Java</code>这种基于类的语言风格，但 <code>new</code> 运算符背地里做的事与基于类的语言却完全不同。如果在一个函数前面带上 <code>new</code> 来调用，那么背地里将会创建一个连接到该函数的<code>prototype</code>成员的对象，同时 <code>this</code> 会绑定到那个新对象。</p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">var</span> Quo = <span class="function"><span class="keyword">function</span> (<span class="params">string</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.status = <span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Quo.prototype.get_status = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.status</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">var</span> myQuo = <span class="keyword">new</span> Quo(<span class="string">'confused'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// get_status 中的 this 此时指向 myQuo</span></span><br><span class="line">myQuo.get_status()</span><br></pre></td></tr></table></figure>
+<p>这里有两个地方要注意，一个是如果一个函数在声明时希望别人以 <code>new</code> 运算符的方式调用，那名字的首字母一定要记得以大写字母开头，以明确告知别人。否则直接使用一个构造器函数会得到意想不到的结果，并且编译时没有警告，运行时也没有警告。调用构造器函数时不在前面加上<code>new</code>的话，就变成了以函数模式调用，那函数里面的<code>this</code>就会指向全局对象，<code>Quo</code>中的<code>status</code>就会被绑定到<code>window</code>上。</p>
+<p>还有一个是如果构造器函数显示返回了一个<code>object</code>类型的对象，那么<code>new</code>调用构造器时，最终返回的就是这个对象了，而不是我们之前期待的<code>this</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.name = <span class="string">'sven'</span></span><br><span class="line">    <span class="keyword">return</span> &#123; <span class="comment">// 显式地返回一个对象</span></span><br><span class="line">        name: <span class="string">'anne'</span> </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass()</span><br><span class="line"><span class="built_in">console</span>.log ( obj.name ); <span class="comment">// 打印 anne</span></span><br></pre></td></tr></table></figure>
+<h2 id="apply（或call）调用模式"><a href="#apply（或call）调用模式" class="headerlink" title="apply（或call）调用模式"></a>apply（或call）调用模式</h2><p>这一部分主要搞清楚<code>apply</code>和<code>call</code>到底用是干嘛用的的，以及它们实际会去解决什么问题。</p>
+<p><code>apply</code>和<code>call</code>是定义在<code>Function</code>原型上的两个方法：<code>Function.prototype.apply</code>和<code>Function.prototype.call</code>。记住这一点，所以我们可以在任何函数上调用<code>apply</code>和<code>call</code>。<code>apply</code>和<code>call</code>的作用一模一样，都是来执行调用它们的函数，他们的第一个参数都是指定函数体内<code>this</code>的指向。不同的是第二个参数，<code>apply</code>接受一个带下标的集合，这个集合可以是数组也可以是类数组。<code>call</code>传入的参数不固定，从第二参数开始，依次传入每个参数。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="function"><span class="keyword">func</span> = <span class="title">function</span> <span class="params">(a, b, <span class="built_in">c</span>)</span></span> &#123;</span><br><span class="line">    console.log(a, b, <span class="built_in">c</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span>.<span class="title">apply</span><span class="params">(null, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</span></span> <span class="comment">// 打印 1, 2, 3</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span>.<span class="title">call</span><span class="params">(null, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span></span>    <span class="comment">// 打印 1, 2, 3</span></span><br></pre></td></tr></table></figure>
+<p>当明确知道要执行的函数传入哪些参数时，可以使用<code>call</code>，使用<code>apply</code>也是可以的，其他情况都可以使用<code>apply</code>。<code>apply</code>比<code>call</code>有着更高的使用率，<code>call</code>更像是包装在<code>apply</code>上面的语法糖。</p>
+<p>上面的例子中第一个参数都传入了<code>null</code>，此时<code>func</code>内的<code>this</code>指向的是全局对象，在浏览器中则是<code>window</code>。如果在严格模式下，<code>this</code>就是<code>null</code>。有时我们使用<code>apply</code>或<code>call</code>的目的不在于指定<code>this</code>指向，而是另有他途，比如借用其他对象的方法，那么我们可以传入<code>null</code>。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">Math</span><span class="selector-class">.max</span><span class="selector-class">.apply</span>(<span class="selector-tag">null</span>, <span class="selector-attr">[1, 2, 5, 3]</span>)</span><br></pre></td></tr></table></figure>
+<p>下面来看一下<code>apply</code>和<code>call</code>的用途。</p>
+<h3 id="改变this指向"><a href="#改变this指向" class="headerlink" title="改变this指向"></a>改变<code>this</code>指向</h3><p><code>call</code>和<code>apply</code>最常见的用途是改变函数内部的<code>this</code>指向，举个例子：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">var</span> obj1 = &#123;</span><br><span class="line">    name: <span class="string">'Jone'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">var</span> obj2 = &#123;</span><br><span class="line">    name: <span class="string">'Candy'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">window<span class="selector-class">.name</span> = <span class="string">'window'</span></span><br><span class="line"></span><br><span class="line"><span class="selector-tag">var</span> getName = function () &#123;</span><br><span class="line">    console.log(this.name)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">getName</span><span class="params">()</span></span>           <span class="comment">// 打印 window</span></span><br><span class="line">getName.call(obj1)  <span class="comment">// 打印 Jone</span></span><br><span class="line">getName.call(obj2)  <span class="comment">// 打印 Candy</span></span><br></pre></td></tr></table></figure>
+<p>当执行<code>getName.call(obj1)</code>这句代码时，<code>getName</code>函数体内的<code>this</code>就指向<code>obj1</code>了，所以实际相当于：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> getName = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(obj1.name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>还记得在函数调用模式时我们用<code>var that = this</code>解决的那个问题，也可以用<code>call</code>和<code>apply</code>来解决。</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">myObject.double = <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> helper = <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.value = add(<span class="keyword">this</span>.value, <span class="keyword">this</span>.value)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    helper.call(<span class="keyword">this</span>)</span><br><span class="line">    <span class="comment">// 这个时候 helper 函数内的 this 就指向了 myObject对象</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">myObject.double()</span><br></pre></td></tr></table></figure>
+<h3 id="借用其他对象的方法"><a href="#借用其他对象的方法" class="headerlink" title="借用其他对象的方法"></a>借用其他对象的方法</h3><p>借用方法的第一种场景是“借用构造函数”，通过这种技术，可以达到一些类似继承的效果：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> A = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.name = name</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> B = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    A.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">B.prototype.getName = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> b = <span class="keyword">new</span> B(<span class="string">'Jone'</span>)</span><br><span class="line"><span class="built_in">console</span>.log(b.getName())   <span class="comment">// 打印 Jone</span></span><br></pre></td></tr></table></figure>
+<p><code>B</code>现在有了<code>name</code>属性，但是<code>B</code>不会拥有<code>A</code>原型上的方法和属性，所以只有<code>B</code>想有<code>A</code>构造器中的一些属性时再用<code>apply</code>这样来做。</p>
+<p>下面看一个用<code>apply</code>借用其他对象的方法更加实用的例子，函数的参数列表<code>arguments</code>，虽然有下标，但是它不是数组，它只是类数组，所以本身不具有<code>Array.prototype</code>中的方法，但很多时候我们又需要它能像数组一样对它进行操作。这时就可以用<code>apply</code>来借用<code>Array.prototype</code>中的方法。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">var</span> fn = function () &#123;</span><br><span class="line">    <span class="selector-tag">var</span> arr = Array<span class="selector-class">.prototype</span><span class="selector-class">.slice</span><span class="selector-class">.apply</span>(arguments)</span><br><span class="line">    console.log(arr) <span class="comment">// [ 1, 2 ]</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="title">fn</span><span class="params">(<span class="number">1</span>, <span class="number">2</span>)</span></span></span><br></pre></td></tr></table></figure>
+<p>这一点在平时的开发中还是很实用的，一定要掌握。但也不是所有类型的数据都可以借用<code>Array.prototype</code>的，必须要满足两个条件：</p>
+<ul>
+<li>对象本身要可以存取属性；</li>
+<li>对象的length属性可读写。</li>
+</ul>
+<p>想要了解具体的原因，可以查阅《JavaScript设计模式与开发实践》第 53 页。</p>
+<h2 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h2><p>再回到介绍函数调用模式时，提到的一个问题，内部函数内的<code>this</code>无法跟外部函数内的<code>this</code>指向同一个对象，导致内部函数无法访问对象的属性。可以用<code>var that = this;</code>来解决，也可以用<code>apply</code>或<code>call</code>来改变<code>this</code>指向。</p>
+<p>不管怎样解决，有时都需要开发人员反应一会才能明白，尤其看别人代码的时候。好在ES6推出了<strong>箭头函数</strong>，箭头函数在写法上比普通函数要简洁，更加接近数学表达式，有时也管它叫<code>lambda</code>表达式。JavaScript中的箭头函数没有单独的<code>this</code>，如果在它内部使用了<code>this</code>，那这个<code>this</code>的指向跟定义它的位置的<code>this</code>指向一致。</p>
+<p>将上面的<code>helper</code>函数改为箭头函数之后，<code>value</code>就可以正确访问到了：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">myObject.<span class="keyword">double</span> = function () &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> helper = () =&gt; &#123;</span><br><span class="line">        <span class="keyword">this</span>.<span class="keyword">value</span> = add(<span class="keyword">this</span>.<span class="keyword">value</span>, <span class="keyword">this</span>.<span class="keyword">value</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    helper()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">myObject.<span class="keyword">double</span>()</span><br></pre></td></tr></table></figure>
+<p>此外，因为箭头函数没有单独的<code>this</code>参数，如果对箭头函数调用<code>apply</code>或<code>call</code>，第一个参数可以省略不传，即使传了也会被忽略。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> adder = &#123;</span><br><span class="line">    base: <span class="number">1</span>,</span><br><span class="line">    add: <span class="function"><span class="keyword">function</span> (<span class="params">a</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> f = v =&gt; v + <span class="keyword">this</span>.base</span><br><span class="line">        <span class="keyword">return</span> f(a)</span><br><span class="line">    &#125;,</span><br><span class="line">    addThruCall: <span class="function"><span class="keyword">function</span> (<span class="params">a</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> f = v =&gt; v + <span class="keyword">this</span>.base</span><br><span class="line">        <span class="keyword">var</span> obj = &#123;</span><br><span class="line">            base: <span class="number">2</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> f.call(obj, a)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(adder.add(<span class="number">1</span>))          <span class="comment">// 打印 2</span></span><br><span class="line"><span class="built_in">console</span>.log(adder.addThruCall(<span class="number">1</span>))  <span class="comment">// 还是打印 2，忽略了 obj</span></span><br></pre></td></tr></table></figure>
+<p>相比于普通函数，箭头函数还有其他一些特性：</p>
+<ul>
+<li>箭头函数不会绑定<code>arguments</code>参数；</li>
+<li>箭头函数没有<code>prototype</code>属性；</li>
+<li>箭头函数不能用作构造器，和<code>new</code>一起用会抛出错误：<code>TypeError: xx is not a constructor</code>。</li>
+<li><code>yield</code>关键字通常不能在箭头函数中使用（除非是嵌套在允许使用的函数内）。因此，箭头函数不能用作函数生成器。</li>
+</ul>
+<p>要了解具体介绍，可查阅<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/Arrow_functions" target="_blank" rel="external">MDN-箭头函数</a>一节。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><strong>【1】</strong> 《JavaScript语言精粹》</p>
+<p><strong>【2】</strong> 《JavaScript设计模式与开发实践》</p>
+<p><strong>【3】</strong> <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/Arrow_functions" target="_blank" rel="external">https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/Arrow_functions</a></p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2019/07/28/JS-this/" target="_blank" rel="external">http://shinancao.cn/2019/07/28/JS-this/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/this/" rel="tag"># this</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/22/JS-Closure/" rel="next" title="JavaScript中的闭包">
+                <i class="fa fa-chevron-left"></i> JavaScript中的闭包
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/02/JS-Promote/" rel="prev" title="JavaScript中的提升">
+                JavaScript中的提升 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="意林" />
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">50</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">71</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#方法调用模式"><span class="nav-number">1.</span> <span class="nav-text">方法调用模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数调用模式"><span class="nav-number">2.</span> <span class="nav-text">函数调用模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构造器调用模式"><span class="nav-number">3.</span> <span class="nav-text">构造器调用模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#apply（或call）调用模式"><span class="nav-number">4.</span> <span class="nav-text">apply（或call）调用模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#改变this指向"><span class="nav-number">4.1.</span> <span class="nav-text">改变this指向</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#借用其他对象的方法"><span class="nav-number">4.2.</span> <span class="nav-text">借用其他对象的方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#箭头函数"><span class="nav-number">5.</span> <span class="nav-text">箭头函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,Scope," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="作为一个稍微有点编程经验的程序员，在学习一门新的编程语言时通常都不用特别关注作用域的问题，因为绝大部分的编程语言中变量的作用域遵循的规则都差不多，开发人员能顺其自然预见一个变量在何处可见，在何时销毁。但是到了JavaScript中，如果再用其他语言的作用域规则往上套，有时会得到让人很迷糊的结果。我觉得这主要是因为JavaScript过渡依赖全局变量，和var声明的变量不具有块级作用域导致的。
+本文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript中变量的作用域">
+<meta property="og:url" content="http://shinancao.github.io/2019/07/21/JS-Scope/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="作为一个稍微有点编程经验的程序员，在学习一门新的编程语言时通常都不用特别关注作用域的问题，因为绝大部分的编程语言中变量的作用域遵循的规则都差不多，开发人员能顺其自然预见一个变量在何处可见，在何时销毁。但是到了JavaScript中，如果再用其他语言的作用域规则往上套，有时会得到让人很迷糊的结果。我觉得这主要是因为JavaScript过渡依赖全局变量，和var声明的变量不具有块级作用域导致的。
+本文">
+<meta property="og:updated_time" content="2020-06-21T12:50:03.964Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JavaScript中变量的作用域">
+<meta name="twitter:description" content="作为一个稍微有点编程经验的程序员，在学习一门新的编程语言时通常都不用特别关注作用域的问题，因为绝大部分的编程语言中变量的作用域遵循的规则都差不多，开发人员能顺其自然预见一个变量在何处可见，在何时销毁。但是到了JavaScript中，如果再用其他语言的作用域规则往上套，有时会得到让人很迷糊的结果。我觉得这主要是因为JavaScript过渡依赖全局变量，和var声明的变量不具有块级作用域导致的。
+本文">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2019/07/21/JS-Scope/"/>
+
+
+
+
+
+  <title>JavaScript中变量的作用域 | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/07/21/JS-Scope/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">JavaScript中变量的作用域</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-21T20:40:32+08:00">
+                2019-07-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>作为一个稍微有点编程经验的程序员，在学习一门新的编程语言时通常都不用特别关注作用域的问题，因为绝大部分的编程语言中变量的作用域遵循的规则都差不多，开发人员能顺其自然预见一个变量在何处可见，在何时销毁。但是到了JavaScript中，如果再用其他语言的作用域规则往上套，有时会得到让人很迷糊的结果。我觉得这主要是因为JavaScript过渡依赖全局变量，和<code>var</code>声明的变量不具有块级作用域导致的。</p>
+<p>本文将总结一下笔者对JavaScript中变量的作用域的理解，如果想深挖其背后的运行机制，推荐阅读《你不知道的JavaScript（上卷）》，这本书几乎用了几乎半本书的内容来讲解作用域。</p>
+<a id="more"></a>
+<h2 id="全局作用域"><a href="#全局作用域" class="headerlink" title="全局作用域"></a>全局作用域</h2><p><code>script</code>标签直接包围的区域就是JavaScript中的全局作用域，定义在全局作用域中的变量叫作全局变量，全局变量在所有作用域中都可见。全局变量在浏览器窗口打开时创建，在浏览器关闭时销毁。在JavaScript中有3种方式定义全局变量。第1种是在任何函数之外放置一个<code>var</code>语句：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = <span class="keyword">value</span>;</span><br></pre></td></tr></table></figure>
+<p>第2种是直接给全局对象添加一个属性。全局对象是所有全局变量的容器。在Web浏览器里，全局对象是window：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">window</span>.foo = <span class="keyword">value</span>;</span><br></pre></td></tr></table></figure>
+<p>在全局作用域中定义的函数同样也会绑定为window对象的方法，所以当不确定变量和函数是否属于全局作用域时，可以打印window来看一下。</p>
+<p>第3种是直接使用未经声明的变量，这被称为隐式的全局变量：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">foo</span> = value;</span><br></pre></td></tr></table></figure>
+<p>还记得大学时刚开始写JavaScript代码，也不管三七二十一，就在一个<code>.js</code>文件写完所有的逻辑，变量也是定义一次恨不得从头用到尾。但是过渡使用全局变量会导致代码的可读性、复用性、可维护性大大降低，还可能导致与引用的其他<code>.js</code>文件中的变量发生命名冲突。在《JavaScript语言精粹》这本书中作者直接把全局变量列在了JavaScript最糟糕的特性第一位。</p>
+<h2 id="块作用域"><a href="#块作用域" class="headerlink" title="块作用域"></a>块作用域</h2><p>一个代码块（扩在一对花括号中的一组语句）会创建一个作用域，这个作用域就是块级作用域。代码块中声明的变量在其外部是不可见的，然而JavaScript中在代码块中用<code>var</code>声明的变量，在包含此代码块的函数的任何位置都是可见的。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(i) <span class="comment">// 仍然能访问到i，并且值为5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>好在ES6引用了新的关键字<code>let</code>和<code>const</code>来定义变量，<code>let</code>和<code>const</code>会为其声明的变量隐式地绑定到变量所在的作用域，包括块级作用域。将上面例子中的<code>var</code>改成<code>let</code>，再运行就会发现报错了，<code>Uncaught ReferenceError: i is not defined</code>。</p>
+<p>块作用域很明确地告诉引擎，变量何时可以创建，何时可以销毁，我们可以利用这一点来释放占用大量内存空间的临时变量，比如《你不知道的JavaScript（上卷）》中给出的这个例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">process</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 在这里做点有趣的事情</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在这个块中定义的内容可以销毁了! </span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">let</span> someReallyBigData = &#123; .. &#125;; </span><br><span class="line">    process( someReallyBigData );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById( <span class="string">"my_button"</span> );</span><br><span class="line"></span><br><span class="line">btn.addEventListener( <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span> <span class="title">click</span>(<span class="params">evt</span>)</span>&#123;</span><br><span class="line">         <span class="built_in">console</span>.log(<span class="string">"button clicked"</span>);</span><br><span class="line">&#125;, <span class="comment">/*capturingPhase=*/</span><span class="literal">false</span> );</span><br></pre></td></tr></table></figure>
+<p>理论上process(…)执行后，<code>someReallyBigData</code>就可以销毁了，但由于<code>click</code>函数形成了一个覆盖整个作用域的闭包，JavaScript引擎极有可能依然保存着这个结构（取决于具体实现）。所以不如在这里显示告诉引擎，这个变量已经不在需要了。</p>
+<p>我觉得这是很有用的一点，在开发时可以使用。</p>
+<h2 id="函数作用域"><a href="#函数作用域" class="headerlink" title="函数作用域"></a>函数作用域</h2><p>JavaScript中还是存在函数作用域的，我们要牢牢记住两点，一是定义在函数中的参数和变量在函数外部是不可见的，不管是<code>var</code>、<code>let</code>还是<code>const</code>定义的变量，在函数外部都是不可见的。二是在一个函数内部任何位置定义的变量，在该函数内部任何地方都可见，所以对于定义在函数内部的函数，也是可以访问到其外部函数中的参数和变量，（这里为<strong>闭包</strong>先铺个垫）。</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="number">3</span>, b = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">var</span> bar = <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> b = <span class="number">7</span>, c = <span class="number">11</span>;</span><br><span class="line"><span class="comment">// 此时，a=3 b=7 c=11</span></span><br><span class="line">        a += b + c;</span><br><span class="line"><span class="comment">// 此时，a=21 b=7 c=11</span></span><br><span class="line">    &#125;;</span><br><span class="line"><span class="comment">// 此时，a=3 b=5</span></span><br><span class="line">    bar();</span><br><span class="line"><span class="comment">// 此时，a=21 b=5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>有一个很好玩的点，对于函数本身，在其内部是可见，在其外部是不可见的。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 打印该function</span></span><br><span class="line">    <span class="built_in">console</span>.log(foo)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 打印undefined</span></span><br><span class="line"><span class="built_in">console</span>.log(foo)</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>从词法作用域来讲，可以将作用域再分为全局作用域、块作用域、函数作用域。我们要小心意义在全局作用域中定义变量和函数，因为过多的全局变量会让代码变得很糟。我们要擅于利用块作用域，来显示销毁临时变量，释放内存。函数这里涉及到闭包和箭头函数时，情况就变得复杂了，等到总结闭包和箭头函数时再细说。</p>
+<p>还有一点，如果能确定一个变量就是局部变量，那最好用<code>let</code>来定义，这样在<code>dev tools</code>中debug时，比较容易观察，用<code>var</code>定义的变量如果跑到了全局作用域，那还要展开<code>window</code>，一点点找。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><strong>【1】</strong> 《JavaScript语言精粹》</p>
+<p><strong>【2】</strong> 《你不知道的JavaScript》</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2019/07/21/JS-Scope/" target="_blank" rel="external">http://shinancao.cn/2019/07/21/JS-Scope/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Scope/" rel="tag"># Scope</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/20/Programming-thinking-1/" rel="next" title="一个业务工程师的能力体现在哪？">
+                <i class="fa fa-chevron-left"></i> 一个业务工程师的能力体现在哪？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/22/JS-Closure/" rel="prev" title="JavaScript中的闭包">
+                JavaScript中的闭包 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="意林" />
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">50</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">71</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#全局作用域"><span class="nav-number">1.</span> <span class="nav-text">全局作用域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#块作用域"><span class="nav-number">2.</span> <span class="nav-text">块作用域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数作用域"><span class="nav-number">3.</span> <span class="nav-text">函数作用域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
