@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JS Syntax,Promise,async/await,Generator," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="说一说同步和异步吧，我们的代码通常是顺序执行的，当前的代码块执行完，才会直接执行下一个代码块。如果一个函数正在执行，后面的代码只能等待它执行完才开始执行，这就是同步的。所以如果这个函数要花很长时间才能执行完，就发生阻塞，程序像陷入一种卡死的状态。如果这个函数把耗时时间长的任务丢出去，立马就返回，后面的代码可以接着运行，那这个函数就是异步的。
+那这个被丢出去的任务总有执行完的时候，等它执行结束后可能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript中的异步编程">
+<meta property="og:url" content="http://shinancao.github.io/2019/08/10/JS-Async/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="说一说同步和异步吧，我们的代码通常是顺序执行的，当前的代码块执行完，才会直接执行下一个代码块。如果一个函数正在执行，后面的代码只能等待它执行完才开始执行，这就是同步的。所以如果这个函数要花很长时间才能执行完，就发生阻塞，程序像陷入一种卡死的状态。如果这个函数把耗时时间长的任务丢出去，立马就返回，后面的代码可以接着运行，那这个函数就是异步的。
+那这个被丢出去的任务总有执行完的时候，等它执行结束后可能">
+<meta property="og:updated_time" content="2020-06-22T14:20:50.332Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JavaScript中的异步编程">
+<meta name="twitter:description" content="说一说同步和异步吧，我们的代码通常是顺序执行的，当前的代码块执行完，才会直接执行下一个代码块。如果一个函数正在执行，后面的代码只能等待它执行完才开始执行，这就是同步的。所以如果这个函数要花很长时间才能执行完，就发生阻塞，程序像陷入一种卡死的状态。如果这个函数把耗时时间长的任务丢出去，立马就返回，后面的代码可以接着运行，那这个函数就是异步的。
+那这个被丢出去的任务总有执行完的时候，等它执行结束后可能">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2019/08/10/JS-Async/"/>
+
+
+
+
+
+  <title>JavaScript中的异步编程 | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/08/10/JS-Async/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">JavaScript中的异步编程</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-10T16:40:32+08:00">
+                2019-08-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>说一说同步和异步吧，我们的代码通常是顺序执行的，当前的代码块执行完，才会直接执行下一个代码块。如果一个函数正在执行，后面的代码只能等待它执行完才开始执行，这就是同步的。所以如果这个函数要花很长时间才能执行完，就发生阻塞，程序像陷入一种卡死的状态。如果这个函数把耗时时间长的任务丢出去，立马就返回，后面的代码可以接着运行，那这个函数就是异步的。</p>
+<p>那这个被丢出去的任务总有执行完的时候，等它执行结束后可能要做一些操作，比如展示数据到界面上。这时JavaScript要怎样来执行异步任务结束后要做的事呢？随着JavaScript的不断发展，目前有这些方式：</p>
+<ul>
+<li>回调函数</li>
+<li>发布/订阅</li>
+<li>Promise</li>
+<li>Generator</li>
+<li>async/await</li>
+</ul>
+<a id="more"></a>
+<h2 id="回调函数"><a href="#回调函数" class="headerlink" title="回调函数"></a>回调函数</h2><figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f1</span><span class="params">(callback)</span> </span>&#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">callback</span>()</span><br><span class="line">    &#125;, <span class="number">1000</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>丢一个函数给异步操作，等异步操作结束后，它就会去执行这个函数，这个函数就是回调函数。</p>
+<p>函数回调的优点是简单，容易理解和部署，缺点是不利于代码阅读和维护，各个部分之间高度耦合，流程会很混乱，而且一个任务只能指定一个回调函数。</p>
+<h2 id="发布-订阅"><a href="#发布-订阅" class="headerlink" title="发布/订阅"></a>发布/订阅</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.body.addEventListener( <span class="string">'click'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123; </span><br><span class="line">    alert(<span class="number">2</span>)</span><br><span class="line">&#125;, <span class="literal">false</span> )</span><br><span class="line"></span><br><span class="line"><span class="built_in">document</span>.body.click() <span class="comment">// 模拟用户点击</span></span><br></pre></td></tr></table></figure>
+<p>这也算是异步处理的一种方式吧，我们没办法预知用户什么时候会点击，所以订阅<code>document.body</code>上的<code>click</code>事件，当<code>body</code>节点被点击时，<code>body</code>节点便会向订阅者发布这个消息。</p>
+<p>通常发布/订阅用来解决一对多的依赖关系，而回调函数是用来解决一对一的依赖关系。</p>
+<p>发布/订阅可以做到事件发生一方和处理事件一方的解耦，但如果发布者和订阅者都变多了以后，也因为结构松散导致代码难以理解和维护。</p>
+<h2 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h2><h2 id="理解Promise"><a href="#理解Promise" class="headerlink" title="理解Promise"></a>理解Promise</h2><p><code>Promise</code>的出现，让我们不用再写回调函数层层嵌套的代码了，实际上<code>Promise</code>内部也是维护了一个回调函数的数组，等到异步事件结束后，取出数组中的所有回调函数，然后依次执行。当创建一个<code>Promise</code>时，传入的函数就已经执行了，这个函数有两个函数参数<code>resolve</code>和<code>reject</code>，至于何时调用<code>resolve</code>，何时调用<code>reject</code>，就是开发者在编码时去确定的了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> p = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span>(<span class="params">resolve, reject</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 通常会在这里执行一些异步操作</span></span><br><span class="line">    <span class="comment">// 异步操作结束后，如果成功了，调用 resolve( result ) 将结果传出去，如果失败了，调用 reject( error ) 将错误原因传出去</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><code>Promise</code>内部还维护了一个状态(<code>state</code>)，分别是<code>pending</code>、<code>fulfilled</code>、<code>rejected</code>。初始时状态为<code>pending</code>，当我们在上面调用了<code>resolve</code>后，就会将<code>Promise</code>的状态改为<code>fulfilled</code>，当调用<code>reject</code>后，状态就变为了<code>rejected</code>。此外，只能从<code>pending</code>变为<code>fulfilled</code>，且只能转变一次。或者从<code>pending</code>变为<code>rejected</code>，且只能转变一次。<code>fulfilled</code>和<code>rejected</code>之间是不能相互转换的。</p>
+<p><code>Promise</code>的原型方法有：</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Promise</span>.proto<span class="keyword">type</span>.then(onFulfilled, onRejected)</span><br><span class="line">// 当调用<span class="keyword">then</span>的时候，就可以看做是像<span class="type">Promise</span>维护的callback数组中加了一次回调，但是这个回调是不会马上执行的，上面也说了，是执行resolve或reject时才会执行</span><br><span class="line"></span><br><span class="line"><span class="type">Promise</span>.proto<span class="keyword">type</span>.catch(onRejected)</span><br><span class="line">// catch中的回调是用来处理错误或异常的，所以其实相当于在调用this.<span class="keyword">then</span>(null, onRejected)，onRejected也是要放入callback数组中的。</span><br><span class="line"></span><br><span class="line"><span class="type">Promise</span>.proto<span class="keyword">type</span>.finally(onDone)</span><br><span class="line">// finally中的回调是不管成功还是失败都要执行的，onDone也要放入callback数组中，但因为onDone不能改变<span class="type">Promise</span>的状态，所以它不是简单的this.<span class="keyword">then</span>(onDone, onDone)。</span><br></pre></td></tr></table></figure>
+<p>所以可以看到，实际上最关键的是<code>then</code>方法，它返回了一个新的<code>Promise</code>，使得在链式调用时，可以正确拿到上一步返回的结果，如果上一步返回的是<code>Promise</code>，那拿到的就是这个<code>Promise</code> <code>resolve</code>的结果。</p>
+<p><code>Promise</code>的静态方法有：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Promise.resove<span class="comment">(value)</span></span><br><span class="line"><span class="comment">// 通常而言，如果你不知道一个值是否为Promise对象，使用该方法返回一个Promise对象，这样就能将value以Promise形式使用了。</span></span><br><span class="line"></span><br><span class="line">Promise.reject<span class="comment">(reason)</span></span><br><span class="line"><span class="comment">// 返回一个失败状态的Promise对象</span></span><br><span class="line"></span><br><span class="line">Promise.all<span class="comment">(iterable)</span></span><br><span class="line"><span class="comment">// 传入一组Promise对象，等所有Promise对象都执行完后，按Promise对象的传入顺序返回结果。</span></span><br><span class="line"><span class="comment">// 全部成功时，返回全部执行结果，有一个失败时，就立即返回失败的原因。</span></span><br><span class="line"><span class="comment">// 注意：all只是用来控制了执行结果的顺序，每个异步事件真正地执行是在Promise对象创建的时候。</span></span><br><span class="line"></span><br><span class="line">Promise.race<span class="comment">(iterable)</span></span><br><span class="line"><span class="comment">// 跟all差不多，只不过race在有一个成功时就返回了</span></span><br></pre></td></tr></table></figure>
+<p>具体可以看<a href="https://github.com/shinancao/code_collector/blob/master/promise_simple.js" target="_blank" rel="external">这里</a>查看<code>Promise</code>的实现过程，我加上了很详细的注释。</p>
+<h3 id="Promise的应用"><a href="#Promise的应用" class="headerlink" title="Promise的应用"></a>Promise的应用</h3><p>Jake Archibald的这篇文章：<a href="https://developers.google.com/web/fundamentals/primers/promises" target="_blank" rel="external">JavaScript Promise：简介</a>非常详细的讲解了<code>Promise</code>可以怎样来帮助我们写出简洁的代码，推荐阅读。虽然开发中也一直在用<code>Promise</code>，但看过文章后发现，也只是用了个皮毛，下面是阅读文章做的笔记，再加上自己的一些理解。</p>
+<p>先来准备一个返回<code>Promise</code>对象的函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> testURL1 = <span class="string">'https://ghibliapi.herokuapp.com/films/58611129-2dbc-4a81-a72f-77ddfc1b1b49'</span></span><br><span class="line"><span class="keyword">let</span> testURL2 = <span class="string">'https://ghibliapi.herokuapp.com/films/2baf70d1-42bb-4437-b551-e5fed5a87abe'</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">get</span>(<span class="params">url</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// Return a new Promise</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span>(<span class="params">resolve, reject</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// Do the usual XHR stuff</span></span><br><span class="line">        <span class="keyword">var</span> req = <span class="keyword">new</span> XMLHttpRequest()</span><br><span class="line">        req.open(<span class="string">'GET'</span>, url)</span><br><span class="line"></span><br><span class="line">        req.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (req.status === <span class="number">200</span>) &#123;</span><br><span class="line">                resolve(req.response)</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                reject(<span class="built_in">Error</span>(req.statusText))</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        req.onerror = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            reject(<span class="built_in">Error</span>(<span class="string">'Network Error'</span>))</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        req.send()</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getJSON</span>(<span class="params">url</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// JSON.parse正好需要一个参数，返回一个值，所以这里直接将其传入</span></span><br><span class="line">    <span class="comment">// 暂时先不用考虑reject的情况，在本文后面会讲到对error的捕获</span></span><br><span class="line">    <span class="keyword">return</span> get(url).then(<span class="built_in">JSON</span>.parse)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="串联多个异步请求"><a href="#串联多个异步请求" class="headerlink" title="串联多个异步请求"></a>串联多个异步请求</h3><p>在开发中，经常会有要先请求一个API，再请求一个API的情况，这时就可以用<code>Promise</code>将其串联起来了。</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">getJSON(testURL1).<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">(json)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> getJSON(testURL2)</span><br><span class="line">&#125;).<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">(json2)</span></span> &#123;</span><br><span class="line">    console.<span class="built_in">log</span>(json2)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>如果在第1个<code>then</code>的回调中又返回了一个<code>Promise</code>，第2个<code>then</code>会等待这个<code>Promise</code>执行完才执行，而且这个 <code>Promise</code> resolve的结果会传入第2个<code>then</code>的回调中。这样我们就可以将多个有顺序的API串联起来请求了，避免了去写出回调地狱那样的代码。</p>
+<p>此外，在开发中如果遇到这样的情况，<code>api_a</code>在请求<code>api_b</code>之前要先去请求一次，在请求<code>api_c</code>之前也需要先去请求一次，但是<code>api_b</code>和<code>api_c</code>的请求顺序是没有关系的，不确定谁先请求，谁后请求，这是我们可以用<code>Promise</code>包装<code>api_a</code>的请求，然后将其缓存下来，像下面这样：</p>
+<figure class="highlight scilab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">var reusablePromise</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getReusableData</span><span class="params">()</span> &#123;</span></span><br><span class="line">    reusablePromise = reusablePromise || getJSON(testURL1)</span><br><span class="line">    <span class="keyword">return</span> reusablePromise</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line">getReusableData().<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">(json)</span> &#123;</span></span><br><span class="line">    <span class="keyword">return</span> getJSON(testURL2)</span><br><span class="line">&#125;).<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">(json2)</span> &#123;</span></span><br><span class="line">    console.<span class="built_in">log</span>(json2)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">//补上一个接口，以便于测试</span></span><br><span class="line">let testURL3 = <span class="string">'https://ghibliapi.herokuapp.com/people/ba924631-068e-4436-b6de-f3283fa848f0'</span></span><br><span class="line">getReusableData().<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">(json)</span> &#123;</span></span><br><span class="line">    <span class="keyword">return</span> getJSON(testURL3)</span><br><span class="line">&#125;).<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">(json2)</span> &#123;</span></span><br><span class="line">    console.<span class="built_in">log</span>(json2)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这样做的好处是，<code>testURL1</code>的数据会在<code>getReusableData</code>被第一次调用的时候才去请求，之后再调用<code>getReusableData</code>时，不会再请求<code>testURL1</code>，运行代码后可以<code>dev tools</code>中观察接口请求情况。</p>
+<h3 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h3><p>异常情况的处理，之前我们可能都放在了<code>reject</code>的回调中，还可以用<code>catch</code>的回调来专门处理错误。</p>
+<figure class="highlight scilab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">getJSON(testURL1).<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">(json)</span> &#123;</span></span><br><span class="line">    console.<span class="built_in">log</span>(<span class="string">'asyncThing1 work!'</span>)</span><br><span class="line">    <span class="keyword">return</span> getJSON(<span class="string">'/'</span>)</span><br><span class="line">&#125;)</span><br><span class="line">.<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">()</span> &#123;</span></span><br><span class="line">    console.<span class="built_in">log</span>(<span class="string">'asyncThing2 work!'</span>)</span><br><span class="line">&#125;)</span><br><span class="line">.<span class="keyword">catch</span>(<span class="function"><span class="keyword">function</span><span class="params">(err)</span> &#123;</span></span><br><span class="line">    console.<span class="built_in">log</span>(<span class="string">'asyncThing2 error!'</span>)</span><br><span class="line">    <span class="comment">// 在asyncThing2发生error，请求另一个接口尝试恢复</span></span><br><span class="line">    <span class="keyword">return</span> getJSON(testURL2)</span><br><span class="line">&#125;)</span><br><span class="line">.<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">(json)</span>&#123;</span></span><br><span class="line">    console.<span class="built_in">log</span>(<span class="string">'recovery1 work!'</span>)</span><br><span class="line">    <span class="keyword">return</span> getJSON(<span class="string">'/'</span>)</span><br><span class="line">&#125;)</span><br><span class="line">.<span class="keyword">catch</span>(<span class="function"><span class="keyword">function</span><span class="params">(err)</span> &#123;</span></span><br><span class="line">    console.<span class="built_in">log</span>(<span class="string">'asyncThing3 error!'</span>)</span><br><span class="line">&#125;)</span><br><span class="line">.<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">()</span> &#123;</span></span><br><span class="line">    console.<span class="built_in">log</span>(<span class="string">'All done!'</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这段的打印结果是：</p>
+<figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">asyncThing1 work!</span><br><span class="line">asyncThing2 error!</span><br><span class="line">recovery1 work!</span><br><span class="line">asyncThing3 error!</span><br><span class="line">All done!</span><br></pre></td></tr></table></figure>
+<p>所以可以观察到，虽然<code>catch</code>捕获到了<code>error</code>，但是在其后的<code>then</code>回调函数会继续执行。所以实际开发中，可以在<code>catch</code>的回调函数中进行错误处理，比如弹一个错误提示框。最后可以再放一个<code>then</code>回调函数，执行最后的收尾工作，比如隐藏loading条。</p>
+<p>此外，<code>Promise</code>构造函数中发生错误，或者<code>then</code>回调中发生错误，都会自动捕获进而拒绝，触发<code>catch</code>回调。</p>
+<h3 id="顺序请求多个接口和并行请求多个接口"><a href="#顺序请求多个接口和并行请求多个接口" class="headerlink" title="顺序请求多个接口和并行请求多个接口"></a>顺序请求多个接口和并行请求多个接口</h3><p>可以结合<code>Array.prototype.reduce</code>和<code>Promise.resolve()</code>来解决。</p>
+<p>顺序请求多个接口：</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">urls.reduce(<span class="function"><span class="keyword">function</span><span class="params">(sequence, url)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">sequence</span>.<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">return</span> getJSON(url)</span><br><span class="line">    &#125;)</span><br><span class="line">    .<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">(json)</span></span> &#123;</span><br><span class="line">        console.<span class="built_in">log</span>(json)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;, Promise.resolve())</span><br></pre></td></tr></table></figure>
+<p>并行请求多个接口，然后等待所有请求结束后再处理数据，可使用<code>Promise.all</code>：</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Promise.<span class="built_in">all</span>(arrayOfPromises).<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">(arrayOfResults)</span></span> &#123;</span><br><span class="line">  //...</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>并行请求多个接口，但在每个接口返回数据时都处理相应的数据，并且是按照传入的<code>Promise</code>的顺序处理的：</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">urls.map(getJSON).reduce(<span class="function"><span class="keyword">function</span><span class="params">(sequence, promise)</span></span> &#123;</span><br><span class="line">    // 使用<span class="keyword">sequence</span>将promise有序串联起来，这样就可以按照顺序拿到数据了</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">sequence</span>.<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">return</span> promise</span><br><span class="line">    &#125;)</span><br><span class="line">    .<span class="keyword">then</span>(<span class="function"><span class="keyword">function</span><span class="params">(json)</span></span> &#123;</span><br><span class="line">        console.<span class="built_in">log</span>(json)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;, Promise.resolve())</span><br></pre></td></tr></table></figure>
+<p><code>Promise</code>虽然让我们可以用链式调用的方式来处理异步请求回来的结果，但是如果<code>Promise</code>多了的话，一堆的<code>then</code>也会看起来很不友好，而且<code>Promise</code>没办法取消，还必须主动设置处理错误的回调函数，才能知道是否发生了错误或者异常。</p>
+<h2 id="generator"><a href="#generator" class="headerlink" title="generator"></a>generator</h2><p>ES6规范同时提出了<code>Generator</code>的方式来编写异步程序，它的形式如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span>* <span class="title">generatorFunction</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">yield</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">yield</span> <span class="number">2</span></span><br><span class="line">    <span class="keyword">yield</span> <span class="number">3</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> generator = generatorFunction()</span><br><span class="line"><span class="comment">// "Generator &#123; &#125;"</span></span><br></pre></td></tr></table></figure>
+<p><code>Generator</code>函数会始终返回一个<code>Generator</code>对象，它的原型方法有：</p>
+<p><strong>Generator.prototype.next()</strong></p>
+<p>返回一个由<code>yield</code>表达式生成的值，该值具有<code>value</code>和<code>done</code>属性。当迭代到最后一个<code>yield</code>，如果有<code>return</code>语句是迭代到<code>return</code>时，<code>done</code>会变为<code>true</code>。它也可以接受一个参数，然后这个参数会被发送给<code>Generator</code>函数中的下一个<code>yield</code>。</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">generator.<span class="keyword">next</span>()  // &#123; value: <span class="number">1</span>, done: <span class="literal">false</span> &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Generator.prototype.return()</strong></p>
+<p>可以调用这个方法随时手动结束生成器，这个方法也接受一个参数，并会将该参数返回。</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">generator.<span class="keyword">return</span>(<span class="string">'over'</span>) // &#123; value: <span class="string">'over'</span>, done: <span class="literal">false</span> &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Generator.prototype.throw()</strong></p>
+<p>像生成器抛出一个<code>error</code>，可以将错误原因作为参数传入。在<code>Generator</code>函数中可以通过<code>try/catch</code>来捕获这个<code>error</code>。</p>
+<p>咱们来从表面看看<code>Generator</code>有什么有意思的地方，通常函数在调用完就结束了，但是我们还可以在<code>generatorFunction</code>函数调用完之后再向它传值，并且还可以从它再拿到新的返回值，而且当前程序也没有发生阻塞。<code>yield</code>似乎把函数的执行暂停在那里了，等到调用<code>next()</code>时候才启动。</p>
+<blockquote>
+<p>那<code>Generator</code>可以怎样应用于异步编程呢？</p>
+</blockquote>
+<p>下面看个例子，利用<code>fetch</code>到<a href="https://jsonplaceholder.typicode.com/" target="_blank" rel="external">jsonplaceholder</a>请一组mock数据。</p>
+<figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span>* getUsers() &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">response</span> = yield fetch(<span class="comment">'https://jsonplaceholder.typicode.com/users')</span></span><br><span class="line">    <span class="keyword">const</span> json = yield <span class="built_in">response</span>.json()</span><br><span class="line">    console.<span class="built_in">log</span>(json)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> gen = getUsers()</span><br><span class="line"></span><br><span class="line">gen.<span class="keyword">next</span>().value.<span class="keyword">then</span>(<span class="built_in">response</span> =&gt; &#123;</span><br><span class="line">    gen.<span class="keyword">next</span>(<span class="built_in">response</span>).value.<span class="keyword">then</span>(<span class="built_in">response</span> =&gt; &#123;</span><br><span class="line">        gen.<span class="keyword">next</span>(<span class="built_in">response</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><code>getUsers</code>中虽然有异步请求，但是在代码书写上就像是同步的，非常便于阅读。那你可能会说那不是还需要下面这些额外的工作嘛。但其实完全可以把通过<code>next</code>一步步拿值的这段代码封装起来，写一次就行了，下面是一个简单版的封装：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">asyncAlt</span>(<span class="params">generatorFunction</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 返回一个函数</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">const</span> generator = generatorFunction()</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">resolve</span>(<span class="params">next</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (next.done) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve(next.value)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 如果yield中还有值，就要等待这个异步返回结果，然后传给下一步，再进行resolve，如此循环，直到没有yield了</span></span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve(next.value).then(response =&gt; &#123;</span><br><span class="line">                <span class="keyword">return</span> resolve(generator.next(response))</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 启动generator</span></span><br><span class="line">        <span class="keyword">return</span> resolve(generator.next())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 测试</span></span><br><span class="line"><span class="keyword">const</span> getUsers = asyncAlt(<span class="function"><span class="keyword">function</span>* (<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">const</span> response = <span class="keyword">yield</span> fetch(<span class="string">'https://jsonplaceholder.typicode.com/users'</span>)</span><br><span class="line">    <span class="keyword">const</span> json = <span class="keyword">yield</span> response.json()</span><br><span class="line">    <span class="keyword">return</span> json</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">getUsers().then(response =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(response)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><code>Generator</code>允许我们用顺序的形式来进行异步编程，更加方便代码阅读。但是也要自行处理<code>next()</code>取值，或者利用第三方库如<a href="https://github.com/tj/co" target="_blank" rel="external">Co.js</a>进行配合。</p>
+<p>实际上<code>Generator</code>是<a href="https://zh.wikipedia.org/wiki/%E5%8D%8F%E7%A8%8B" target="_blank" rel="external">协程</a>在JavaScript中的实现，关于协程，可以看阮一峰老师的<a href="https://www.liaoxuefeng.com/wiki/897692888725344/923057403198272" target="_blank" rel="external">这篇文章</a>更进一步了解。</p>
+<h2 id="asyn-await"><a href="#asyn-await" class="headerlink" title="asyn/await"></a>asyn/await</h2><h3 id="如何使用asyn-await"><a href="#如何使用asyn-await" class="headerlink" title="如何使用asyn/await"></a>如何使用asyn/await</h3><p>好在ES7规范提出了<code>asyn/await</code>，结合<code>Promise</code>，让我们真正可以像写同步代码一样去写异步代码，它的使用形式如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">myFirstAsyncFunction</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> fulfilledValue = <span class="keyword">await</span> promise</span><br><span class="line">    &#125; <span class="keyword">catch</span>(rejectedValue) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在函数定义前面加上<code>async</code>关键字，就可以在函数内部使用<code>await</code>了，而且<code>await</code>一定是一个<code>Promise</code>对象，之后函数会暂停执行，直到<code>Promise</code>对象产生结果，并且暂停不会阻塞主线程。如果<code>Promise</code>成功，就会返回值，如果<code>Promise</code>拒绝，就会抛出错误。</p>
+<p>调用加上了<code>async</code>的函数，始终会返回一个<code>Promise</code>对象，如果函数有返回值，该<code>Promise</code>成功，并返回该值，如果函数抛出了错误，该<code>Promise</code>拒绝，并抛出该错误。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">wait</span>(<span class="params">ms</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(r =&gt; setTimeout(r, ms))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">await</span> wait(<span class="number">500</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="string">'world'</span></span><br><span class="line">  <span class="comment">// 或者 </span></span><br><span class="line">  <span class="comment">// throw Error('bar')</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">hello().then(val =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val)  <span class="comment">// world</span></span><br><span class="line">&#125;, err =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(err)  <span class="comment">// bar</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="关于并行和并发"><a href="#关于并行和并发" class="headerlink" title="关于并行和并发"></a>关于并行和并发</h3><p>在MDN的<code>async function</code>这一节举的例子中，有特意对比并行和并发写法的不同，我将其中<code>Promise</code>的部分拿出来，感兴趣的话，可以跳转到MDN看看：</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">var concurrentPromise = function() &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'==CONCURRENT START with Promise.all=='</span>);</span><br><span class="line">  <span class="keyword">return</span> Promise.all([resolveAfter2Seconds(), resolveAfter1Second()]).<span class="keyword">then</span>(<span class="function"><span class="params">(messages)</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(messages[<span class="number">0</span>]); <span class="regexp">//</span> slow</span><br><span class="line">    <span class="built_in">console</span>.log(messages[<span class="number">1</span>]); <span class="regexp">//</span> fast</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> This function does <span class="keyword">not</span> handle errors. See warning below!</span><br><span class="line">var parallelPromise = function() &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'==PARALLEL with Promise.then=='</span>);</span><br><span class="line">  resolveAfter2Seconds().<span class="keyword">then</span>(<span class="function"><span class="params">(message)</span>=&gt;</span><span class="built_in">console</span>.log(message));</span><br><span class="line">  resolveAfter1Second().<span class="keyword">then</span>(<span class="function"><span class="params">(message)</span>=&gt;</span><span class="built_in">console</span>.log(message));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> wait again</span><br><span class="line">setTimeout(concurrentPromise, <span class="number">7000</span>); <span class="regexp">//</span> after <span class="number">2</span> seconds, logs <span class="string">"slow"</span> <span class="keyword">and</span> <span class="keyword">then</span> <span class="string">"fast"</span></span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> wait again</span><br><span class="line">setTimeout(parallelPromise, <span class="number">13000</span>); <span class="regexp">//</span> truly parallel: after <span class="number">1</span> second, logs <span class="string">"fast"</span>, <span class="keyword">then</span> after <span class="number">1</span> more second, <span class="string">"slow"</span></span><br></pre></td></tr></table></figure>
+<p>这块我想说的是，不管是哪一种写法，在调用<code>resolveAfter2Seconds()</code>和<code>resolveAfter1Second()</code>时异步操作都已经开始了，只所以看到输出结果不同，是因为<code>then</code>被执行的时机不同，<code>Promise.all</code>内部是新生成了一个<code>Promise</code>对象，然后用<code>for</code>循环计数传出的<code>Promise</code>是否都执行完了，都执行完后才调用了新生成的<code>Promise</code>的<code>resolve</code>，我们看到这个<code>then</code>才被调用。下面<code>parallelPromise</code>就不用说啦，异步执行完的时候<code>then</code>就被执行了，所以我们看到的输出结果时机不一样。</p>
+<blockquote>
+<p>我觉得没有必要扯到并行和并发上去，要不总不自觉联想到操作系统那一套东西 =.=</p>
+</blockquote>
+<p>这里也正好提醒我们，虽然<code>async/await</code>可以让我们以同步的方式写异步代码，但是有多个异步操作可以同时进行时，还是要先执行异步操作，然后再对结果进行处理。假如我们想获取一组网址，并尽快按正确的顺序将它们记录到日志中。</p>
+<p>🚫不推荐的写法</p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">logInOrder</span>(<span class="params">urls</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">const</span> <span class="built_in">url</span> <span class="keyword">of</span> urls) &#123;</span><br><span class="line">        <span class="keyword">const</span> response = <span class="keyword">await</span> fetch(<span class="built_in">url</span>)</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="keyword">await</span> response.text())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然写法跟我们平时写<code>for</code>的代码一样，但是效率却低很多，要等一个请求拿到结果后，下一个请求才会发出。</p>
+<p>✅推荐的写法</p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">logInOrder</span>(<span class="params">urls</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// async函数返回的始终是Promise对象，这里将url映射成Promise对象</span></span><br><span class="line">    <span class="comment">// 这map的过程中，实际上就有n个async函数被调用了，所以请求是一起发出去的</span></span><br><span class="line">    <span class="keyword">const</span> textPromises = urls.map(<span class="keyword">async</span> <span class="built_in">url</span> =&gt; &#123;</span><br><span class="line">        <span class="keyword">const</span> response = <span class="keyword">await</span> fetch(<span class="built_in">url</span>)</span><br><span class="line">        <span class="keyword">return</span> response.text()</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 最后等所有的请求都执行完毕，再按照顺序打印日志就好了</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> textPromise <span class="keyword">of</span> textPromises) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="keyword">await</span> textPromise.text())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>async/await</code>的用法看起来是不是很想上一节展示的<code>asyncAlt</code>函数，实际上可以把<code>async/await</code>看成是*/yield的语法糖。有一些浏览器可能还不支持<code>async/await</code>，可以使用<a href="https://babeljs.io/" target="_blank" rel="external">Babel</a>进行转译。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><strong>【1】</strong> <a href="http://www.ruanyifeng.com/blog/2012/12/asynchronous＿javascript.html" target="_blank" rel="external">Javascript异步编程的4种方法</a></p>
+<p><strong>【2】</strong> <a href="https://developers.google.com/web/fundamentals/primers/promises" target="_blank" rel="external">JavaScript Promise：简介</a></p>
+<p><strong>【3】</strong> <a href="https://mp.weixin.qq.com/s?__biz=MzI4NjY4MTU5Nw==&amp;mid=2247486661&amp;idx=1&amp;sn=8e4b3056aa9c110ca08047d0917290f4&amp;chksm=ebd87c57dcaff54168d1a8f94b074fa814270b9753d8c1e7eebe3b4203254ecb0e6989ba1f19&amp;scene=21" target="_blank" rel="external">图解 Promise 实现原理（一）—— 基础实现</a>（一到四）</p>
+<p><strong>【4】</strong> <a href="https://www.taniarascia.com/understanding-generators-in-javascript/" target="_blank" rel="external">Understanding Generators in JavaScript</a></p>
+<p><strong>【5】</strong> <a href="https://developers.google.com/web/fundamentals/primers/async-functions" target="_blank" rel="external">异步函数 - 提高 Promise 的易用性</a></p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2019/08/10/JS-Async/" target="_blank" rel="external">http://shinancao.cn/2019/08/10/JS-Async/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JS-Syntax/" rel="tag"># JS Syntax</a>
+          
+            <a href="/tags/Promise/" rel="tag"># Promise</a>
+          
+            <a href="/tags/async-await/" rel="tag"># async/await</a>
+          
+            <a href="/tags/Generator/" rel="tag"># Generator</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/02/JS-Promote/" rel="next" title="JavaScript中的提升">
+                <i class="fa fa-chevron-left"></i> JavaScript中的提升
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/15/HTTP-Cookie/" rel="prev" title="HTTP cookie">
+                HTTP cookie <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="意林" />
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">51</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#回调函数"><span class="nav-number">1.</span> <span class="nav-text">回调函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发布-订阅"><span class="nav-number">2.</span> <span class="nav-text">发布/订阅</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Promise"><span class="nav-number">3.</span> <span class="nav-text">Promise</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#理解Promise"><span class="nav-number">4.</span> <span class="nav-text">理解Promise</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Promise的应用"><span class="nav-number">4.1.</span> <span class="nav-text">Promise的应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#串联多个异步请求"><span class="nav-number">4.2.</span> <span class="nav-text">串联多个异步请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#错误处理"><span class="nav-number">4.3.</span> <span class="nav-text">错误处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#顺序请求多个接口和并行请求多个接口"><span class="nav-number">4.4.</span> <span class="nav-text">顺序请求多个接口和并行请求多个接口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#generator"><span class="nav-number">5.</span> <span class="nav-text">generator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#asyn-await"><span class="nav-number">6.</span> <span class="nav-text">asyn/await</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何使用asyn-await"><span class="nav-number">6.1.</span> <span class="nav-text">如何使用asyn/await</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于并行和并发"><span class="nav-number">6.2.</span> <span class="nav-text">关于并行和并发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
