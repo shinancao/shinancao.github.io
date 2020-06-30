@@ -574,6 +574,432 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/08/25/JS-Modules/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/25/JS-Modules/" itemprop="url">JavaScript中的模块</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-25T16:40:32+08:00">
+                2019-08-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本文将主要介绍一下CommonJS、AMD、CMD，以及ES6 Module，每个部分的讲解足够开始上手使用相应的模块化工具，所以本文会略长，可以直接定位到需要的小节看~</p>
+<h2 id="模块系统的演进"><a href="#模块系统的演进" class="headerlink" title="模块系统的演进"></a>模块系统的演进</h2><blockquote>
+<p>本部分内容摘自：<a href="https://zhaoda.net/webpack-handbook/module-system.html" target="_blank" rel="external">https://zhaoda.net/webpack-handbook/module-system.html</a></p>
+</blockquote>
+<p>模块系统主要解决模块的定义、依赖和导出，先来看看已经存在的模块系统。</p>
+<h3 id="lt-script-gt-标签"><a href="#lt-script-gt-标签" class="headerlink" title="&lt;script&gt;标签"></a><code>&lt;script&gt;</code>标签</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"module1.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"module2.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"libraryA.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"module3.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这是最原始的 JavaScript 文件加载方式，如果把每一个文件看做是一个模块，那么他们的接口通常是暴露在全局作用域下，也就是定义在 window 对象中，不同模块的接口调用都是一个作用域中，一些复杂的框架，会使用命名空间的概念来组织这些模块的接口，典型的例子如 <a href="https://yuilibrary.com/" target="_blank" rel="external">YUI</a> 库。</p>
+<p>这种原始的加载方式暴露了一些显而易见的弊端：</p>
+<ul>
+<li>全局作用域下容易造成变量冲突</li>
+<li>文件只能按照 <code>&lt;script&gt;</code> 的书写顺序进行加载</li>
+<li>开发人员必须主观解决模块和代码库的依赖关系</li>
+<li>在大型项目中各种资源难以管理，长期积累的问题导致代码库混乱不堪</li>
+</ul>
+<h3 id="CommonJS"><a href="#CommonJS" class="headerlink" title="CommonJS"></a>CommonJS</h3><p>服务器端的 Node.js 遵循 <a href="http://wiki.commonjs.org/wiki/CommonJS" target="_blank" rel="external">CommonJS</a>规范，该规范的核心思想是允许模块通过 <code>require</code> 方法来同步加载所要依赖的其他模块，然后通过 <code>exports</code> 或 <code>module.exports</code> 来导出需要暴露的接口。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(<span class="string">"module"</span>);</span><br><span class="line"><span class="built_in">require</span>(<span class="string">"../file.js"</span>);</span><br><span class="line">exports.doStuff = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125;;</span><br><span class="line"><span class="built_in">module</span>.exports = someValue;</span><br></pre></td></tr></table></figure>
+<p>优点：</p>
+<ul>
+<li>服务器端模块便于重用</li>
+<li><a href="https://www.npmjs.com/" target="_blank" rel="external">NPM</a> 中已经有将近20万个可以使用模块包</li>
+<li>简单并容易使用</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>同步的模块加载方式不适合在浏览器环境中，同步意味着阻塞加载，浏览器资源是异步加载的</li>
+<li>不能非阻塞的并行加载多个模块</li>
+</ul>
+<p>实现：</p>
+<ul>
+<li>服务器端的 <a href="http://www.nodejs.org/" target="_blank" rel="external">Node.js</a></li>
+<li><a href="http://browserify.org/" target="_blank" rel="external">Browserify</a>浏览器端的 CommonJS 实现，可以使用 NPM 的模块，但是编译打包后的文件体积可能很大</li>
+<li><a href="https://github.com/medikoo/modules-webmake" target="_blank" rel="external">modules-webmake</a>，类似Browserify，还不如 Browserify 灵活</li>
+<li><a href="https://github.com/substack/wreq" target="_blank" rel="external">wreq</a>，Browserify 的前身</li>
+</ul>
+<h3 id="AMD"><a href="#AMD" class="headerlink" title="AMD"></a>AMD</h3><p><a href="https://github.com/amdjs/amdjs-api" target="_blank" rel="external">Asynchronous Module Definition</a> 规范其实只有一个主要接口 define(id?, dependencies?, factory)，它要在声明模块的时候指定所有的依赖 dependencies，并且还要当做形参传到 factory 中，对于依赖的模块提前执行，依赖前置。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="string">"module"</span>, [<span class="string">"dep1"</span>, <span class="string">"dep2"</span>], <span class="function"><span class="keyword">function</span>(<span class="params">d1, d2</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> someExportedValue;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="built_in">require</span>([<span class="string">"module"</span>, <span class="string">"../file"</span>], <span class="function"><span class="keyword">function</span>(<span class="params">module, file</span>) </span>&#123; <span class="comment">/* ... */</span> &#125;);</span><br></pre></td></tr></table></figure>
+<p>优点：</p>
+<ul>
+<li>适合在浏览器环境中异步加载模块</li>
+<li>可以并行加载多个模块</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>提高了开发成本，代码的阅读和书写比较困难，模块定义方式的语义不顺畅</li>
+<li>不符合通用的模块化思维方式，是一种妥协的实现</li>
+</ul>
+<p>实现：</p>
+<ul>
+<li><a href="https://requirejs.org/" target="_blank" rel="external">RequireJS</a></li>
+<li><a href="https://github.com/cujojs/curl" target="_blank" rel="external">curl</a></li>
+</ul>
+<h3 id="CMD"><a href="#CMD" class="headerlink" title="CMD"></a>CMD</h3><p><a href="https://github.com/cmdjs/specification/blob/master/draft/module.md" target="_blank" rel="external">Common Module Definition</a> 规范和 AMD 很相似，尽量保持简单，并与 CommonJS 和 Node.js 的 Modules 规范保持了很大的兼容性。</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">define</span></span>(function(<span class="keyword">require</span>, exports, module) &#123;</span><br><span class="line">  <span class="built_in">var</span> $ = <span class="keyword">require</span>(<span class="string">'jquery'</span>);</span><br><span class="line">  <span class="built_in">var</span> Spinning = <span class="keyword">require</span>(<span class="string">'./spinning'</span>);</span><br><span class="line">  exports.doSomething = <span class="attr">...</span></span><br><span class="line">  module.exports = <span class="attr">...</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>优点：</p>
+<ul>
+<li>依赖就近，延迟执行</li>
+<li>可以很容易在 Node.js 中运行</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>依赖 SPM 打包，模块的加载逻辑偏重</li>
+</ul>
+<p>实现：</p>
+<ul>
+<li><a href="https://www.xgllseo.com/seajs/docs/zh-cn/commonjs-notes.html" target="_blank" rel="external">sea.js</a></li>
+<li><a href="https://github.com/cloudcome/coolie" target="_blank" rel="external">coolie</a></li>
+</ul>
+<h3 id="UMD"><a href="#UMD" class="headerlink" title="UMD"></a>UMD</h3><p><a href="https://github.com/umdjs/umd" target="_blank" rel="external">Universal Module Definition</a> 规范类似于兼容 CommonJS 和 AMD 的语法糖，是模块定义的跨平台解决方案。</p>
+<h3 id="ES6-模块"><a href="#ES6-模块" class="headerlink" title="ES6 模块"></a>ES6 模块</h3><p>ECMAScript6 标准增加了 JavaScript 语言层面的模块体系定义。<a href="https://es6.ruanyifeng.com/#docs/module" target="_blank" rel="external">ES6 模块</a>的设计思想，是尽量的静态化，使得编译时就能确定模块的依赖关系，以及输入和输出的变量。CommonJS 和 AMD 模块，都只能在运行时确定这些东西。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 没有用原文中的代码</span></span><br><span class="line"><span class="comment">// 导出</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">shout</span>(<span class="params">string</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;string.toUpperCase()&#125;</span>!`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 导入</span></span><br><span class="line"><span class="keyword">import</span> &#123; shout &#125; <span class="keyword">from</span> <span class="string">'./lib.js'</span></span><br></pre></td></tr></table></figure>
+<p>优点：</p>
+<ul>
+<li>容易进行静态分析</li>
+<li>面向未来的 ECMAScript 标准</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>原生浏览器端还没有实现该标准 （笔者注：目前主流的浏览器都已经支持了JavaScript的模块）</li>
+<li>全新的命令字，新版的 Node.js才支持</li>
+</ul>
+<p>实现：</p>
+<ul>
+<li><a href="https://babeljs.io/" target="_blank" rel="external">Babel</a></li>
+</ul>
+<h2 id="CommonJS-与-Node-js"><a href="#CommonJS-与-Node-js" class="headerlink" title="CommonJS 与 Node.js"></a>CommonJS 与 Node.js</h2><p>Node.js的模块化实现，采用的是CommonJS规范，我们可以在Node环境中进行调试，观察CommonJS规范中的一些细节。</p>
+<blockquote>
+<p>关于CommonJS的使用和介绍，可以阅读阮一峰老师的这篇文章：<a href="https://javascript.ruanyifeng.com/nodejs/module.html#toc0" target="_blank" rel="external">CommonJS规范</a>，将的各方面都比较详细易懂。</p>
+</blockquote>
+<p>现在准备3个<code>.js</code>文件，引用关系如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">main<span class="selector-class">.js</span> -----&gt; increment<span class="selector-class">.js</span> -----&gt; math.js</span><br></pre></td></tr></table></figure>
+<p>math.js</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">var</span> inc = require(<span class="string">'./increment'</span>)<span class="selector-class">.increment</span></span><br><span class="line"></span><br><span class="line"><span class="selector-tag">var</span> <span class="selector-tag">a</span> = <span class="number">1</span></span><br><span class="line"><span class="function"><span class="title">inc</span><span class="params">(a)</span></span>   <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
+<p>increment.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> add = <span class="built_in">require</span>(<span class="string">'./math'</span>).add</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports.increment = <span class="function"><span class="keyword">function</span>(<span class="params">val</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> add(val, <span class="number">1</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>math.js</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">module.exports.add = function() &#123;</span><br><span class="line">    <span class="keyword">var</span> <span class="keyword">sum</span> = 0, i = 0, <span class="keyword">args</span> = arguments, <span class="keyword">l</span> = <span class="keyword">args</span>.<span class="built_in">length</span></span><br><span class="line">    <span class="keyword">while</span> (i &lt; <span class="keyword">l</span>) &#123;</span><br><span class="line">        <span class="keyword">sum</span> += <span class="keyword">args</span>[i++]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sum</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>打开终端，进行调试：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="keyword">node</span> <span class="title">debug</span> main.js</span><br></pre></td></tr></table></figure>
+<p>当前的变量如下图所示：</p>
+<p><img src="/images/commonjs-debug.jpg"></p>
+<p>可以看到，这里面多了3个变量，并不是我们手动创建的：<code>exports</code>、<code>module</code>、<code>require</code>。搞懂了这几个变量，基本可以应对平时在Node中使用导入导出时涉及到的问题，以及对Node是如何实现CommonJS规范的，有一个大致的理解。</p>
+<h3 id="exports"><a href="#exports" class="headerlink" title="exports"></a>exports</h3><p><code>exports</code>中的内容，就是要暴露给别人使用的接口，因为<code>main.js</code>没有导出东西，所以这里<code>exports</code>是空的。这个<code>exports</code>变量实际上是Node为了方便提供的，指向<code>module.exports</code>。这相当于在每个模块头部，有这样一行语句：</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="keyword">exports</span> = module.<span class="keyword">exports</span></span><br></pre></td></tr></table></figure>
+<p>所以当要导出接口时，下面两种写法都是可以的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">exports.repeat = <span class="function"><span class="keyword">function</span>(<span class="params">string</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;string&#125;</span> <span class="subst">$&#123;string&#125;</span>`</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 或</span></span><br><span class="line"><span class="built_in">module</span>.exports.repeat = <span class="function"><span class="keyword">function</span>(<span class="params">string</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;string&#125;</span> <span class="subst">$&#123;string&#125;</span>`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意，不能直接让<code>exports</code>变量直接指向一个值，这相当于切断了<code>exports</code>和<code>module.exports</code>之间的联系。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">exports = <span class="function"><span class="keyword">function</span>(<span class="params">string</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;string&#125;</span> <span class="subst">$&#123;string&#125;</span>`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的写法是无效的，因为<code>exports</code>不再指向<code>module.exports</code>了。如果一个模块对外只有一个接口，只能使用<code>module.exports</code>输出。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span>(<span class="params">string</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;string&#125;</span> <span class="subst">$&#123;string&#125;</span>`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="module"><a href="#module" class="headerlink" title="module"></a>module</h3><p><code>module</code>是<code>Module</code>的实例对象，将它展开可以看到具有如下属性：</p>
+<p><img src="/images/commomjs-module.jpg"></p>
+<ul>
+<li><p><code>module.id</code> — 模块的标识符，通常是带有绝对路径的文件名。可见CommonJS规范中一个文件就是一个模块，不管它又没有对外输出值。</p>
+</li>
+<li><p><code>module.filename</code> - 模块的文件名，带有绝对路径。</p>
+</li>
+<li><p><code>module.loaded</code> — 布尔值，表示模块是否被加载过。可以看到<code>main.js</code>模块没有被加载过，<code>loaded</code>是<code>false</code>，而它的<code>children</code>模块，<code>loaded</code>是<code>true</code>。</p>
+</li>
+<li><p><code>module.children</code> — <code>Module</code>对象数组，在当前模块中<code>require</code>的其他模块。</p>
+</li>
+<li><p><code>module.parent</code> — 一个<code>Module</code>对象或<code>null</code>，如果当前模块是入口模块，它的<code>parent</code>即为<code>null</code>，否则它的<code>parent</code>是在代码执行顺序上第一个加载它的模块。</p>
+</li>
+<li><p><code>module.exports</code> — 当前模块对外输出的值。</p>
+</li>
+</ul>
+<h3 id="require"><a href="#require" class="headerlink" title="require"></a>require</h3><p>在<code>Module</code>的原型方法中有一个<code>require</code>方法，我们看到的这个<code>require</code>实际内部就调用了<code>module.require</code>。可以做个实验，用<code>module.require</code>去加载一个模块，会发现一样能正常加载。</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> inc = <span class="built_in">module</span>.<span class="built_in">require</span>(<span class="string">'./increment'</span>).increment</span><br></pre></td></tr></table></figure>
+<p>此外，Node又给当前的这个<code>require</code>新增加了一些属性：</p>
+<p><img src="/images/commonjs-require.jpg"></p>
+<ul>
+<li><p><code>require.cache</code> - 一个文件被编译成了模块后，这个模块就会被缓存起来，当下次再需要加载这个模块时，就会拷贝一份缓存中的模块副本返回。所以当我们想让Node重新执行一遍文件中的代码时，可以从<code>require.cache</code>中将它删除。</p>
+</li>
+<li><p><code>require.main</code> - 入口模块，也是直接执行的模块，其他的是被调用执行的。</p>
+</li>
+<li><p><code>require.resolve</code> - 传入模块名称，返回该模块文件所在的位置，它并不会去加载模块。</p>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>.resolve(<span class="string">'./increment'</span>)</span><br><span class="line"><span class="comment">// 返回 /Users/Shinancao/Documents/workplace/js-modules/increment.js</span></span><br></pre></td></tr></table></figure>
+<p>在调试的过程中，会发现，当执行一条<code>require(&#39;xxx&#39;)</code>时，<code>require.cache</code>中就会新增一条记录，这也说明了CommonJS中的模块是按照代码执行顺序生成的。并且当<code>require</code>执行完，后面的代码从会执行，说明模块是同步加载的，会产生阻塞。所以CommonJS规范比较适合服务器端的环境，<code>.js</code>文件大部分都已经在硬盘上了，耗时的就是I/O部分。</p>
+<h3 id="require内部的处理流程"><a href="#require内部的处理流程" class="headerlink" title="require内部的处理流程"></a>require内部的处理流程</h3><p>通过调试和试验，我们可以大概猜一下Node是怎样来实现CommonJS规范的。</p>
+<ul>
+<li><p>将一个文件中的代码都放入到一个函数中，这个函数返回<code>exports</code>中输出的内容。</p>
+</li>
+<li><p>当第一次要加载模块时，就将这个函数执行一次，然后将返回结果放入缓存中。</p>
+</li>
+<li><p>下次再要加载该模块时，就从缓存中取出，然后拷贝一份返回。</p>
+</li>
+</ul>
+<p>Node中具体的执行流程，可以看这篇文章的讲解：<a href="http://fredkschott.com/post/2014/06/require-and-the-module-system/" target="_blank" rel="external">The Node.js Way - How <code>require()</code> Actually Works</a>。</p>
+<p>每个文件中的代码最后都注入进了一个函数中，所有的变量都在这个函数作用域中，因此就不会对Node环境中的其他部分操作污染：</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> <span class="params">(exports, <span class="keyword">require</span>, <span class="keyword">module</span>, __filename, __dirname)</span> <span class="comment">&#123;</span><br><span class="line">  // YOUR CODE INJECTED HERE!</span><br><span class="line">&#125;</span>);</span></span><br></pre></td></tr></table></figure>
+<h2 id="AMD-与-RequireJS"><a href="#AMD-与-RequireJS" class="headerlink" title="AMD 与 RequireJS"></a>AMD 与 RequireJS</h2><p>CommonJS虽好，但是不适合用于浏览器环境中，所以就有了AMD和CMD。AMD（异步模块定义，Asynchronous Module Definition）采用异步的方式加载模块，这样就不会阻塞后面代码的执行了，所以适用于浏览器环境中。<a href="https://requirejs.org/" target="_blank" rel="external"><code>require.js</code></a>是实现AMD规范比较有名的库，本节中测试使用的就是<code>require.js</code>。</p>
+<p>先来看一个使用<code>require.js</code>最简单的例子，新建<code>index.html</code>、<code>app.js</code>、<code>shirt.js</code>，它们之间的调用关系如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">index<span class="selector-class">.html</span> -----&gt; app<span class="selector-class">.js</span> ------&gt; shirt.js</span><br></pre></td></tr></table></figure>
+<p>shirt.js</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">define</span>(function() &#123;</span><br><span class="line">    <span class="selector-tag">return</span> &#123;</span><br><span class="line">        <span class="attribute">color</span>: <span class="string">"black"</span>,</span><br><span class="line">        <span class="attribute">size</span>: <span class="string">"unisize"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>app.js</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">require(['shirt'], function(<span class="name">shirt</span>) &#123;</span><br><span class="line">    console.log(<span class="name">shirt</span>.color)</span><br><span class="line">    console.log(<span class="name">shirt</span>.size)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>index.html</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">data-main</span>=<span class="string">"app"</span> <span class="attr">src</span>=<span class="string">"lib/require.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello World<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>可以直接在本地用浏览器打开<code>index.html</code>，即可观察到结果，不会受跨域的限制。</p>
+<p>在<code>index.html</code>中，下面这句话的意思是加载完<code>require.js</code>后，去执行<code>app.js</code>，所以<code>app.js</code>相当于一个调用的入口。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">data-main</span>=<span class="string">"app"</span> <span class="attr">src</span>=<span class="string">"lib/require.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>如果在浏览器中查看页面元素会发现，被依赖的文件都生成了一个<code>&lt;script&gt;</code>标签，放在了页面的<code>&lt;head&gt;</code>中。</p>
+<p><img src="/images/requirejs-el.jpg"></p>
+<h3 id="定义模块：define"><a href="#定义模块：define" class="headerlink" title="定义模块：define()"></a>定义模块：define()</h3><p><code>define()</code>的完整定义如下：</p>
+<figure class="highlight puppet"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">define</span>(<span class="section">id</span>?, dependencies?, factory)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>id</code> - 模块的名称，可以省略。通常是省略的，<code>require.js</code>提供的<a href="https://requirejs.org/docs/optimization.html" target="_blank" rel="external">优化代码的工具</a>会自动给加上，这使得我们的代码可以容易地移动到别的文件中。</li>
+<li><code>dependencies</code> — 模块依赖的其他模块，如果没有，也可以省略。</li>
+<li><code>factory</code> - 可以是对象、字符串、函数等任意值，当是函数时，前面依赖的其他模块就是该函数的参数，函数的返回就是模块对外的输出。</li>
+</ul>
+<p>放上一个来自官方文档的🌰：</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">define(</span><br><span class="line">    <span class="comment">// 模块的名称</span></span><br><span class="line">    <span class="string">"types/Manager"</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">//依赖项数组</span></span><br><span class="line">    [<span class="string">"types/Employee"</span>],</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 当所有的依赖项都加载完后执行该函数</span></span><br><span class="line">    <span class="comment">// 这个函数的参数就是前面的依赖项</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="params">(Employee)</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">Manager</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.reports = [];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//This will now work</span></span><br><span class="line">        Manager.prototype = <span class="keyword">new</span> Employee();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//return the Manager constructor function so it can be used by</span></span><br><span class="line">        <span class="comment">//other modules.</span></span><br><span class="line">        <span class="keyword">return</span> Manager;</span><br><span class="line">    &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>笔者尝试了一下，在同一个文件中，用不同的名字定义了两个模块，结果在运行时会报错，看来还是一个文件中只能定义一个模块。</p>
+</blockquote>
+<p>Node是隐式地把文件中的代码放在函数中，而AMD规范的做法是显示地让开发者自己来写，其实这样更有利于debug，但就是给阅读代码时增加了一些障碍。</p>
+<p>为了能兼容CommonJS规范，也可以像下面这样定义一个模块：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="function"><span class="keyword">function</span>(<span class="params">require, exports, module</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> a = <span class="built_in">require</span>(<span class="string">'a'</span>),</span><br><span class="line">            b = <span class="built_in">require</span>(<span class="string">'b'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//返回该模块的值</span></span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>这里的<code>exports</code>就是当前这个模块的输出值，如果将输出放在<code>exports</code>中，那么函数不返回也可以，其他引用当前模块的地方也可以正确拿到值。<code>module</code>指的就是当前模块，封装了当前模块的一些信息。</p>
+<h3 id="引入模块：require"><a href="#引入模块：require" class="headerlink" title="引入模块：require()"></a>引入模块：require()</h3><p><code>require()</code>的完整定义如下：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span>([<span class="class"><span class="keyword">module</span>], <span class="title">callback</span>)</span></span><br></pre></td></tr></table></figure>
+<p>举个🌰：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>([<span class="string">'foo'</span>, <span class="string">'bar'</span>], <span class="function"><span class="keyword">function</span> (<span class="params"> foo, bar </span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 这里写其余的代码</span></span><br><span class="line">    foo.doSomething();</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>也可以在模块中动态加载依赖的模块：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="function"><span class="keyword">function</span> (<span class="params"> require </span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> isReady = <span class="literal">false</span>, foobar;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 请注意在模块定义内部内联的 require 语句</span></span><br><span class="line">    <span class="built_in">require</span>([<span class="string">'foo'</span>, <span class="string">'bar'</span>], <span class="function"><span class="keyword">function</span> (<span class="params">foo, bar</span>) </span>&#123;</span><br><span class="line">        isReady = <span class="literal">true</span>;</span><br><span class="line">        foobar = foo() + bar();</span><br><span class="line">    &#125;);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 我们仍可以返回一个模块</span></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        isReady: isReady,</span><br><span class="line">        foobar: foobar</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>很显然，这里的<code>require()</code>是去同步加载模块的。</p>
+<h3 id="配置选项"><a href="#配置选项" class="headerlink" title="配置选项"></a>配置选项</h3><p>下面是配置项比较常用的几个，关于配置选项的介绍，可以到<code>require.js</code>的<a href="https://requirejs.org/docs/api.html#config" target="_blank" rel="external">官方文档</a>详细了解一下。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">requirejs</span><span class="selector-class">.config</span>(&#123;</span><br><span class="line">    <span class="attribute">baseUrl</span>: <span class="string">'/another/path'</span>,</span><br><span class="line">    <span class="attribute">paths</span>: &#123;</span><br><span class="line">        <span class="string">"some"</span>: <span class="string">"some/v1.0"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attribute">shim</span>: &#123;</span><br><span class="line">        <span class="attribute">backbone</span>: &#123;</span><br><span class="line">            <span class="attribute">deps</span>: [<span class="string">'jquery'</span>, <span class="string">'underscore'</span>],</span><br><span class="line">            <span class="attribute">exports</span>: <span class="string">'Backbone'</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attribute">underscore</span>: &#123;</span><br><span class="line">            <span class="attribute">exports</span>: <span class="string">'_'</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">require</span>( [<span class="string">"some/module"</span>, <span class="string">"my/module"</span>, <span class="string">"a.js"</span>, <span class="string">"b.js"</span>],</span><br><span class="line">    function(someModule, myModule) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>baseUrl</code> - 指定查找模块的路径，上例中 “my/module”将会生成一个<code>script</code>标签是<code>src = &quot;/another/path/my/module.js&quot;</code>。</li>
+<li><code>path</code> - 映射不能直接在<code>baseUrl</code>下找到的模块路径，这里的路径在书写上，是相对于<code>baseUrl</code>的位置，上例中”some/module”将会生成一个<code>script</code>标签是<code>src = &quot;/another/path/some/v1.0/module.js&quot;</code>。</li>
+</ul>
+<p>对于具有以下特征之一的模块ID，不会按照<code>baseUrl</code>+<code>path</code>的规则查找，就是普通正常的文件路径：</p>
+<ol>
+<li>以<code>.js</code>结尾的</li>
+<li>以<code>/</code>开头的</li>
+<li>包含URL协议的，如：<code>http:</code>或<code>https:</code></li>
+</ol>
+<ul>
+<li>shim - 主要用来配置像<code>jquery.js</code>、<code>underscore.js</code>、<code>backbone.js</code>这样很早就流行的库，但是没有采用AMD规范。官方这里给了一个解释很详细的例子，像上面配置的，之后在其他文件中可以这样使用：</li>
+</ul>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">define</span><span class="params">([<span class="string">'backbone'</span>], function (Backbone)</span></span> &#123;</span><br><span class="line">  return Backbone<span class="selector-class">.Model</span><span class="selector-class">.extend</span>(&#123;&#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>关于<code>require.config</code>还是<code>requirejs.config</code>，在<a href="https://stackoverflow.com/questions/16960510/whats-the-difference-between-require-config-and-requirejs-config" target="_blank" rel="external">stack overflow</a>找了答案。<code>requirejs</code>是<code>require</code>的别名，为了防止有其他库也使用了<code>require</code>。</p>
+</blockquote>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><strong>【1】</strong> <a href="https://hijiangtao.github.io/2019/08/25/JavaScript-Module-Definitions-and-Webpack-Configurations-Notes/" target="_blank" rel="external">JavaScript 模块化方案总结</a></p>
+<p><strong>【2】</strong> <a href="https://justineo.github.io/singles/writing-modular-js/" target="_blank" rel="external">使用 AMD、CommonJS 及 ES Harmony 编写模块化的 JavaScript</a></p>
+<p><strong>【3】</strong> <a href="https://requirejs.org/" target="_blank" rel="external">requirejs.org</a></p>
+<h2 id="CMD-与-SeaJS"><a href="#CMD-与-SeaJS" class="headerlink" title="CMD 与 SeaJS"></a>CMD 与 SeaJS</h2><p>这里是<code>sea.js</code>的文档：<a href="https://www.xgllseo.com/seajs/docs/zh-cn/index-2.html" target="_blank" rel="external">Sea.js 手册与文档</a>。<br>可以看到使用上和<code>require.js</code>十分相近，定义一个模块也是如下格式：</p>
+<figure class="highlight puppet"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">define</span>(<span class="section">id</span>?, dependencies?, factory)</span><br></pre></td></tr></table></figure>
+<p>这里的<code>factory</code>可以是函数，也可以是对象、字符串等任意值，这时<code>module.exports</code>会设置为<code>factory</code>的值。如果是函数时，第一个参数必须是<code>require</code>。与<code>require.js</code>的区别是，这里并不会把前面传入的依赖项，作为<code>factory</code>的参数。并且<code>sea.js</code>更推荐省略<code>id</code>和<code>dependencies</code>，像下面这样定义一个模块：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="function"><span class="keyword">function</span>(<span class="params"><span class="built_in">require</span>, exports, <span class="built_in">module</span></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// The module code goes here</span></span><br><span class="line">  </span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>在需要其他模块的地方时再去调用<code>require</code>：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">define</span><span class="params">(function(require)</span></span> &#123;</span><br><span class="line">  <span class="selector-tag">var</span> <span class="selector-tag">a</span> = require(<span class="string">'./a'</span>)</span><br><span class="line">  <span class="selector-tag">a</span>.doSomething()</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这里的<code>require</code>是同步的，所以<code>sea.js</code>提供了<code>require.async</code>可以异步加载模块：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="function"><span class="keyword">function</span>(<span class="params">require, exports, module</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 加载一个模块</span></span><br><span class="line">  <span class="built_in">require</span>.async(<span class="string">'./b'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">b</span>) </span>&#123;</span><br><span class="line">    b.doSomething()</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 加载多个模块</span></span><br><span class="line">  <span class="built_in">require</span>.async([<span class="string">'./c'</span>, <span class="string">'./d'</span>], <span class="function"><span class="keyword">function</span>(<span class="params">c, d</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// do something</span></span><br><span class="line">  &#125;);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>搞懂了<code>require.js</code>的使用，上手<code>sea.js</code>还是挺轻松的，这里不再赘述了。</p>
+<p>所以AMD与CMD的主要区别是：</p>
+<p><strong>AMD推崇的是依赖前置，等依赖的模块都加载完毕，才执行模块中的代码。</strong></p>
+<p><strong>CMD推崇的是就近依赖，在模块的执行过程中，遇到依赖其他的模块时再去加载。</strong></p>
+<h2 id="ES6-Module"><a href="#ES6-Module" class="headerlink" title="ES6 Module"></a>ES6 Module</h2><p>目前主流的浏览器已经支持原生JavaScript的模块化，可以在<a href="https://caniuse.com/#feat=es6-module" target="_blank" rel="external">JavaScript modules via script tag</a>查看原生JavaScript模块的支持情况。</p>
+<h3 id="基础用法"><a href="#基础用法" class="headerlink" title="基础用法"></a>基础用法</h3><p>JavaScript自己的模块使用的依然是<code>export</code>和<code>import</code>的方式，为了演示如果使用JavaScript modules，我们先创建3个文件：<code>index.html</code>、<code>main.js</code>、<code>lib.js</code>，之间的调用关系如下：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">index.html -----&gt; main.js ------&gt; <span class="class"><span class="keyword">lib</span>.<span class="title">js</span></span></span><br></pre></td></tr></table></figure>
+<p>先看<code>lib.js</code>，这里我们放两个工具函数，然后使用<code>export</code>将其暴露出去：</p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// lib.js</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> repeat = (<span class="built_in">string</span>) =&gt; <span class="string">`<span class="subst">$&#123;string&#125;</span> <span class="subst">$&#123;string&#125;</span>`</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">shout</span>(<span class="params">string</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;string.toUpperCase()&#125;</span>!`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>main.js</code>通过<code>import</code>将<code>lib.js</code>引入进来，之后就可以使用<code>lib.js</code>中暴露出的功能了：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"></span><br><span class="line">import &#123;<span class="keyword">repeat</span>, shout&#125; from <span class="string">'./moduleA.js'</span></span><br><span class="line"></span><br><span class="line">console.<span class="built-in">log</span>(<span class="keyword">repeat</span>(<span class="string">'hello'</span>))</span><br><span class="line"></span><br><span class="line">console.<span class="built-in">log</span>(shout(<span class="string">'Modules in action'</span>))</span><br></pre></td></tr></table></figure>
+<p><code>index.html</code>在用<code>script</code>标签引入<code>main.js</code>时要加上<code>type=&quot;module&quot;</code>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// index.html</span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en-US"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>JavaScript module object example<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span> <span class="attr">src</span>=<span class="string">"./main.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>如果在浏览器中打开本地的<code>index.html</code>，控制台会报错，因为不能跨域访问到<code>.js</code>文件。用<code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security --user-data-dir=/Users/yourname/MyChromeDevUserData/</code>（Mac上）打开允许跨域访问的Chrome，也还是不行，会报<code>The server responded with a non-JavaScript MIME type</code>。只能将这些文件都放到服务器上去测试，这里我用<code>node.js</code>写了一下server端，可以直接拿去用。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// server.js</span></span><br><span class="line"><span class="comment">// 运行：node server.js</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>)</span><br><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line"><span class="keyword">const</span> url = <span class="built_in">require</span>(<span class="string">'url'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> hostname = <span class="string">'localhost'</span></span><br><span class="line"><span class="keyword">const</span> port = <span class="number">3000</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> server = http.createServer(<span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> pathname = url.parse(req.url).pathname</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`request <span class="subst">$&#123;pathname&#125;</span>`</span>)</span><br><span class="line"></span><br><span class="line">    fs.readFile(<span class="string">`.<span class="subst">$&#123;pathname&#125;</span>`</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err, file</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!err) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="regexp">/(\.js)$/</span>.test(pathname)) &#123;</span><br><span class="line">                res.writeHead(<span class="number">200</span>, &#123;<span class="string">"Content-Type"</span>: <span class="string">"text/javascript"</span>&#125;)</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                res.writeHead(<span class="number">200</span>, &#123;<span class="string">"Content-Type"</span>: <span class="string">"text/html"</span>&#125;)</span><br><span class="line">            &#125;</span><br><span class="line">            res.write(file)</span><br><span class="line">            res.end()</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            res.writeHead(<span class="number">404</span>,  &#123;<span class="string">"Content-Type"</span>: <span class="string">"text/plain"</span>&#125;)</span><br><span class="line">            res.write(<span class="string">'404 Not Found'</span>)</span><br><span class="line">            res.end()</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">server.listen(port, hostname, () =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Server running at http://<span class="subst">$&#123;hostname&#125;</span>:<span class="subst">$&#123;port&#125;</span>/`</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>我们在使用JavaScript的模块来设计项目时，可以将某一类的功能封装成一个模块，然后再有一个模块进行整合实现最终的业务，然后在<code>html</code>中只要引入少量模块即可了。</p>
+</blockquote>
+<h3 id="关于export"><a href="#关于export" class="headerlink" title="关于export"></a>关于<code>export</code></h3><h3 id="导出任意合法的表达式"><a href="#导出任意合法的表达式" class="headerlink" title="导出任意合法的表达式"></a>导出任意合法的表达式</h3><p>只要表达式在JavaScript中是合法的，都可以在其前面加上<code>export</code>z将其导出。</p>
+<p>举个🌰：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 导出变量</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> repeat = (string) =&gt; <span class="string">`<span class="subst">$&#123;string&#125;</span> <span class="subst">$&#123;string&#125;</span>`</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 导出函数</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">shout</span>(<span class="params">string</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;string.toUpperCase()&#125;</span>!`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 导出常量</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> LENGTH = <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 导出类</span></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">Square</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(length) &#123;</span><br><span class="line">        <span class="keyword">this</span>.length = length</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    area() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.length * <span class="keyword">this</span>.length</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的例子中是分别导出每个表达式，也可以先不在每个表达式前加<code>export</code>，最后再一次性导出：</p>
+<figure class="highlight hsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export &#123; <span class="keyword">repeat</span>, shout, <span class="keyword">LENGTH</span>, Square &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="重命名导出"><a href="#重命名导出" class="headerlink" title="重命名导出"></a>重命名导出</h3><p>在<code>export</code>后的大括号中，可以使用<code>as</code>关键字后面跟上新的名字来重命名即将导出的功能的标识名字，来让别的模块通过新的名字使用对应的功能。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">export &#123; </span><br><span class="line">    <span class="keyword">repeat</span> <span class="keyword">as</span> repeatString, </span><br><span class="line">    shout <span class="keyword">as</span> shoutString,</span><br><span class="line">    LENGTH <span class="keyword">as</span> SQUARE_LENGTH, </span><br><span class="line">    Square <span class="keyword">as</span> BigSquare</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="默认导出"><a href="#默认导出" class="headerlink" title="默认导出"></a>默认导出</h3><p>每一个模块都可以有一个默认导出的功能（且只能有一个），在<code>export</code>后面再加上<code>default</code>关键字，就标识了该功能是默认导出的，如果是默认导出的<code>function</code>或<code>class</code>，可以将名字省略。</p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span>(<span class="params">string</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">string</span>.match(<span class="regexp">/\s+/g</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(name) &#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在其他模块中导入的时候，可以将大括号省略，并且给起个名字，如下导入刚刚的函数：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> hasSpaces <span class="keyword">from</span> <span class="string">'./lib.js'</span></span><br></pre></td></tr></table></figure>
+<h3 id="关于import"><a href="#关于import" class="headerlink" title="关于import"></a>关于<code>import</code></h3><h4 id="重命名导入"><a href="#重命名导入" class="headerlink" title="重命名导入"></a>重命名导入</h4><p>在导入时也可以重命名功能的标识名字，以避免命名冲突。原来的名字后面加上<code>as</code>关键字，再加上新名字即可。</p>
+<p>比如我们在<code>lib.js</code>中导入的是下面这样：</p>
+<figure class="highlight hsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export &#123; <span class="keyword">repeat</span>, shout, <span class="keyword">LENGTH</span>, Square &#125;</span><br></pre></td></tr></table></figure>
+<p>在<code>main.js</code>中导入时重新命名：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; repeat <span class="keyword">as</span> repeatString, </span><br><span class="line">         shout <span class="keyword">as</span> shoutString, </span><br><span class="line">         LENGTH <span class="keyword">as</span> SQUARE_LENGTH, </span><br><span class="line">         Square <span class="keyword">as</span> BigSquare &#125; <span class="keyword">from</span> <span class="string">'./moduleA.js'</span></span><br></pre></td></tr></table></figure>
+<h4 id="创建模块对象"><a href="#创建模块对象" class="headerlink" title="创建模块对象"></a>创建模块对象</h4><p>上面的导入方式，一旦东西变多就会显得混乱、冗长，一种更好的导入方式是将模块导入到一个模块上，用法如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 导入</span></span><br><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> Lib <span class="keyword">from</span> <span class="string">'./lib.js'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用</span></span><br><span class="line"><span class="built_in">console</span>.log(Lib.repeat(<span class="string">'hello'</span>))</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(Lib.shout(<span class="string">'Modules in action'</span>))</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(Lib.LENGTH)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> square = <span class="keyword">new</span> Lib.Square(<span class="number">10</span>)</span><br><span class="line"><span class="built_in">console</span>.log(square.area())</span><br></pre></td></tr></table></figure>
+<h3 id="动态导入-🌹"><a href="#动态导入-🌹" class="headerlink" title="动态导入 🌹"></a>动态导入 🌹</h3><p>到目前为止我们用到的都还是静态导入，也就是在页面一加载时，<code>import</code>的<code>.js</code>文件就会被下载到本地，有时我们可能不希望这样，我们想要在需要某个模块时再去下载它。嗯，目前的主流浏览器支持了这一功能，也就是可以让我们动态加载模块！</p>
+<p>看个动态加载模块的🌰，现在给<code>index.html</code>加上个按钮，然后将<code>main.js</code>改为如下：</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">const testBtn = <span class="built_in">document</span>.querySelector(<span class="string">'.testBtn'</span>)</span><br><span class="line"></span><br><span class="line">testBtn.addEventListener(<span class="string">'click'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    import(<span class="string">'./lib.js'</span>).<span class="keyword">then</span>(Lib =&gt; &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">console</span>.log(Lib.repeat(<span class="string">'hello'</span>))</span><br><span class="line"></span><br><span class="line">        <span class="built_in">console</span>.log(Lib.shout(<span class="string">'Modules in action'</span>))</span><br><span class="line"></span><br><span class="line">        <span class="built_in">console</span>.log(Lib.LENGTH)</span><br><span class="line"></span><br><span class="line">        const square = <span class="keyword">new</span> Lib.Square(<span class="number">10</span>)</span><br><span class="line">        <span class="built_in">console</span>.log(square.area())</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>可以观察到，在点击了按钮时，<code>lib.js</code>才被下载下来。</p>
+<p>因为<code>import()</code>返回的是一个<code>Promise</code>对象，所以也可以用<code>async/await</code>形式来写：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">testBtn.addEventListener(<span class="string">'click'</span>, <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> Lib = <span class="keyword">await</span> <span class="keyword">import</span>(<span class="string">'./moduleA.js'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.log(Lib.repeat(<span class="string">'hello'</span>))</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.log(Lib.shout(<span class="string">'Modules in action'</span>))</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.log(Lib.LENGTH)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">const</span> square = <span class="keyword">new</span> Lib.Square(<span class="number">10</span>)</span><br><span class="line">    <span class="built_in">console</span>.log(square.area())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也可以只拿模块中的一部分功能，像下面这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; repeat, shout &#125; = <span class="keyword">await</span> <span class="keyword">import</span>(<span class="string">'./moduleA.js'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(repeat(<span class="string">'hello'</span>))</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(shout(<span class="string">'Modules in action'</span>))</span><br></pre></td></tr></table></figure>
+<p>而且动态导入也可以用于标准的JavaScript中，也就是上面的代码可以直接写在<code>&lt;script&gt;&lt;/script&gt;</code>中。</p>
+<h3 id="标准JavaScript的区别"><a href="#标准JavaScript的区别" class="headerlink" title="标准JavaScript的区别"></a>标准JavaScript的区别</h3><ul>
+<li><p>模块默认就是开启了<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode" target="_blank" rel="external"><code>strict mode</code></a>。</p>
+</li>
+<li><p>模块具有顶级的词法作用域，就是如果在模块中定义了<code>var foo = 42</code>，并不会在全局作用域中生成一个<code>foo</code>变量，但是在标准的JavaScript中，在浏览器环境中，会生成<code>window.foo</code>。</p>
+</li>
+<li><p>同样地，模块中的<code>this</code>也不会指向全局对象，而是<code>undefined</code>。</p>
+</li>
+<li><p><a href="https://v8.dev/features/top-level-await" target="_blank" rel="external"><code>Top-level await</code></a>可用于模块中，但是在标准JavaScript中不支持，也就是在模块中<code>await</code>语句可以不在<code>async function</code>内部定义。</p>
+</li>
+<li><p>模块默认支持<code>defer</code>，所以不需要在<code>&lt;script type=&quot;module&quot;&gt;</code>上再加<code>defer</code>关键字。各种情况下，HTML解析和<code>.js</code>文件下载和执行的顺序如下图所示（图片来源：[JavaScript modules](<a href="https://v8.dev/features/modules）：" target="_blank" rel="external">https://v8.dev/features/modules）：</a></p>
+</li>
+</ul>
+<p><img src="/images/async-defer.svg"></p>
+<ul>
+<li>如果一个<code>.js</code>文件被引入多次，在标准的JavaScript中该文件引入几次就会被执行几次，但如果是模块，只会执行一次。</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"classic.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"classic.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- classic.js executes multiple times. --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span> <span class="attr">src</span>=<span class="string">"module.mjs"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span> <span class="attr">src</span>=<span class="string">"module.mjs"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span>&gt;</span><span class="actionscript"><span class="meta"><span class="meta-keyword">import</span> './module.mjs';</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- module.mjs executes only once. --&gt;</span></span><br></pre></td></tr></table></figure>
+<p>因为有这些区别在，所以JavaScript运行环境需要知道一段JavaScript代码是否是模块，所以需要加上<code>type=&quot;module&quot;</code>标识。</p>
+<h3 id="关于性能的建议"><a href="#关于性能的建议" class="headerlink" title="关于性能的建议"></a>关于性能的建议</h3><ul>
+<li><p>尽管JavaScirpt自身支持了模块，但是对于大型项目仍然需要打包工具（如：webpack）打包，因为打包工具会进行很多优化，比如去掉没有被引用的代码，减少包的大小等等。</p>
+</li>
+<li><p>习惯于使用细粒度模块编写代码，这不仅让代码看起来易读简单，也有利于消除没有被用到的代码，如果一个模块没有被任何地方导入，浏览器不会去下载该模块。被使用过的代码也会被浏览器逐个缓存。</p>
+</li>
+<li><p>如果确定一些模块是在页面初始化时就要用到的，可以使用<code>&lt;link rel=&quot;modulepreload&quot;&gt;</code>可以让浏览器预加载，甚至预解析和执行模块及它们的依赖。</p>
+</li>
+</ul>
+<h3 id="参考资料-1"><a href="#参考资料-1" class="headerlink" title="参考资料"></a>参考资料</h3><p><strong>【1】</strong> <a href="https://v8.dev/features/modules" target="_blank" rel="external">v8.dev — JavaScript modules</a><br><strong>【2】</strong> <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Modules" target="_blank" rel="external">MDN — JavaScript modules</a></p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2019/08/25/JS-Modules/" target="_blank" rel="external">http://shinancao.cn/2019/08/25/JS-Modules/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/08/19/JS-Obj-Type/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1602,157 +2028,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/07/20/Programming-thinking-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="意林">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="意林的小站">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/20/Programming-thinking-1/" itemprop="url">一个业务工程师的能力体现在哪？</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-20T20:41:03+08:00">
-                2019-07-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programming/" itemprop="url" rel="index">
-                    <span itemprop="name">Programming</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programming/Thinking/" itemprop="url" rel="index">
-                    <span itemprop="name">Thinking</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>记录一下最近的一些思考，个人认为习惯总结与反思无论对技能的提高还是自身的成长都是非常关键的，否则你可能非常努力刻苦，但其实在很低效地做事，甚至在错误的方向上前行。</p>
-<p>先说一下，其实我并不喜欢把工程师分成做业务的还是做基架的，即使按照公司部门的划分，你现在正在做业务或正在做基础架构，至少在自己的内心不要这样定位自己。我甚至听到有同学说自己工作了几年一直在做业务，出去面试也进不了基架部门。为什么要把业务和基架分的这么清楚呢？做业务实现产品需求就不需要有架设计的能力了吗？业务会千变万化，你怎么样在改动最少代码的情况下实现新的需求？你怎么样在实现新的需求时不会影响到老的功能？你怎么样在别人接手你的代码时能快速知道每段逻辑用意？等等，要考虑的问题太多了。你的代码还是需要抽象、封装。同样对于做基础架构的同学来说，如果你封装的东西，不能很好为上层调用方服务，本身做的再完美也是没有太大价值的，所以你依然需要了解业务在干什么，甚至预知业务的未来走向。</p>
-<p>我要说的这几个能力都是老生常谈的了，最近换了项目组，接手了新业务，对此又要了一些新的思考。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/20/Programming-thinking-1/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1803,7 +2078,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-count">54</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1825,7 +2100,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">79</span>
+                <span class="site-state-item-count">83</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
