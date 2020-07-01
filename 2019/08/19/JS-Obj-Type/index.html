@@ -111,7 +111,8 @@
 
 
 
-<meta name="description" content="JS中的数据类型原始值类型：String、Number、BigInt、Boolean、Null、Undefined、Symbol引用类型：Object
+<meta name="description" content="本文将主要总结一下JavaScript中获取数据类型的方式，以及数据类型之间的转换规则。
+JS中的数据类型原始值类型：String、Number、BigInt、Boolean、Null、Undefined、Symbol引用类型：Object
 typeof
 
 
@@ -133,21 +134,13 @@ BigInt
 ‘bigint’
 
 
-Boolean
-‘boolean’
-
-
-Null
-‘object’
-
-
-Undefined
-‘unde">
+Boolea">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JavaScript中的类型判断">
+<meta property="og:title" content="JavaScript中的数据类型">
 <meta property="og:url" content="http://shinancao.github.io/2019/08/19/JS-Obj-Type/index.html">
 <meta property="og:site_name" content="意林的小站">
-<meta property="og:description" content="JS中的数据类型原始值类型：String、Number、BigInt、Boolean、Null、Undefined、Symbol引用类型：Object
+<meta property="og:description" content="本文将主要总结一下JavaScript中获取数据类型的方式，以及数据类型之间的转换规则。
+JS中的数据类型原始值类型：String、Number、BigInt、Boolean、Null、Undefined、Symbol引用类型：Object
 typeof
 
 
@@ -169,20 +162,12 @@ BigInt
 ‘bigint’
 
 
-Boolean
-‘boolean’
-
-
-Null
-‘object’
-
-
-Undefined
-‘unde">
-<meta property="og:updated_time" content="2020-06-26T11:03:26.586Z">
+Boolea">
+<meta property="og:updated_time" content="2020-07-01T05:58:55.707Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JavaScript中的类型判断">
-<meta name="twitter:description" content="JS中的数据类型原始值类型：String、Number、BigInt、Boolean、Null、Undefined、Symbol引用类型：Object
+<meta name="twitter:title" content="JavaScript中的数据类型">
+<meta name="twitter:description" content="本文将主要总结一下JavaScript中获取数据类型的方式，以及数据类型之间的转换规则。
+JS中的数据类型原始值类型：String、Number、BigInt、Boolean、Null、Undefined、Symbol引用类型：Object
 typeof
 
 
@@ -204,16 +189,7 @@ BigInt
 ‘bigint’
 
 
-Boolean
-‘boolean’
-
-
-Null
-‘object’
-
-
-Undefined
-‘unde">
+Boolea">
 
 
 
@@ -247,7 +223,7 @@ Undefined
 
 
 
-  <title>JavaScript中的类型判断 | 意林的小站</title>
+  <title>JavaScript中的数据类型 | 意林的小站</title>
   
 
 
@@ -403,7 +379,7 @@ Undefined
 
         
         
-          <h2 class="post-title" itemprop="name headline">JavaScript中的类型判断</h2>
+          <h2 class="post-title" itemprop="name headline">JavaScript中的数据类型</h2>
         
 
         <div class="post-meta">
@@ -472,7 +448,8 @@ Undefined
       
 
       
-        <h2 id="JS中的数据类型"><a href="#JS中的数据类型" class="headerlink" title="JS中的数据类型"></a>JS中的数据类型</h2><p>原始值类型：<code>String</code>、<code>Number</code>、<code>BigInt</code>、<code>Boolean</code>、<code>Null</code>、<code>Undefined</code>、<code>Symbol</code><br>引用类型：<code>Object</code></p>
+        <p>本文将主要总结一下JavaScript中获取数据类型的方式，以及数据类型之间的转换规则。</p>
+<h2 id="JS中的数据类型"><a href="#JS中的数据类型" class="headerlink" title="JS中的数据类型"></a>JS中的数据类型</h2><p>原始值类型：<code>String</code>、<code>Number</code>、<code>BigInt</code>、<code>Boolean</code>、<code>Null</code>、<code>Undefined</code>、<code>Symbol</code><br>引用类型：<code>Object</code></p>
 <h2 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h2><table>
 <thead>
 <tr>
@@ -599,7 +576,7 @@ Undefined
 </tr>
 <tr>
 <td>/regex/</td>
-<td>[object RegExp]</td>
+<td>‘[object RegExp]’</td>
 </tr>
 <tr>
 <td>自定义对象</td>
@@ -620,6 +597,94 @@ Undefined
 <p>示例：</p>
 <figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">var</span> num = <span class="number">123</span></span><br><span class="line"><span class="built_in">var</span> num1 = <span class="built_in">Number</span>(<span class="number">123</span>)</span><br><span class="line"><span class="built_in">var</span> num2 = <span class="keyword">new</span> <span class="built_in">Number</span>(<span class="number">123</span>)</span><br><span class="line"><span class="built_in">console</span>.log(num.constructor === <span class="built_in">Number</span>)</span><br><span class="line"><span class="built_in">console</span>.log(num1.constructor === <span class="built_in">Number</span>)</span><br><span class="line"><span class="built_in">console</span>.log(num2.constructor === <span class="built_in">Number</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">var</span> str = <span class="string">'abc'</span></span><br><span class="line"><span class="built_in">var</span> str1 = <span class="built_in">String</span>(<span class="string">'abc'</span>)</span><br><span class="line"><span class="built_in">var</span> str2 = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'abc'</span>)</span><br><span class="line"><span class="built_in">console</span>.log(str.constructor === <span class="built_in">String</span>)</span><br><span class="line"><span class="built_in">console</span>.log(str2.constructor === <span class="built_in">String</span>)</span><br><span class="line"><span class="built_in">console</span>.log(str2.constructor === <span class="built_in">String</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">var</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line"><span class="built_in">var</span> arr1 = <span class="built_in">Array</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line"><span class="built_in">var</span> arr2 = <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line"><span class="built_in">console</span>.log(arr.constructor === <span class="built_in">Array</span>)</span><br><span class="line"><span class="built_in">console</span>.log(arr1.constructor === <span class="built_in">Array</span>)</span><br><span class="line"><span class="built_in">console</span>.log(arr2.constructor === <span class="built_in">Array</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">var</span> <span class="built_in">bool</span> = <span class="literal">true</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">bool</span>.constructor === <span class="built_in">Boolean</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">var</span> obj = &#123;<span class="attribute">name</span>: <span class="string">'Kitty'</span>&#125;</span><br><span class="line"><span class="built_in">console</span>.log(obj.constructor === <span class="built_in">Object</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">var</span> Cat = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">var</span> myCat = <span class="keyword">new</span> Cat(<span class="string">'Kitty'</span>)</span><br><span class="line"><span class="built_in">console</span>.log(myCat.constructor === Cat)</span><br><span class="line"></span><br><span class="line"><span class="built_in">var</span> fun = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="built_in">console</span>.log(fun.constructor === <span class="built_in">Function</span>)</span><br></pre></td></tr></table></figure>
 <p>以上都会输出<code>true</code>。</p>
+<h2 id="valueOf-NaN"><a href="#valueOf-NaN" class="headerlink" title="valueOf"></a>valueOf</h2><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>String</td>
+<td>返回字符串值</td>
+</tr>
+<tr>
+<td>new String()</td>
+<td>返回字符串值</td>
+</tr>
+<tr>
+<td>Number</td>
+<td>返回数字值</td>
+</tr>
+<tr>
+<td>new Number()</td>
+<td>返回数字值</td>
+</tr>
+<tr>
+<td>Boolean</td>
+<td>返回布尔值true或false</td>
+</tr>
+<tr>
+<td>new Boolean()</td>
+<td>返回布尔值true或false</td>
+</tr>
+<tr>
+<td>Array</td>
+<td>返回数组对象本身</td>
+</tr>
+<tr>
+<td>Object</td>
+<td>返回对象本身</td>
+</tr>
+<tr>
+<td>Function</td>
+<td>返回本身</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>返回当前时间距1970年1月1日午夜的毫秒数</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><code>Undefine</code>、<code>Null</code>、<code>Match</code>、<code>Error</code>没有<code>valueOf</code>方法，对其调用<code>valueOf</code>会报错。</p>
+</blockquote>
+<p>示例（来源[MDN](<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf）：" target="_blank" rel="external">https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf）：</a></p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Array：返回数组对象本身</span></span><br><span class="line"><span class="built_in">var</span> array = [<span class="string">"ABC"</span>, <span class="literal">true</span>, <span class="number">12</span>, <span class="number">-5</span>];</span><br><span class="line"><span class="built_in">console</span>.log(array.valueOf() === array);   <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Date：当前时间距1970年1月1日午夜的毫秒数</span></span><br><span class="line"><span class="built_in">var</span> <span class="built_in">date</span> = <span class="keyword">new</span> <span class="built_in">Date</span>(<span class="number">2013</span>, <span class="number">7</span>, <span class="number">18</span>, <span class="number">23</span>, <span class="number">11</span>, <span class="number">59</span>, <span class="number">230</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">date</span>.valueOf());   <span class="comment">// 1376838719230</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Number：返回数字值</span></span><br><span class="line"><span class="built_in">var</span> num =  <span class="number">15.26540</span>;</span><br><span class="line"><span class="built_in">console</span>.log(num.valueOf());   <span class="comment">// 15.2654</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">var</span> newNum = <span class="keyword">new</span> <span class="built_in">Number</span>(<span class="number">15.26540</span>)</span><br><span class="line"><span class="built_in">console</span>.log(newNum.valueOf())</span><br><span class="line"></span><br><span class="line"><span class="comment">// 布尔：返回布尔值true或false</span></span><br><span class="line"><span class="built_in">var</span> <span class="built_in">bool</span> = <span class="literal">true</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">bool</span>.valueOf() === <span class="built_in">bool</span>);   <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// new一个Boolean对象</span></span><br><span class="line"><span class="built_in">var</span> newBool = <span class="keyword">new</span> <span class="built_in">Boolean</span>(<span class="literal">true</span>);</span><br><span class="line"><span class="comment">// valueOf()返回的是true，两者的值相等</span></span><br><span class="line"><span class="built_in">console</span>.log(newBool.valueOf() == newBool);   <span class="comment">// true</span></span><br><span class="line"><span class="comment">// 但是不全等，两者类型不相等，前者是boolean类型，后者是object类型</span></span><br><span class="line"><span class="built_in">console</span>.log(newBool.valueOf() === newBool);   <span class="comment">// false</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Function：返回函数本身</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;&#125;</span><br><span class="line"><span class="built_in">console</span>.log( foo.valueOf() === foo );   <span class="comment">// true</span></span><br><span class="line"><span class="built_in">var</span> foo2 =  <span class="keyword">new</span> <span class="built_in">Function</span>(<span class="string">"x"</span>, <span class="string">"y"</span>, <span class="string">"return x + y;"</span>);</span><br><span class="line"><span class="built_in">console</span>.log( foo2.valueOf() );</span><br><span class="line"><span class="comment">/*</span><br><span class="line">ƒ anonymous(x,y</span><br><span class="line">) &#123;</span><br><span class="line">return x + y;</span><br><span class="line">&#125;</span><br><span class="line">*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Object：返回对象本身</span></span><br><span class="line"><span class="built_in">var</span> obj = &#123;<span class="attribute">name</span>: <span class="string">"张三"</span>, <span class="attribute">age</span>: <span class="number">18</span>&#125;;</span><br><span class="line"><span class="built_in">console</span>.log( obj.valueOf() === obj );   <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// String：返回字符串值</span></span><br><span class="line"><span class="built_in">var</span> str = <span class="string">"http://www.xyz.com"</span>;</span><br><span class="line"><span class="built_in">console</span>.log( str.valueOf() === str );   <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// new一个字符串对象</span></span><br><span class="line"><span class="built_in">var</span> str2 = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">"http://www.xyz.com"</span>);</span><br><span class="line"><span class="comment">// 两者的值相等，但不全等，因为类型不同，前者为string类型，后者为object类型</span></span><br><span class="line"><span class="built_in">console</span>.log( str2.valueOf() === str2 );   <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+<h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2><p>关于类型转换，可以看阮一峰老师的这篇文章：<a href="https://javascript.ruanyifeng.com/grammar/conversion.html" target="_blank" rel="external">数据类型转换</a>，讲的很细致。我这里加上个人的理解做个整理。</p>
+<p>在日常开发中涉及到的类型转换主要就发生在数值、字符串、布尔值之间的转换，可以使用<code>Number()</code>、<code>String()</code>、<code>Boolean()</code>显示转换，也可以依赖JS引擎隐式转换。所以主要就是搞懂隐式转换和隐式转换依据的规则是什么。</p>
+<h3 id="Number"><a href="#Number" class="headerlink" title="Number()"></a>Number()</h3><p>对 <em>原始类型</em> 的转换如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数值：转换后还是原来的值</span></span><br><span class="line"><span class="function"><span class="title">Number</span><span class="params">(<span class="number">123</span>)</span></span>               <span class="comment">// 123</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 字符串：如果可以被解析为数值，则转换为相应的数值</span></span><br><span class="line"><span class="function"><span class="title">Number</span><span class="params">(<span class="string">'123'</span>)</span></span>             <span class="comment">// 123</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 字符串：如果不能解析为数值，则转换为NaN</span></span><br><span class="line"><span class="function"><span class="title">Number</span><span class="params">(<span class="string">'123abc'</span>)</span></span>          <span class="comment">// NaN</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 空字符串：转换为0</span></span><br><span class="line"><span class="function"><span class="title">Number</span><span class="params">(<span class="string">''</span>)</span></span>                <span class="comment">// 0</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 布尔值：true会转为1，false会转为0</span></span><br><span class="line"><span class="function"><span class="title">Number</span><span class="params">(true)</span></span></span><br><span class="line"><span class="function"><span class="title">Number</span><span class="params">(false)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// undefined：转换为NaN</span></span><br><span class="line"><span class="function"><span class="title">Number</span><span class="params">(undefined)</span></span>         <span class="comment">// NaN</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// null：转换为0</span></span><br><span class="line"><span class="function"><span class="title">Number</span><span class="params">(null)</span></span>              <span class="comment">// 0</span></span><br></pre></td></tr></table></figure>
+<p>对 <em>对象</em> 的转换规则如下：</p>
+<ol>
+<li>调用对象自身的<code>valueOf</code>方法，如果返回原始类型的值，直接对该值使用<code>Number</code>函数，不再进行后续步骤。</li>
+<li>如果<code>valueOf</code>方法返回的是对象，则调用该对象的<code>toString</code>方法，如果返回原始类型的值，直接对该值使用<code>Number</code>函数，不再进行后续步骤。</li>
+<li>如果<code>toString</code>方法返回的是对象，就报错。</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;x: <span class="number">1</span>&#125;</span><br><span class="line"><span class="built_in">Number</span>(obj)      <span class="comment">// NaN</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 等同于</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">typeof</span> obj.valueOf() === <span class="string">'object'</span> &#123;</span><br><span class="line">    <span class="comment">// obj.toString() 返回 "[object Object]"，所以转换后是NaN。</span></span><br><span class="line">    <span class="built_in">Number</span>(obj.toString())</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">Number</span>(obj.value())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="String"><a href="#String" class="headerlink" title="String()"></a>String()</h3><p>对 <em>原始类型</em> 的转换如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数值：转换为对象的字符串</span></span><br><span class="line"><span class="function"><span class="title">String</span><span class="params">(<span class="number">123</span>)</span></span></span><br><span class="line"><span class="comment">// 字符串：转换后还是原来的字符串</span></span><br><span class="line"><span class="function"><span class="title">String</span><span class="params">(<span class="string">'abc'</span>)</span></span></span><br><span class="line"><span class="comment">// 布尔值：true转换为"true"字符串，false转换为"false"字符串</span></span><br><span class="line"><span class="function"><span class="title">String</span><span class="params">(true)</span></span></span><br><span class="line"><span class="comment">// undefined：转换为"undefined"字符串</span></span><br><span class="line"><span class="function"><span class="title">String</span><span class="params">(undefined)</span></span></span><br><span class="line"><span class="comment">// null：转换为"null"字符串</span></span><br><span class="line"><span class="function"><span class="title">String</span><span class="params">(null)</span></span></span><br></pre></td></tr></table></figure>
+<p>对 <em>对象</em> 的转换规则如下：</p>
+<ol>
+<li>调用对象本身的<code>toString</code>方法，如果返回原始类型的值，直接对该值使用<code>String</code>函数，不再继续后面的步骤。</li>
+<li>如果上一步<code>toString</code>方法返回的是对象，则调用该对象的<code>valueOf</code>方法，如果返回原始类型的值，直接对该值使用<code>String</code>函数，不再继续后面的步骤。</li>
+<li>如果<code>valueOf</code>方法返回对象，就报错。</li>
+</ol>
+<blockquote>
+<p>Number()和String()对对象类型的值的转换规则相似，只是换了一下<code>valueOf</code>和<code>toString</code>的执行顺序。</p>
+</blockquote>
+<h3 id="Boolean"><a href="#Boolean" class="headerlink" title="Boolean()"></a>Boolean()</h3><p>Boolean()可以将任意类型的值转为布尔值，下面的5个值会转换为<code>false</code>，其他值都会转换为<code>true</code>。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">Boolean</span><span class="params">(undefined)</span></span>   <span class="comment">// false</span></span><br><span class="line"><span class="function"><span class="title">Boolean</span><span class="params">(null)</span></span>        <span class="comment">// false</span></span><br><span class="line"><span class="function"><span class="title">Boolean</span><span class="params">(<span class="number">0</span>)</span></span>           <span class="comment">// false</span></span><br><span class="line"><span class="function"><span class="title">Boolean</span><span class="params">(<span class="string">''</span>)</span></span>          <span class="comment">// false</span></span><br><span class="line"><span class="function"><span class="title">Boolean</span><span class="params">(NaN)</span></span>         <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+<p>Boolean()对任意 <em>对象</em> 转换后得到的都是<code>true</code>，下面这些得到的都是<code>true</code>：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">Boolean</span><span class="params">([])</span></span>                     <span class="comment">// true</span></span><br><span class="line"><span class="function"><span class="title">Boolean</span><span class="params">(&#123;&#125;)</span></span>                     <span class="comment">// true</span></span><br><span class="line"><span class="function"><span class="title">Boolean</span><span class="params">(new Boolean(false)</span></span>)     <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<h3 id="隐式转换"><a href="#隐式转换" class="headerlink" title="隐式转换"></a>隐式转换</h3><p>隐式转换一般发生在下面三种情况时，JavaScript会自动调用String()、Number()或Boolean()对需要转换的值进行转换：</p>
+<p>第一种情况，不同类型的数据互相运算：</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 加法运算时，有一方是字符串，则会把另一个值也转为字符串，最后得到一个字符串值</span></span><br><span class="line"><span class="number">123</span> + <span class="string">'abc'</span>  <span class="comment">// "123abc"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 其他运算时，会把参与运算的两个值都转为数值，再计算结果，如果有一方不能转为数值，最后会得到NaN</span></span><br><span class="line"><span class="string">'5'</span> - <span class="string">'2'</span>    <span class="comment">// 3</span></span><br><span class="line"><span class="string">'5'</span> * <span class="string">'2'</span>    <span class="comment">// 10</span></span><br><span class="line"><span class="string">'5'</span> * []     <span class="comment">// 0</span></span><br></pre></td></tr></table></figure>
+<p>第二种情况，对非布尔类型的数据求布尔值，除了上面说的5个值会转为<code>false</code>，其他情况都会是<code>true</code>：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">if</span> (<span class="string">'abc'</span>) &#123;</span><br><span class="line">  console<span class="selector-class">.log</span>(<span class="string">'hello'</span>)</span><br><span class="line">&#125; <span class="comment">// "hello"</span></span><br></pre></td></tr></table></figure>
+<p>第三种情况，一元运算符时，会将运算子转为数值：</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+<span class="string">'abc'</span>       <span class="comment">// NaN</span></span><br><span class="line">-<span class="string">'abc'</span>       <span class="comment">// NaN</span></span><br><span class="line">+<span class="literal">true</span>        <span class="comment">// 1</span></span><br></pre></td></tr></table></figure>
 <div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2019/08/19/JS-Obj-Type/" target="_blank" rel="external">http://shinancao.cn/2019/08/19/JS-Obj-Type/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
 </div>
       
@@ -834,7 +899,7 @@ Undefined
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JS中的数据类型"><span class="nav-number">1.</span> <span class="nav-text">JS中的数据类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#typeof"><span class="nav-number">2.</span> <span class="nav-text">typeof</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-prototype-toString"><span class="nav-number">3.</span> <span class="nav-text">Object.prototype.toString</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#instanceof"><span class="nav-number">4.</span> <span class="nav-text">instanceof</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#constructor-NaN"><span class="nav-number">5.</span> <span class="nav-text">constructor</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JS中的数据类型"><span class="nav-number">1.</span> <span class="nav-text">JS中的数据类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#typeof"><span class="nav-number">2.</span> <span class="nav-text">typeof</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-prototype-toString"><span class="nav-number">3.</span> <span class="nav-text">Object.prototype.toString</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#instanceof"><span class="nav-number">4.</span> <span class="nav-text">instanceof</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#constructor-NaN"><span class="nav-number">5.</span> <span class="nav-text">constructor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#valueOf-NaN"><span class="nav-number">6.</span> <span class="nav-text">valueOf</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类型转换"><span class="nav-number">7.</span> <span class="nav-text">类型转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Number"><span class="nav-number">7.1.</span> <span class="nav-text">Number()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String"><span class="nav-number">7.2.</span> <span class="nav-text">String()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Boolean"><span class="nav-number">7.3.</span> <span class="nav-text">Boolean()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#隐式转换"><span class="nav-number">7.4.</span> <span class="nav-text">隐式转换</span></a></li></ol></li></ol></div>
             
 
           </div>
