@@ -95,7 +95,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="JS Syntax,Promise,async/await,Generator," />
+  <meta name="keywords" content="JS Syntax,prototype,class inherit," />
 
 
 
@@ -111,19 +111,19 @@
 
 
 
-<meta name="description" content="JavaScript是基于原型的语言，对象和它的原型对象之间只是建立了关联，这与基于类的语言完全不同。在基于类的语言中，会把一个对象（“类”）的属性和方法复制到另一个对象（“实例”）中，因为在编译期间要确定这个实例所占内存大小。但是JavaScript又提出了构造函数、new运算符，甚至在ES6中增加了class、extend关键字，想往基于类的语言特征上靠，这其实反而容易让刚才那些语言过来的开发">
+<meta name="description" content="JavaScript是基于原型的语言，对象和它的原型对象之间只是建立了关联，这与基于类的语言完全不同。在基于类的语言中，会把一个对象（“类”）的属性和方法复制到另一个对象（“实例”）中，因为在编译期间要确定这个实例所占内存大小。但是JavaScript又提出了构造函数、new运算符，想往基于类的语言特征上靠，这反而让刚从别的语言过来的开发者感到迷糊。例如，本来想按照类的特征去设计代码，发现没办法设">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JavaScript中的原型与继承">
 <meta property="og:url" content="http://shinancao.github.io/2019/09/10/JS-Prototype/index.html">
 <meta property="og:site_name" content="意林的小站">
-<meta property="og:description" content="JavaScript是基于原型的语言，对象和它的原型对象之间只是建立了关联，这与基于类的语言完全不同。在基于类的语言中，会把一个对象（“类”）的属性和方法复制到另一个对象（“实例”）中，因为在编译期间要确定这个实例所占内存大小。但是JavaScript又提出了构造函数、new运算符，甚至在ES6中增加了class、extend关键字，想往基于类的语言特征上靠，这其实反而容易让刚才那些语言过来的开发">
+<meta property="og:description" content="JavaScript是基于原型的语言，对象和它的原型对象之间只是建立了关联，这与基于类的语言完全不同。在基于类的语言中，会把一个对象（“类”）的属性和方法复制到另一个对象（“实例”）中，因为在编译期间要确定这个实例所占内存大小。但是JavaScript又提出了构造函数、new运算符，想往基于类的语言特征上靠，这反而让刚从别的语言过来的开发者感到迷糊。例如，本来想按照类的特征去设计代码，发现没办法设">
 <meta property="og:image" content="http://shinancao.github.io/images/prototype.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/prototype_obj.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/prototype_f.jpg">
-<meta property="og:updated_time" content="2020-07-03T12:08:43.611Z">
+<meta property="og:updated_time" content="2020-07-04T02:08:21.410Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaScript中的原型与继承">
-<meta name="twitter:description" content="JavaScript是基于原型的语言，对象和它的原型对象之间只是建立了关联，这与基于类的语言完全不同。在基于类的语言中，会把一个对象（“类”）的属性和方法复制到另一个对象（“实例”）中，因为在编译期间要确定这个实例所占内存大小。但是JavaScript又提出了构造函数、new运算符，甚至在ES6中增加了class、extend关键字，想往基于类的语言特征上靠，这其实反而容易让刚才那些语言过来的开发">
+<meta name="twitter:description" content="JavaScript是基于原型的语言，对象和它的原型对象之间只是建立了关联，这与基于类的语言完全不同。在基于类的语言中，会把一个对象（“类”）的属性和方法复制到另一个对象（“实例”）中，因为在编译期间要确定这个实例所占内存大小。但是JavaScript又提出了构造函数、new运算符，想往基于类的语言特征上靠，这反而让刚从别的语言过来的开发者感到迷糊。例如，本来想按照类的特征去设计代码，发现没办法设">
 <meta name="twitter:image" content="http://shinancao.github.io/images/prototype.jpg">
 
 
@@ -383,7 +383,7 @@
       
 
       
-        <p>JavaScript是基于原型的语言，对象和它的原型对象之间只是建立了关联，这与基于类的语言完全不同。在基于类的语言中，会把一个对象（“类”）的属性和方法复制到另一个对象（“实例”）中，因为在编译期间要确定这个实例所占内存大小。但是JavaScript又提出了构造函数、<code>new</code>运算符，甚至在ES6中增加了<code>class</code>、<code>extend</code>关键字，想往基于类的语言特征上靠，这其实反而容易让刚才那些语言过来的开发者感到迷糊。例如，本来想按照类的特征去设计代码，发现没办法设置私有属性。更加让人迷惑的是，铺天盖地的资料跟你讲的是原型范围内的东西，用的术语确是类中的，加大了理解难度。</p>
+        <p>JavaScript是基于原型的语言，对象和它的原型对象之间只是建立了关联，这与基于类的语言完全不同。在基于类的语言中，会把一个对象（“类”）的属性和方法复制到另一个对象（“实例”）中，因为在编译期间要确定这个实例所占内存大小。但是JavaScript又提出了构造函数、<code>new</code>运算符，想往基于类的语言特征上靠，这反而让刚从别的语言过来的开发者感到迷糊。例如，本来想按照类的特征去设计代码，发现没办法设置私有属性。更加让人迷惑的是，铺天盖地的资料跟你讲的是原型范围内的东西，用的术语确是类中的，加大了理解难度。ES6中增加了<code>class</code>，规范了对类的使用。<code>class</code>中的各种特性依然是基于原型的，并没有真的把基于类的语言中的那一套搬过来。</p>
 <p>Douglas Crockford 在《JavaScript语言精粹》这本书中讲的特别好，一语中的：</p>
 <blockquote>
 <p>JavaScript是一门弱类型语言，从不需要类型转换。对象继承关系变得无关紧要。对于一个对象来说重要的是它能做什么，而不是它从哪里来。</p>
@@ -391,6 +391,9 @@
 <p>把重点转移到一个对象能做什么，如何复用其他对象的功能上，一切问题思考起来都变得简单很多。JavaScript中对象和函数的灵活性，使得有很多方式可以达到代码重用的目的。</p>
 <a id="more"></a>
 <h2 id="JavaScript中的原型"><a href="#JavaScript中的原型" class="headerlink" title="JavaScript中的原型"></a>JavaScript中的原型</h2><p>在基于原型的语言中，对象可以从它的原型对象“继承”属性和方法。在JavaScript中，对象从它的原型对象“继承”的属性和方法，在原型对象的<code>prototype</code>属性中。又因为JavaScript中的对象都是通过函数“构造”出来的，但JavaScript没有区分哪种函数可以用来“构造”对象，哪种不能。所以每个函数都有一个<code>prototype</code>属性，它的值是一个对象。</p>
+<blockquote>
+<p>ES6提出的箭头函数没有<code>prototype</code>属性，而且不能用作构造器函数，用<code>new</code>运算符调用时会报错。</p>
+</blockquote>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function f() &#123;</span><br><span class="line">&#125;</span><br><span class="line">f<span class="selector-class">.prototype</span><span class="selector-class">.a</span> = <span class="number">1</span></span><br><span class="line">f<span class="selector-class">.prototype</span><span class="selector-class">.b</span> = <span class="number">2</span></span><br><span class="line">f<span class="selector-class">.prototype</span><span class="selector-class">.print</span> = function(sth) &#123;</span><br><span class="line">    console.log(sth)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><img src="/images/prototype.jpg"></p>
 <p><code>f.prototype</code>的值中，除了我们手动添加的属性和方法，还多了两个属性<code>constructor</code>和<code>__proto__</code>，这两个属性会一起被函数“构造”出来的对象“继承”。<code>constructor</code>属性的值就是当前函数本身。而<code>__proto__</code>是每个对象都会有的一个私有属性，正是<code>__proto__</code>建立起了对象和它的原型对象之前的联系，<code>__proto__</code>会指向原型对象的<code>prototype</code>属性。</p>
@@ -503,11 +506,9 @@
           
             <a href="/tags/JS-Syntax/" rel="tag"># JS Syntax</a>
           
-            <a href="/tags/Promise/" rel="tag"># Promise</a>
+            <a href="/tags/prototype/" rel="tag"># prototype</a>
           
-            <a href="/tags/async-await/" rel="tag"># async/await</a>
-          
-            <a href="/tags/Generator/" rel="tag"># Generator</a>
+            <a href="/tags/class-inherit/" rel="tag"># class inherit</a>
           
         </div>
       
@@ -530,8 +531,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/03/15/HTTP-Cookie/" rel="prev" title="HTTP cookie">
-                HTTP cookie <i class="fa fa-chevron-right"></i>
+              <a href="/2019/09/12/JS-Class/" rel="prev" title="JavaScript中的class">
+                JavaScript中的class <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -607,7 +608,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-count">56</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -629,7 +630,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-count">87</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
