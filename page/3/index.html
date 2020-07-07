@@ -1117,6 +1117,17 @@
 
                 
                 
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
               
             </span>
           
@@ -1157,6 +1168,549 @@
             </a>
           </div>
           <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2018/12/05/Browser-DOM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/12/05/Browser-DOM/" itemprop="url">浏览器 - DOM</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-05T16:40:32+08:00">
+                2018-12-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Browser/" itemprop="url" rel="index">
+                    <span itemprop="name">Browser</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="理解DOM"><a href="#理解DOM" class="headerlink" title="理解DOM"></a>理解DOM</h2><p>HTML和XML本身只是一种特定格式的文档，要想对其进行操作，必须按照他们这种格式特点转换成编程语言能够处理的对象。行业中需要有一套HTML和XML文档转换后的接口规范，来约定接口的实现方，尤其是各浏览器厂商，以便上层开发者使用。DOM（Document Object Model的缩写）就是被业界使用的HTML和XML文档的编程接口。在MDN上对DOM的解释如下：</p>
+<blockquote>
+<p>文档对象模型 (DOM) 是HTML和XML文档的编程接口。它提供了对文档的结构化的表述，并定义了一种方式可以使从程序中对该结构进行访问，从而改变文档的结构，样式和内容。DOM 将文档解析为一个由节点和对象（包含属性和方法的对象）组成的结构集合。简言之，它会将web页面和脚本或程序语言连接起来。</p>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document_Object_Model/Introduction" target="_blank" rel="external">查看更多介绍</a></p>
+</blockquote>
+<p>浏览器环境中是用JavaScript实现的DOM接口，主要用来解析HTML文档，但DOM并不是ECMAScript规范中的一部分，JavaScript和DOM是相互独立的两部分。浏览器通常也把DOM和JavaScript独立实现。比如，Safari中的DOM和渲染是使用WebKit中的WebCore实现，JavaScript部分是由独立的JavaScriptCore引擎来实现。Google Chrome同样使用WebKit中的WebCore库来渲染页面，但JavaScript引擎是他们自己研发的，名为V8。</p>
+<p>其他编程语言也可以实现DOM接口，比如<code>Swift</code>的第三方库<a href="https://github.com/scinfu/SwiftSoup" target="_blank" rel="external"><code>SwiftSoup</code></a>，<code>python</code>的<a href="https://www.crummy.com/software/BeautifulSoup/" target="_blank" rel="external"><code>BeautifulSoup</code></a>库，<code>Node.js</code>也有第三库可用，如<a href="https://github.com/jsdom/jsdom" target="_blank" rel="external"><code>jsdom</code></a>。</p>
+<blockquote>
+<p>这可以让我们做很多有意思的事，可以多琢磨琢磨，不要把自己的思维局限在浏览器中的JavaScript上~</p>
+</blockquote>
+<p>DOM中的所有元素项都被定义为<strong>节点（nodes）</strong>，这些节点又嵌套成一个树结构，通常称为<strong>DOM tree</strong>，根节点是<code>document</code>。下面总结一下如何访问、修改DOM中的元素。</p>
+<h2 id="操作DOM"><a href="#操作DOM" class="headerlink" title="操作DOM"></a>操作DOM</h2><h3 id="查询DOM节点"><a href="#查询DOM节点" class="headerlink" title="查询DOM节点"></a>查询DOM节点</h3><p><strong>1. <code>document.getElementById()</code></strong></p>
+<p>返回一个特定ID的元素，由于元素的ID在大部分情况下都是独一无二的，这自然而然地成为了高效查找特定元素的方法。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> elem = <span class="built_in">document</span>.getElementById(<span class="string">'para'</span>)</span><br></pre></td></tr></table></figure>
+<p><strong>2. <code>Element.getElementsByClassName()</code></strong></p>
+<p>返回一个动态的包含指定标签名的元素的HTML集合<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCollection" target="_blank" rel="external"><code>HTMLCollection</code></a>。指定的元素的子树会被搜索，不包括元素自己。返回的列表是动态的，这意味着它会随着DOM树的变化自动更新自身，所以使用相同元素和相同参数时，没有必要多次调用<code>Element.getElementsByClassName()</code>。当<code>Element</code>是<code>document</code>对象时，会搜索整个文档，包括根元素。参数可以为多个<code>class</code>名，多个时用空格分割。</p>
+<p>注意，这个方法返回的并不是一个数组，<code>Array.prototype</code>中的方法不能直接使用，可以将<code>HTMLCollection</code>作为方法的上下文（<code>this</code>）传入。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> testElements = <span class="built_in">document</span>.getElementsByClassName(<span class="string">'test'</span>)</span><br><span class="line"><span class="keyword">var</span> testDivs = <span class="built_in">Array</span>.prototype.filter.call(testElements, <span class="function"><span class="keyword">function</span>(<span class="params">testElement</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> testElement.nodeName === <span class="string">'div'</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><strong>3. <code>Element.getElementsByTagName()</code></strong></p>
+<p>跟<code>getElementsByClassName</code>一样，也是返回一个动态的包含指定标签名的元素的HTML集合<code>HTMLCollection</code>。参数中的标签名最好小写，兼容XHMTL。如果传入<code>*</code>，代表所有元素。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">var</span> <span class="selector-tag">table</span> = document.getElementById(<span class="string">'forecast-table'</span>)</span><br><span class="line"><span class="selector-tag">var</span> cells = <span class="selector-tag">table</span>.getElementsByTagName(<span class="string">'td'</span>)</span><br></pre></td></tr></table></figure>
+<p><strong>4. <code>Element.querySelector()</code></strong></p>
+<p>参数是一组合法的css选择器。返回指定的元素的子树中，第一个与选择器组匹配的元素。如果没有找到，返回值为null。如果<code>Element</code>为<code>document</code>对象，则搜索整个文档，找到第一个满足条件的元素。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">var</span> el = document.getElementById(<span class="string">'#para'</span>)</span><br><span class="line"><span class="selector-tag">var</span> testEl = document<span class="selector-class">.body</span><span class="selector-class">.querySelector</span>(<span class="string">'.test'</span>)</span><br><span class="line"><span class="comment">// 查找div或article元素</span></span><br><span class="line"><span class="selector-tag">var</span> el = document.querySelector(<span class="string">'div, article'</span>)</span><br></pre></td></tr></table></figure>
+<p><strong>5. <code>Element.querySelectorAll()</code></strong></p>
+<p>参数也是一组合法的css选择器。返回指定的元素的子树中，所有与选择器组匹配的元素列表<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Element/NodeList" target="_blank" rel="external"><code>NodeList</code></a>。返回的<code>NodeList</code>不是动态的，也就是如果DOM树发生变化，它不会跟着改变。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> el = <span class="built_in">document</span>.<span class="built_in">querySelector</span>(<span class="string">'#test'</span>)</span><br><span class="line"><span class="keyword">var</span> matches = el.<span class="built_in">querySelectorAll</span>(<span class="string">'div.highlighted &gt; p'</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="遍历DOM节点"><a href="#遍历DOM节点" class="headerlink" title="遍历DOM节点"></a>遍历DOM节点</h3><p>DOM本身是一个树的结构，可以使用根节点、父节点、子节点，兄弟节点等这些属性来遍历DOM元素。</p>
+<p><strong>1. 根节点</strong></p>
+<p><code>document</code>对象是DOM中每个节点的根节点。它实际上是<code>window</code>对象的一个属性。<code>html</code>、<code>head</code>、<code>body</code>元素直接作为<code>document</code>的属性。</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Node</th>
+<th>Node Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>document</code></td>
+<td><code>#document</code></td>
+<td><code>DOCUMENT_NODE</code></td>
+</tr>
+<tr>
+<td><code>document.documentElement</code></td>
+<td><code>html</code></td>
+<td><code>ELEMENT_NODE</code></td>
+</tr>
+<tr>
+<td><code>document.head</code></td>
+<td><code>head</code></td>
+<td><code>ELEMENT_NODE</code></td>
+</tr>
+<tr>
+<td><code>document.body</code></td>
+<td><code>body</code></td>
+<td><code>ELEMENT_NODE</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>2. 父节点</strong></p>
+<p>父节点是当前节点的上一层节点。</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Gets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/parentNode" target="_blank" rel="external"><code>parentNode</code></a></td>
+<td>Parent Node</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/parentElement" target="_blank" rel="external"><code>parentElement</code></a></td>
+<td>Parent Element Node</td>
+</tr>
+</tbody>
+</table>
+<p>这两个属性大多数时候使用哪一都可以，只有一点微小的区别：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const <span class="selector-tag">html</span> = document<span class="selector-class">.documentElement</span></span><br><span class="line"></span><br><span class="line">console.log(<span class="selector-tag">html</span>.parentNode)          <span class="comment">// #document</span></span><br><span class="line">console.log(<span class="selector-tag">html</span>.parentElement)       <span class="comment">// null</span></span><br></pre></td></tr></table></figure>
+<p>当遍历DOM时，<code>parentNode</code>使用的更普通一些。</p>
+<p><strong>3. 子节点</strong></p>
+<p>子节点是当前节点的下一层节点。</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Gets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/childNodes" target="_blank" rel="external"><code>childNodes</code></a></td>
+<td>Child Nodes</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/firstChild" target="_blank" rel="external"><code>firstChild</code></a></td>
+<td>First Child Node</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/lastChild" target="_blank" rel="external"><code>lastChild</code></a></td>
+<td>Last Child Node</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/children" target="_blank" rel="external"><code>children</code></a></td>
+<td>Element Child Nodes</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/firstElementChild" target="_blank" rel="external"><code>firstElementChild</code></a></td>
+<td>First Child Element Node</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/lastElementChild" target="_blank" rel="external"><code>lastElementChild</code></a></td>
+<td>Last Child Element Node</td>
+</tr>
+</tbody>
+</table>
+<p>DOM中的节点有一个<code>nodeType</code>属性，表示节点的类型，常用的有如下几个：</p>
+<table>
+<thead>
+<tr>
+<th>Node Type</th>
+<th>Value</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ELEMENT_NODE</code></td>
+<td>1</td>
+<td><code>&lt;body&gt;</code>元素</td>
+</tr>
+<tr>
+<td><code>TEXT_NODE</code></td>
+<td>3</td>
+<td>文本部分</td>
+</tr>
+<tr>
+<td><code>COMMENT_NODE</code></td>
+<td>8</td>
+<td><code>&lt;!-- an HTML comment --&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>childNodes</code>、<code>firstChild</code>、<code>lastChild</code>查找的是所有类型的节点，而<code>children</code>、<code>firstElementChild</code>、<code>lastElementChild</code>只查找<code>nodeType = 1</code>的节点。例如：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;h1&gt;Shark World&lt;/h1&gt;</span><br><span class="line"></span><br><span class="line">const <span class="selector-tag">h1</span> = document.getElementsByTagName(<span class="string">'h1'</span>)[<span class="number">0</span>]</span><br><span class="line"><span class="selector-tag">h1</span><span class="selector-class">.firstChild</span>           <span class="comment">// "Shark World"</span></span><br><span class="line"><span class="selector-tag">h1</span><span class="selector-class">.firstELementChild</span>    <span class="comment">// null</span></span><br></pre></td></tr></table></figure>
+<p><strong>4. 兄弟节点</strong></p>
+<p>与当前节点处于同一层级的节点。</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Gets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/previousSibling" target="_blank" rel="external"><code>previousSibling</code></a></td>
+<td>Previous Sibling Node</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/nextSibling" target="_blank" rel="external"><code>nextSibling</code></a></td>
+<td>Next Sibling Node</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/NonDocumentTypeChildNode/previousElementSibling" target="_blank" rel="external"><code>previousElementSibling</code></a></td>
+<td>Previous Sibling Element Node</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/NonDocumentTypeChildNode/nextElementSibling" target="_blank" rel="external"><code>nextElementSibling</code></a></td>
+<td>Next Sibling Element Node</td>
+</tr>
+</tbody>
+</table>
+<p><code>previousSibling</code>和<code>nextSibling</code>会查找任意类型的节点，<code>previousElementSibling</code>和<code>nextElementSibling</code>只查找<code>nodeType = 1</code>的节点。</p>
+<h3 id="改变DOM节点"><a href="#改变DOM节点" class="headerlink" title="改变DOM节点"></a>改变DOM节点</h3><p><strong>1. 创建节点</strong></p>
+<table>
+<thead>
+<tr>
+<th>Property/Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement" target="_blank" rel="external"><code>createElement()</code></a></td>
+<td>创建一个元素节点（<code>nodeType = 1</code>）</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/createTextNode" target="_blank" rel="external"><code>createTextNode()</code></a></td>
+<td>创建一个文本节点（<code>nodeType = 3</code>）</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent" target="_blank" rel="external"><code>node.textContent</code></a></td>
+<td>获取或设置一个元素节点的文本内容</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML" target="_blank" rel="external"><code>node.innerHTML</code></a></td>
+<td>获取或设置一个元素的HTML内容</td>
+</tr>
+</tbody>
+</table>
+<p><strong>2. 插入节点</strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild" target="_blank" rel="external"><code>parentNode.appendChild(newNode)</code></a></td>
+<td>将传入的节点作为最后一个子节点添加到当前节点</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/insertBefore" target="_blank" rel="external"><code>parentNode.insertBefore(newNode, referenceNode)</code></a></td>
+<td>在特定的元素之前插入一个节点到父元素中</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/replaceChild" target="_blank" rel="external"><code>parentNode.replaceChild(newChild, oldChild)</code></a></td>
+<td>用一个新节点替换一个旧节点</td>
+</tr>
+</tbody>
+</table>
+<p><strong>3. 删除节点</strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/removeChild" target="_blank" rel="external"><code>parentNode.removeChild(child);</code></a></td>
+<td>从父节点中移除传入的节点</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/ChildNode/remove" target="_blank" rel="external"><code>node.remove()</code></a></td>
+<td>移除节点本身</td>
+</tr>
+</tbody>
+</table>
+<p>这两个方法足以让我们移除DOM中的任何节点。也可以用<code>node.innerHTML = &#39;&#39;</code>达到移除节点的效果，但最好不要这样用，这样写很不直观。</p>
+<h3 id="修改元素的Attributes、Classes、Styles"><a href="#修改元素的Attributes、Classes、Styles" class="headerlink" title="修改元素的Attributes、Classes、Styles"></a>修改元素的Attributes、Classes、Styles</h3><p><strong>1. 修改元素的Attributes</strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hasAttribute()</code></td>
+<td>返回<code>true</code>或<code>false</code></td>
+<td><code>element.hasAttribute(&#39;href&#39;)</code></td>
+</tr>
+<tr>
+<td><code>getAttribute()</code></td>
+<td>返回传入的属性值或null</td>
+<td><code>element.getAttribute(&#39;href&#39;)</code></td>
+</tr>
+<tr>
+<td><code>setAttribute()</code></td>
+<td>新增或更新传入的属性</td>
+<td><code>element.setAttribute(&#39;href&#39;, &#39;index.html&#39;)</code></td>
+</tr>
+<tr>
+<td><code>removeAttribute()</code></td>
+<td>从元素上移除传入的属性</td>
+<td><code>element.removeAttribute(&#39;href&#39;)</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>2. 修改元素的Classes</strong></p>
+<table>
+<thead>
+<tr>
+<th>Property/Method</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>className</code></td>
+<td>获取或设置class值</td>
+<td><code>element.className</code></td>
+</tr>
+<tr>
+<td><code>classList.add()</code></td>
+<td>添加一个或多个class，添加多个时用逗号隔开</td>
+<td><code>element.classList.add(&#39;active&#39;)</code></td>
+</tr>
+<tr>
+<td><code>classList.toggle()</code></td>
+<td>开启或关闭一个class</td>
+<td><code>element.classList.toggle(&#39;active&#39;)</code></td>
+</tr>
+<tr>
+<td><code>classList.contains()</code></td>
+<td>判断一个class是否存在</td>
+<td><code>element.classList.contains(&#39;active&#39;)</code></td>
+</tr>
+<tr>
+<td><code>classList.replace()</code></td>
+<td>用一个新的class替换一个之前已存在的class</td>
+<td><code>classList.replace()</code></td>
+</tr>
+<tr>
+<td><code>classList.remove()</code></td>
+<td>移除一个class</td>
+<td><code>element.classList.remove(&#39;active&#39;)</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>3. 修改元素的Styles</strong></p>
+<p>直接使用元素的<code>style</code>属性设置即可，样式名称用驼峰格式写法并且开头字母小写，例如：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">div</span><span class="selector-class">.style</span><span class="selector-class">.borderRadius</span> = <span class="string">'50%'</span></span><br><span class="line"><span class="selector-tag">div</span><span class="selector-class">.style</span><span class="selector-class">.display</span> = <span class="string">'flex'</span></span><br><span class="line"><span class="selector-tag">div</span><span class="selector-class">.style</span><span class="selector-class">.justifyContent</span> = <span class="string">'center'</span></span><br><span class="line"><span class="selector-tag">div</span><span class="selector-class">.style</span><span class="selector-class">.alignItems</span> = <span class="string">'center'</span></span><br></pre></td></tr></table></figure>
+<p>可以使用<code>setAttribute()</code>给一个元素设置<code>style</code>属性：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">div</span>.setAttribute(<span class="string">'style'</span>, <span class="string">'text-align: center'</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><strong>【1】</strong> <a href="https://www.digitalocean.com/community/tutorial_series/understanding-the-dom-document-object-model" target="_blank" rel="external">Understanding the DOM — Document Object Model</a></p>
+<h2 id="减少操作DOM带来的性能损失"><a href="#减少操作DOM带来的性能损失" class="headerlink" title="减少操作DOM带来的性能损失"></a>减少操作DOM带来的性能损失</h2><blockquote>
+<p>把DOM和JavaScript各自想象为一个岛屿，它们之间用收费桥梁连接。ECMAScript每次访问DOM，都要途径这座桥，并交纳“过桥费”。访问DOM的次数越多，费用也就越高。</p>
+<p>摘自《高性能JavaScript》第3章</p>
+</blockquote>
+<h3 id="最小化DOM访问次数"><a href="#最小化DOM访问次数" class="headerlink" title="最小化DOM访问次数"></a>最小化DOM访问次数</h3><p><strong>1. 克隆已有节点，而不是创建新节点</strong></p>
+<p>使用<code>element.cloneNode()</code>代替<code>document.createElement()</code>，在大多数浏览器中都更有效率，但也不是特别明显。</p>
+<p><strong>2. 访问集合元素时使用局部变量</strong></p>
+<p>上一节总结查询DOM节点的方法时说到，<code>Element.getElementsByClassName()</code>和<code>Element.getElementsByTagName()</code>返回的<code>HTMLCollection</code>，是动态的，时刻保持着和DOM节点的同步。增加对该集合的访问次数，就会增加对DOM节点的查询次数，从而影响性能。所以当遍历一个集合时，能用局部变量进行缓存的属性和方法，就用局部变量缓存，能带来较大的速度提升。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">loopCollection</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> coll = <span class="built_in">document</span>.getElementsByTagName(<span class="string">'div'</span>)</span><br><span class="line">    <span class="keyword">const</span> len = coll.length</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> count = <span class="number">0</span>; count &lt; len; count++) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>3. 访问元素节点时使用只会返回元素节点的API</strong></p>
+<p>上一节总结遍历DOM节点的属性和方法时说到，像<code>firstChild</code>这一类的API返回的是所有类型的节点，<code>firstElementChild</code>这一类的API只会返回元素节点（<code>nodeType = 1</code>）。如果我们的目的是只想访问元素节点（HTML标签），最好使用<code>firstElementChild</code>这一类的API，具体有哪些可以再回到上一节看一下。这样得到的集合项更少，所以速度也会更快。</p>
+<p><strong>4. 访问特定元素时使用选择器API</strong></p>
+<p>选择器API主要是：<code>querySelector()</code>和<code>querySelectorAll()</code>。在需要组合查询时，选择器API只要传入正确的css选择器，就能一次返回特定元素。而使用<code>getElementById()</code>、<code>getElementByTagName()</code>等等API，需要查询多次，并且代码冗长。而且<code>querySelectorAll()</code>返回的是静态的节点列表，省略了将动态集合再转换成数组的步骤。所以选择器API能带来较好的速度提升。</p>
+<h3 id="减少重绘和重排的次数"><a href="#减少重绘和重排的次数" class="headerlink" title="减少重绘和重排的次数"></a>减少重绘和重排的次数</h3><blockquote>
+<p>当DOM的变化影响了元素的几何属性（宽和高）——比如改变边框或给段落增加文字，导致行数增加——浏览器需要重新计算元素的几何属性，同样其他元素的几何属性和位置也会因此受到影响。浏览器会使渲染树中受到影响的部分失效，并重新构造渲染树。这个过程称为“重排”。完成重排后，浏览器会重新绘制受影响的部分到屏幕中，该过程称为“重绘”。</p>
+<p>摘自《高性能JavaScript》第3章</p>
+</blockquote>
+<p>也就是页面需要重新布局时就会触发“重排”，主要有下列情况会发生重排。</p>
+<ul>
+<li>添加或删除可见的DOM元素.</li>
+<li>改变元素位置。</li>
+<li>元素尺寸改变（包括：外边距、内边距、边框宽度、宽度、高度等属性改变）。</li>
+<li>内容改变，例如：文本改变或图片被另一个不同尺寸的图片替代。</li>
+<li>页面渲染初始化。</li>
+<li>浏览器窗口尺寸改变。</li>
+</ul>
+<p>每一次重排都会产生计算消耗，大多数浏览器通过队列化修改并批量执行来优化重排过程。但是如果访问下面这些属性，会强制浏览器立即执行重排，返回布局信息。</p>
+<ul>
+<li>offsetTop, offsetLeft, offsetWidth, offsetHeight</li>
+<li>scrollTop, scrollLeft, scrollWidth, scrollHeight</li>
+<li>clientTop, clientLeft, clientWidth, clientHeight</li>
+<li>getComputedStyle()(currentStyle in IE)</li>
+</ul>
+<p>下面总结一下减少重排和重绘次数的方法。</p>
+<p><strong>1. 改变样式时，使用<code>el.style.cssText</code>一次性设置所有样式</strong>，这样只会修改DOM一次。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const el = document.getElementById(<span class="string">'myDiv'</span>)</span><br><span class="line">el<span class="selector-class">.style</span><span class="selector-class">.cssText</span> = <span class="string">'border-left: 1px; border-right: 2px; padding: 5px;'</span></span><br></pre></td></tr></table></figure>
+<p><strong>2. 批量修改DOM</strong></p>
+<p>批量修改DOM说的是，先让元素脱离文档流，然后再对元素进行改变，所有的改变都设置完了后，再把元素放回到文档中。脱离文档和再回到文档中会分别触发一次重排，中间无论有多少修改都只会触发一次重排。</p>
+<p>使元素脱离文档流有三种基本方法：</p>
+<ul>
+<li>隐藏元素，应用修改，重新显示。</li>
+</ul>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const <span class="selector-tag">ul</span> = document.getElementById(<span class="string">'myList'</span>)</span><br><span class="line"><span class="selector-tag">ul</span><span class="selector-class">.style</span><span class="selector-class">.display</span> = <span class="string">'none'</span></span><br><span class="line"><span class="function"><span class="title">appendDataToElement</span><span class="params">(ul, data)</span></span></span><br><span class="line"><span class="selector-tag">ul</span><span class="selector-class">.style</span><span class="selector-class">.display</span> = <span class="string">'block'</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用文档片段（document fragment）在当前DOM之外构建一个子树，再把它拷贝回文档。</li>
+</ul>
+<p>这种效率是最高的，可能平时都被忽略了。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fragment = <span class="built_in">document</span>.createDocumentFragment()</span><br><span class="line">appendDataToElement(fragment, data)</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">'myList'</span>).appendChild(fragment)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>将原始元素拷贝到一个脱离文档的节点中，修改副本，完成后再替换原始元素。</li>
+</ul>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">old</span> = document.getElementById(<span class="string">'myList'</span>)</span><br><span class="line"><span class="keyword">const</span> clone = <span class="keyword">old</span>.cloneNode(<span class="keyword">true</span>)</span><br><span class="line">appendDataToElement(clone, data)</span><br><span class="line"><span class="keyword">old</span>.parentNode.replaceChild(clone, <span class="keyword">old</span>)</span><br></pre></td></tr></table></figure>
+<p><strong>3. 缓存布局信息</strong></p>
+<p>比如要移动一个元素，下面的代码可以进行优化：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">myElement<span class="selector-class">.style</span><span class="selector-class">.left</span> = <span class="number">1</span> + myElement<span class="selector-class">.style</span><span class="selector-class">.left</span> + <span class="string">'px'</span></span><br></pre></td></tr></table></figure>
+<p>将<code>myElement.style.left</code>用赋值给一个变量，在移动时使用该变量做计算：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">var</span> current = myElement<span class="selector-class">.style</span><span class="selector-class">.left</span></span><br><span class="line"></span><br><span class="line">current++</span><br><span class="line">myElement<span class="selector-class">.style</span><span class="selector-class">.left</span> = current + <span class="string">'px'</span></span><br></pre></td></tr></table></figure>
+<p><strong>4. 让元素脱离动画流</strong></p>
+<ol>
+<li><p>使用绝对位置定位页面上的动画元素，将其脱离文档流。</p>
+</li>
+<li><p>让元素动起来。当它扩大时，会临时覆盖部分页面。但这只是页面一个小区域的重绘过程，不会产生重排并重绘页面的大部分内容。</p>
+</li>
+<li><p>当动画结束时恢复定位，从而只会下移一次文档中的其他元素。</p>
+</li>
+</ol>
+<p><strong>5. 避免在在大量元素上使用<code>:hover</code></strong></p>
+<h3 id="使用事件委托"><a href="#使用事件委托" class="headerlink" title="使用事件委托"></a>使用事件委托</h3><p>如果想要在大量子元素中单击任何一个元素都执行一段代码，可以将事件监听器设置在父节点上，发生在子节点上的事件会冒泡到父节点上，这样就不需要给每个子节点都单独设置监听器。</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;ul id=<span class="string">"menu"</span>&gt;</span><br><span class="line">    &lt;<span class="keyword">li</span>&gt;&lt;a href=<span class="string">"menu1.html"</span>&gt;&lt;/a&gt;&lt;/<span class="keyword">li</span>&gt;</span><br><span class="line">    &lt;<span class="keyword">li</span>&gt;&lt;a href=<span class="string">"menu2.html"</span>&gt;&lt;/a&gt;&lt;/<span class="keyword">li</span>&gt;</span><br><span class="line">    &lt;<span class="keyword">li</span>&gt;&lt;a href=<span class="string">"menu3.html"</span>&gt;&lt;/a&gt;&lt;/<span class="keyword">li</span>&gt;</span><br><span class="line">    &lt;<span class="keyword">li</span>&gt;&lt;a href=<span class="string">"menu4.html"</span>&gt;&lt;/a&gt;&lt;/<span class="keyword">li</span>&gt;</span><br><span class="line">&lt;/ul&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 处理点击a标签的事件</span></span><br><span class="line">document.getElementById('menu').onclick = function(<span class="keyword">e</span>) &#123;</span><br><span class="line">    <span class="keyword">e</span> = <span class="keyword">e</span> || <span class="keyword">window</span>.event</span><br><span class="line">    <span class="keyword">var</span> target = <span class="keyword">e</span>.target || <span class="keyword">e</span>.srcElement</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从target中拿到有用信息，进行相关处理</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 取消默认行为，并阻止再向#menu的父节点传递</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="keyword">e</span>.preventDefault === 'function') &#123;</span><br><span class="line">        <span class="keyword">e</span>.preventDefault()</span><br><span class="line">        <span class="keyword">e</span>.stopPropagation()</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">e</span>.returnValue = false</span><br><span class="line">        <span class="keyword">e</span>.cancelBubble = true</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="参考资料-1"><a href="#参考资料-1" class="headerlink" title="参考资料"></a>参考资料</h3><p><strong>【1】</strong> 《高性能JavaScript》第3章</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2018/12/05/Browser-DOM/" target="_blank" rel="external">http://shinancao.cn/2018/12/05/Browser-DOM/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+          
         
       
     </div>
@@ -1628,144 +2182,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2018/02/03/Life-2012/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="意林">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="意林的小站">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/03/Life-2012/" itemprop="url">竟然在QQ空间的日志中发现了12、13年的年终总结</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-03T18:12:09+08:00">
-                2018-02-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Life/" itemprop="url" rel="index">
-                    <span itemprop="name">Life</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>已经许久不用QQ了，前几天登录上去竟在日志中发现了12年和13年写年终总结，如获至宝呀！赶快搬到博客里来，免得哪天连QQ的密码都不记得时，曾经的这些记录就彻底消失了。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/02/03/Life-2012/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1816,7 +2232,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-count">57</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1827,7 +2243,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">14</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1838,7 +2254,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-count">88</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
