@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-  <title>Nobuo Uematsu</title>
+  <title>意林的小站</title>
 
   <link href="https://fonts.googleapis.com/css?family=Paytone+One" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,700,900" rel="stylesheet">
@@ -20,37 +20,32 @@
   <nav class="site-navigation">
     <div class="nav-container">
       <div class="brand underline">
-        <a href="#!">
-          Nobuo
-          <b>Uematsu</b>
-        </a>
+        <a href="http://shinancao.cn/" target="_blank">Home</a>
       </div>
       <div class="menu">
-        <a href="#!">Experience</a>
-        <a href="#!">Portfolio</a>
-        <a href="#!">Contact</a>
+        <a href="#sec-about">About</a>
+        <a href="#sec-tools">Tools</a>
+        <a href="#sec-labs">Code-Labs</a>
       </div>
     </div>
   </nav>
 
   <main>
-    <div class="container flex ac">
+    <div class="container flex ac" id="sec-about">
       <div class="hero-container ">
-        <h1>Nobuo Uematsu</h1>
-        <p class="lead">Nobuo is a Japanese
-          <a href="https://en.wikipedia.org/wiki/Video_game_music">video game composer</a>, best known for scoring most of the titles in the
-          <a href="https://en.wikipedia.org/wiki/Final_Fantasy">Final Fantasy</a> series by
-          <a href="https://na.square-enix.com/us/home">Square Enix</a>.</p>
-
-        <p>He is considered to be one of the most well known composers in the video game industry.</p>
+        <h1>About</h1>
+        <p>这里整理了我在平时开发和学习中做的一些小项目，主要与iOS和Web前端相关。
+我将其分成了两部分，一部分是可以用在平时开发中提升效率的工具，让我们可以减少一些重复性劳动。
+另一部分是对某些技术点的实践或造的轮子，主要以学习为目的。</p>
         <p>
-          <a class="button" href="#!">Get in Touch</a>
+          项目都托管在了<a href="https://github.com/shinancao/">GitHub</a>上，欢迎来一起讨论交流。
         </p>
       </div>
       <div class="code">
         <pre><code class="language-js">{
-  "name": "Nobuo Uematsu",
-  "occupation": "Video game composer",
+  "name": "张楠",
+  "occupation": "software engineer",
+  "skills": ["Web", "iOS"],
   "available_for_hire:" true
 }</code></pre>
       </div>
@@ -61,158 +56,157 @@
       <div class="container">
         <header class="section-header">
           <h1>Technical Skills</h1>
-          <p>There's some familiarity in Celtic music, even if you've never heard that piece of music before.</p>
+          <p>这里列出了目前项目中涉及到的主要技术，我还会不断去尝试更多的~</p>
         </header>
         <div class="flex wrap skills">
           <div class="card">
-            <img src="img/html.png" alt="">
-            <h2>HTML</h2>
+            <img src="img/objc.png" alt="">
+            <h2 class="skill-title">Objective-C</h2>
           </div>
           <div class="card">
-            <img src="img/css.png" alt="">
-            <h2>CSS</h2>
+            <img src="img/swift.png" alt="">
+            <h2 class="skill-title">Swift</h2>
           </div>
           <div class="card">
             <img src="img/js.png" alt="">
-            <h2>JavaScript</h2>
+            <h2 class="skill-title">JavaScript</h2>
           </div>
           <div class="card">
-            <img src="img/node.png" alt="">
-            <h2>Node.js</h2>
-          </div>
-          <div class="card">
-            <img src="img/php.png" alt="">
-            <h2>PHP</h2>
+            <img src="img/vue.png" alt="">
+            <h2 class="skill-title">Vue.js</h2>
           </div>
         </div>
       </div>
-
     </section>
 
-    <section class="section">
+    <section class="section-gradient-bg" id="sec-tools">
       <div class="container">
         <header class="section-header">
-          <h1>Experience</h1>
-          <p>However, very recently I have come to an understanding that complex music is not necessarily pleasant.</p>
+          <h1>Tools</h1>
+          <p>这里是一些提高开发效率的工具，希望会对你有帮助。重复性的工作就交给程序去做吧~</p>
         </header>
         <div class="resume">
           <div class="flex">
-            <div class="resume-title">
-              <h2 class="underline-nh">Square-Enix</h2>
-              <div class="subtitle">1993 - Current</div>
-            </div>
             <div class="resume-description">
-              <h3>Master Composer</h3>
-              <p>Lead composer working on the nth iteration of the Final Fantasy series original soundtrack. Also Chrono Trigger.</p>
+              <h2>Xib2ObjC<a class="tools-code" href="https://github.com/shinancao/Xib2ObjC" target="_blank">< 项目源码 /></a></h2>
+              <p>做过iOS开发的朋友都知道，因为文件包的大小要求或对加载速度的要求，
+                有时候不得不用代码来写UI，但是在xib中直接拖拽UI又是如此的快速，
+                所以这个工具就是把xib文件直接转换成Objective-C代码。你再也不用无聊地一遍一遍写layout了。工具主要的features：</p>
               <ul>
-                <li>Composed songs such as Dancing Mad and Aria de Maria.</li>
-                <li>Also composed One Winged Angel.</li>
+                <li>把xib文件转换成用<a href="https://github.com/desandro/masonry">Masonry</a>布局的Objective-C代码。</li>
+                <li>如果你在xib中给view取了名字，那在生成中的代码中也会同步使用该名字，并生成一个相应的property。
+                  建议你对主要的view都取一个名字，免得再去代码中改。</li>
+                <li>你可以拖拽完UI后，直接运行模拟器查看效果，不需要等到放回项目中再看。</li>
               </ul>
+              <p>涉及到的相关技术：<a href="https://developer.apple.com/swift/">Swift</a>、<a href="https://github.com/apple/swift-package-manager">Swift Package Manager</a>、<a href="https://github.com/drmohundro/SWXMLHash">SWXMLHash</a>。</p>
             </div>
           </div>
           <div class="flex">
-            <div class="resume-title">
-              <h2 class="underline-nh">The Black Mages</h2>
-              <div class="subtitle">2006 - 2011</div>
-            </div>
             <div class="resume-description">
-              <h3>Lead Keyboardist</h3>
-              <p>Musical influence and keyboardist in rock/video game band.</p>
+              <h2>ModelMaker<a class="tools-code" href="https://github.com/shinancao/ModelMaker">< 项目源码 /></a></h2>
+              <p>在iOS的开发中我们总是会经历对照接口返回的JSON来定义Model文件，
+                但是一个property一个property地去敲实在即无聊又没有技术可言的活儿。
+                该命令行工具可以直接使用JSON文件来生成相应的Model文件，可以节省你大量的时间。工具主要的features：</p>
               <ul>
-                <li>Spearheaded the combination of video games and heavy metal.</li>
-                <li>Wore a sweet bandana.</li>
-                <li>It had kanji on it I think.</li>
+                <li>支持用JSON文件直接生成 Swift 的Model文件。</li>
+                <li>支持用JSON文件直接生成 Objective-C 的Model文件，并且会自动设置Array的泛型。</li>
+                <li>生成Objective-C的Model文件时，如果项目中用到了<a href="https://github.com/jsonmodel/jsonmodel">JSONModel</a>，生成的Model也可以自动继承JSONModel。</li>
+                <li>也可以指定Model的前缀和后缀。</li>
+                <li>作为命令行工具，简单易用。</li>
               </ul>
+              <p>涉及到的相关技术：<a href="https://developer.apple.com/swift/">Swift</a>、<a href="https://github.com/apple/swift-package-manager">Swift Package Manager</a>。</p>
+            </div>
+          </div>
+          <div class="flex">
+            <div class="resume-description">
+              <h2>pod-carthage-template<a class="tools-code" href="https://github.com/shinancao/pod-carthage-template" target="_blank">< 项目源码 /></a></h2>
+              <p>当你想贡献一个iOS的开源库时，你是怎样设计你项目的目录结构呢？我在观察了很多主流的开源库的目录结构设计后发现，
+                它们的主目录结构几乎都一样。所以这个命令行工具就是自动为你生成你的开源库框架，同时会配置好支持 <a href="https://github.com/CocoaPods/CocoaPods" target="_blank">CocoaPods</a> 和 
+                <a href="https://github.com/Carthage/Carthage" target="_blank">Carthage</a> ，
+                你只要专心实现项目的核心内容就好了。工具主要的features：</p>
+              <ul>
+                <li>生成一个开源库的项目模板。</li>
+                <li>会自动配置好支持 <a href="https://github.com/CocoaPods/CocoaPods" target="_blank">CocoaPods</a> 和 <a href="https://github.com/Carthage/Carthage" target="_blank">Carthage</a>。</li>
+                <li>也可以指定项目依赖的第三方库，在生成项目时会自动配置好。</li>
+                <li>自动配置好用git进行源码管理。</li>
+                <li>作为命令行工具，简单易用。</li>
+              </ul>
+              <p>涉及到的相关技术：<a href="https://www.ruby-lang.org/en/" target="_blank">Ruby</a>、<a href="https://github.com/CocoaPods/Xcodeproj" target="_blank">Xcodeproj</a>。</p>
+            </div>
+          </div>
+          <div class="flex">
+            <div class="resume-description">
+              <h2>module-template<a class="tools-code" href="https://github.com/shinancao/pod-carthage-template" target="_blank">< 项目源码 /></a></h2>
+              <p>在做iOS开发时，你有没有遇到过每新增一个模块都要重复创建一样的目录，
+                甚至重复创建一样的类文件，只是文件的名字使用的是当前模块的名字。如果是这样，那你可以按照该工具的使用说明，
+                做一个模块模板，以后再新增模块时，只要运行一下脚本，模块的所有信息都生成了。工具主要的features：</p>
+              <ul>
+                <li>自动生成项目模块，节省重复劳动的时间。</li>
+                <li>作为命令行工具，简单易用。</li>
+              </ul>
+              <p>涉及到的相关技术：<a href="https://www.ruby-lang.org/en/" target="_blank">Ruby</a>。</p>
             </div>
           </div>
         </div>
+      </div>
+
     </section>
 
-    <section class="section-bg">
-      <header class="section-header">
-        <h1>Portfolio</h1>
-        <p>So I don't really have a clear plan, in terms of music, as to where I want to head in the future.</p>
-      </header>
+    <section class="section-bg" id="sec-labs">
       <div class="container">
+        <header class="section-header">
+          <h1>Code-Labs</h1>
+          <p>这里是我实践过的一些好玩的点子，或对一些技术知识的探索，希望能给你一些启发~</p>
+        </header>
         <div class="flex wrap portfolio">
           <div class="card">
-            <img src="img/dw.jpg" alt="">
-            <h2>Distant Worlds</h2>
-          </div>
-          <div class="card">
-            <img src="img/bm.jpg" alt="">
-            <h2>The Black Mages</h2>
+            <h2>js-download-upload</h2>
+            <p>这个小项目演示了JavaScript中文件的下载和上传，并实现了server端，可以将源码clone到本地玩一玩。主要功能点：</p>
+            <ul>
+              <li>使用fetch和async/await批量下载图片。</li>
+              <li>使用blob.slice分割大文件并上传。</li>
+              <li>用node.js实现了server端：获取图片列表、获取某一张图片，合并分割后的图片并保存。</li>
+            </ul>
+            <p><a class="button" href="https://github.com/shinancao/js-download-upload target="_blank"" target="_blank">项目源码</a></p>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <header class="section-header">
-        <h1>Contact</h1>
-        <p>However there is something about it that will remain in your mind for a long, long time. Including
-          <a href="#!">Twitter</a> and
-          <a href="#!">GitHub</a>.</p>
-      </header>
-      <div class="form-container">
-        <form action="https://formspree.io/you@email.com">
-          <label for="name">Name</label>
-          <input type="text" name="name">
-          <label for="email">Email Address</label>
-          <input type="email" name="_replyto">
-          <label for="message">Message</label>
-          <textarea name="message" cols="30" rows="10"></textarea>
-          <input type="submit" value="Send">
-        </form>
-      </div>
+        <div class="flex wrap portfolio">
+          <div class="card">
+            <h2>vue-store</h2>
+            <p>这个小项目可以看成是<a href="https://vuex.vuejs.org/zh/" target="_blank">Vuex</a>的简单实现吧，你也可以直接用在已有的项目中，不用安装任何其他库。</p>
+            <ul>
+              <li>支持指定模块名称。</li>
+              <li>支持将getters映射到Vue组件的computed中。</li>
+              <li>支持通过dispatch派发actions。</li>
+            </ul>
+            <p><a class="button" href="https://github.com/shinancao/vue-store" target="_blank">项目源码</a></p>
+          </div>
+        </div>
+        <div class="flex wrap portfolio">
+          <div class="card">
+            <h2>vue-ghibli</h2>
+            <p>这个小项目是利用ghibli提供的<a href="https://ghibliapi.herokuapp.com/" target="_blank">免费API</a>，演示了<a href="https://cn.vuejs.org/index.html" target="_blank">Vue</a>全家桶的使用。
+            尽量在保持功能简洁的同时，展示了一个Vue生态中各种技术的使用，让初学Vue的朋友可以对Vue项目有个大致了解。</p>
+            <ul>
+              <li>主要使用了<a href="https://vuex.vuejs.org/zh/" target="_blank">Vuex</a>进行状态管理，
+                <a href="https://router.vuejs.org/zh/" target="_blank">Vue Router</a>进行页面路由管理，<a href="https://github.com/axios/axios" target="_blank">axios</a>进行接口请求，
+                <a href="https://element.eleme.io/#/zh-CN" target="_blank">Element UI</a>进行页面搭建。</li>
+              <li>并演示了使用开源库<a href="https://github.com/shunseven/express-proxy-mock" target="_blank">express-proxy-mock</a>如何在开发环境中进行mock数据。</li>
+              <li>我将这一套的搭建，基于vue-cli 2.0做了一份<a href="https://github.com/shinancao/webpack" target="_blank">脚手架</a>，下次再开发Vue的项目可以直接拿来用。</li>
+              <li>项目中的编码风格，完全按照Vue的官方<a href="https://cn.vuejs.org/v2/style-guide/" target="_blank">风格指南</a>书写。</li>
+            </ul>
+            <p><a class="button" href="https://github.com/shinancao/vue-store" target="_blank">项目源码</a>
+            <a class="button" href="">项目预览</a></p>
+          </div>
+        </div>
     </section>
 
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <div class="flex sb">
-        <div class="about">
-          <h1>
-            <span class="primary">Nobuo</span>
-            <b class="secondary">Uematsu</b>
-          </h1>
-          <p>
-            Uematsu currently resides in Tokyo, Japan with his wife, Reiko, whom he met during college, and their beagle, Pao. They have
-            a summer cabin in Yamanakako, Yamanashi. In his spare time, he enjoys watching professional wrestling, drinking
-            beer and bicycling.
-          </p>
-
-        </div>
-        <div class="connect">
-          <h1>Connect with me</h1>
-          <p>You can find me here, there, and everywhere.</p>
-          <div class="social-icons">
-            <a href="https://www.taniarascia.com/feed">
-              <i class="fa fa-rss fa-2x"></i>
-            </a>
-            <a href="https://twitter.com/taniarascia" target="_blank">
-              <i class="fa fa-twitter fa-2x"></i>
-            </a>
-            <a href="https://github.com/taniarascia" target="_blank">
-              <i class="fa fa-github fa-2x"></i>
-            </a>
-            <a href="https://stackoverflow.com/users/4541434/tania-rascia" target="_blank">
-              <i class="fa fa-stack-overflow fa-2x"></i>
-            </a>
-            <a href="https://www.linkedin.com/in/taniarascia/" target="_blank">
-              <i class="fa fa-linkedin-square fa-2x" aria-hidden="true"></i>
-            </a>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </footer>
   <footer class="footer-bottom">
     <div class="container">
       <p>
-        &copy; 2017 Firstname Lastname. All rights reserved.
+        &copy; 2020 意林的小站. All rights reserved.
 
       </p>
     </div>
