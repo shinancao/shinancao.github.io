@@ -1,0 +1,2 @@
+webpackJsonp([0],{"7Otq":function(t,n,e){t.exports=e.p+"static/img/logo.e86d97c.png"},Lhz1:function(t,n){},tF1C:function(t,n,e){"use strict";var i={render:function(){this.$createElement;this._self._c;return this._m(0)},staticRenderFns:[function(){var t=this.$createElement,n=this._self._c||t;return n("div",{staticClass:"ghibli-logo"},[n("img",{attrs:{src:e("7Otq")}})])}]};var s=e("VU/8")(null,i,!1,function(t){e("Lhz1")},"data-v-66c181d6",null);n.a=s.exports}});
+//# sourceMappingURL=0.08a5866fbe686fff043c.js.map
