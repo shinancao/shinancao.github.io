@@ -95,7 +95,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="JavaScript,Vue.js,源码分析," />
+  <meta name="keywords" content="JavaScript,Vue,源码分析," />
 
 
 
@@ -119,7 +119,7 @@
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="看 Vue.js 源码的重要性不必多说了，无论是出于对技术的好奇，还是想要更好的使用 Vue.js，还是要应付面试，都需要我们沉浸下来好好琢磨一下它的源码。Vue.js 的代码经过了全世界这么多的程序员的审视，代码的设计性、规范性、严谨性等等，一定有很多值得我们学习借鉴的地方，自己在看的时候还是要多用心思考。
 我目前找到两份总结的比较系统全面文档，一份是Vue.js技术解密，划分了每一章，可以一目">
-<meta property="og:updated_time" content="2020-07-26T04:27:45.311Z">
+<meta property="og:updated_time" content="2020-07-26T04:43:35.011Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue.js源码学习 —— 起步">
 <meta name="twitter:description" content="看 Vue.js 源码的重要性不必多说了，无论是出于对技术的好奇，还是想要更好的使用 Vue.js，还是要应付面试，都需要我们沉浸下来好好琢磨一下它的源码。Vue.js 的代码经过了全世界这么多的程序员的审视，代码的设计性、规范性、严谨性等等，一定有很多值得我们学习借鉴的地方，自己在看的时候还是要多用心思考。
@@ -369,8 +369,8 @@
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Web/Vue-js/" itemprop="url" rel="index">
-                    <span itemprop="name">Vue.js</span>
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
                   </a>
                 </span>
 
@@ -407,13 +407,12 @@
 <p>我目前找到两份总结的比较系统全面文档，一份是<a href="https://ustbhuangyi.github.io/vue-analysis/v2/prepare/" target="_blank" rel="external">Vue.js技术解密</a>，划分了每一章，可以一目了然我们当下分析的目标是什么。还有一份是<a href="http://caibaojian.com/vue-design/art/" target="_blank" rel="external">Vue技术内幕</a>，真的是带着读着从头开始几乎逐行代码解读。感谢大神们对社区的贡献！但是我们仍有必要整理一份自己分析的笔记，在梳理的过程中，这些知识会逐渐内化成自己掌握的。我们不是在看小说，完全靠读别人的文章会大大减少去思考的机会，最终时间花了，却收效甚微。对我来说，写Demo，然后调试验证，会理解的深一些。后面的系列文章中我也会尽量给出例子，希望你能跟着看下去，并拿例子到浏览器中打断点调试一遍。</p>
 <p>这篇文章会先说一下开始看代码前的准备工作，介绍一下 <code>Vue.js</code> 项目的整体结构，然后再讲一下后面会怎样着手看代码。</p>
 <a id="more"></a>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="clone代码"><a href="#clone代码" class="headerlink" title="clone代码"></a>clone代码</h3><ol>
 <li><p>clone <code>Vue.js</code> <a href="https://github.com/vuejs/vue" target="_blank" rel="external">源码</a> 到本地。我clone的是<code>2.6.11</code>版本，后面的分析也会基于该版本。</p>
 <p>以前写分享源码的文章，基本上是贴源代码，再加上注释说明，这次我会尽量不去贴源代码，所以你一定要将代码clone下来，打开放在旁边。要看源码，如果连代码都不clone下来，实在说不过去啦。</p>
 </li>
-<li><p>了解项目结构。在 <a href="https://github.com/vuejs/vue/blob/dev/.github/CONTRIBUTING.md" target="_blank" rel="external">Vue.js Contributing Guide</a>介绍了每个目录放的内容，我翻译了一下如下：</p>
-</li>
 </ol>
+<h3 id="了解项目结构。"><a href="#了解项目结构。" class="headerlink" title="了解项目结构。"></a>了解项目结构。</h3><p>在 <a href="https://github.com/vuejs/vue/blob/dev/.github/CONTRIBUTING.md" target="_blank" rel="external">Vue.js Contributing Guide</a>介绍了每个目录放的内容，我翻译了一下如下：</p>
 <ul>
 <li><p><strong><code>scripts</code></strong>: 包括与打包相关的脚本和配置文件。通常你不需要接触它们。但是，熟悉下面的文件会对你自己有帮助：</p>
 <ul>
@@ -470,18 +469,14 @@
 </ul>
 </li>
 </ul>
-<ol>
-<li>了解代码风格。<code>Vue.js</code> 使用了 <a href="https://flowtype.org/" target="_blank" rel="external">Flow</a> 做类型注解，虽然跟写纯JavaScript代码有点不一样，但其实是有助于我们阅读代码的，可以明确地知道比如一个函数的传参和返回是什么类型。我在代码中随便找了一处看一下：</li>
-</ol>
+<h3 id="了解代码风格。"><a href="#了解代码风格。" class="headerlink" title="了解代码风格。"></a>了解代码风格。</h3><p><code>Vue.js</code> 使用了 <a href="https://flowtype.org/" target="_blank" rel="external">Flow</a> 做类型注解，虽然跟写纯JavaScript代码有点不一样，但其实是有助于我们阅读代码的，可以明确地知道比如一个函数的传参和返回是什么类型。我在代码中随便找了一处看一下：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Vue.prototype.$mount = <span class="function"><span class="keyword">function</span> (<span class="params"></span><br><span class="line">  el?: string | Element,</span><br><span class="line">  hydrating?: boolean</span><br><span class="line"></span>): <span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">return</span> mount.call(<span class="keyword">this</span>, el, hydrating)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><code>el?: string | Element</code> 表示 <code>el</code>可以不传，如果传了必须是 <code>string</code> 或 <code>Element</code> 类型的值。</p>
 <p><code>hydrating?: boolean</code> 表示 <code>hydrating</code>可以不传，如果传了必须是 <code>boolean</code>类型的值。</p>
 <p><code>: Component</code> 表示函数返回的值为 <code>Component</code>类型。</p>
 <p>项目中的自定义类型都放在了 <code>flow</code> 文件夹中。</p>
 <p>在书写上，对于函数的定义，很多地方都是像上面的代码一样，将参数换行写，返回值也换一行。<code>if</code>中的判断条件多的时候也会换行。</p>
-<ol>
-<li>了解项目是如何打包的。打开 <code>package.json</code> 看 <code>scripts</code> 部分：</li>
-</ol>
+<h3 id="了解项目是如何打包的。"><a href="#了解项目是如何打包的。" class="headerlink" title="了解项目是如何打包的。"></a>了解项目是如何打包的。</h3><p>打开 <code>package.json</code> 看 <code>scripts</code> 部分：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"scripts"</span>: &#123;</span><br><span class="line">    <span class="string">"dev"</span>: <span class="string">"rollup -w -c scripts/config.js --environment TARGET:web-full-dev"</span>,</span><br><span class="line">    <span class="string">"dev:cjs"</span>: <span class="string">"rollup -w -c scripts/config.js --environment TARGET:web-runtime-cjs-dev"</span>,</span><br><span class="line">    <span class="string">"dev:esm"</span>: <span class="string">"rollup -w -c scripts/config.js --environment TARGET:web-runtime-esm"</span>,</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p> <code>vue.js</code>是使用 <a href="https://www.rollupjs.com/" target="_blank" rel="external"><code>rollup</code></a> 打包的，<code>rollup</code>会按照ES6支持的标准模块化格式打包，并且能够分析出项目中未被使用的代码，在打包时去除掉，减少打包后的体积。干的活跟<code>webpack</code>很像，通常开发 Web 应用时使用 <code>webpack</code> 打包，开发库时使用 <code>rollup</code> 打包。</p>
 <p>我们后面分析基于<code>dev</code>这个脚本打包出来的 <code>vue.js</code>，所以来具体看下该脚本内容：</p>
@@ -492,30 +487,19 @@
 </blockquote>
 <p>完整版本的 <code>vue.js</code> 除了基本功能外，还带有编译器功能。你也可以将带有<code>template</code>选项的<code>Vue</code>实例代码发布上线，在运行时遇到 <code>template</code>，完整版本的 <code>vue.js</code> 会先将其编译成JavaScript代码（也就是<code>render</code>函数，这块留在以后再细说）。</p>
 <p><code>scripts</code> 中的其他脚本的意思也都类似，<code>TARGET</code> 后指明了要打包的<code>vue.js</code>的版本，在 <code>scripts</code> 文件夹下的 <code>config.js</code>文件中有对应的版本的入口文件路径。</p>
-<ol>
-<li><p>安装依赖包：<code>npm install</code>。</p>
-</li>
-<li><p>让 <code>rollup</code> 打包时产生 <code>vue.js.map</code> 方便调试，后面的分析都基于完整版本的 <code>vue.js</code>，所以在上面第4点中说的<code>dev</code>脚本后面加上 <code>--sourcemap</code>：</p>
-</li>
-</ol>
+<h3 id="安装依赖包"><a href="#安装依赖包" class="headerlink" title="安装依赖包"></a>安装依赖包</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure>
+<h3 id="准备调试"><a href="#准备调试" class="headerlink" title="准备调试"></a>准备调试</h3><p>让 <code>rollup</code> 打包时产生 <code>vue.js.map</code> 方便调试。后面的分析都基于完整版本的 <code>vue.js</code>，所以在上面第4点中说的<code>dev</code>脚本后面加上 <code>--sourcemap</code>：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"dev"</span>: <span class="string">"rollup -w -c scripts/config.js --environment TARGET:web-full-dev --sourcemap"</span></span><br></pre></td></tr></table></figure>
-<ol>
-<li><p>运行项目：<code>npm run dev</code>，之后会看到 <code>dist</code> 文件夹下产生了一个 <code>vue.js.map</code> 文件，这使得我们可以在浏览器中看到<code>src</code>文件夹，这样就可以直接在具体的位置打断点调试了。</p>
-</li>
-<li><p>找个例子，开始调试！<code>examples</code> 文件夹下有很多例子，随便找一个，然后将对 <code>vue.min.js</code> 的引用改为对 <code>vue.js</code> 的引用，在浏览器中打开页面，再打开 devtools ，在 Sources 板块会看到 <code>scr</code> 文件夹被列出来了。后面随便你怎么打断点调试了。</p>
-</li>
-<li><p>在看代码时，将官方的[API文档]放在旁边，遇到没有用过的API和方法一定记得先看文档里的说明，先了解API是干什么用的，再回头看代码会容易很多。其实整个项目几乎就是在实现这些API。</p>
-</li>
-</ol>
+<h3 id="运行项目"><a href="#运行项目" class="headerlink" title="运行项目"></a>运行项目</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run dev</span><br></pre></td></tr></table></figure>
+<p>之后会看到 <code>dist</code> 文件夹下产生了一个 <code>vue.js.map</code> 文件，这使得我们可以在浏览器中看到<code>src</code>文件夹，这样就可以直接在具体的位置打断点调试了。</p>
+<p>找个例子，开始调试！<code>examples</code> 文件夹下有很多例子，随便找一个，然后将对 <code>vue.min.js</code> 的引用改为对 <code>vue.js</code> 的引用，在浏览器中打开页面，再打开 devtools ，在 Sources 板块会看到 <code>scr</code> 文件夹被列出来了。后面随便你怎么打断点调试了。</p>
+<h3 id="准备官方API文档"><a href="#准备官方API文档" class="headerlink" title="准备官方API文档"></a>准备官方API文档</h3><p>在看代码时，将官方的[API文档]放在旁边，遇到没有用过的API和方法一定记得先看文档里的说明，先了解API是干什么用的，再回头看代码会容易很多。其实整个项目几乎就是在实现这些API。</p>
 <h2 id="找到-Vue-实例被初始化的地方"><a href="#找到-Vue-实例被初始化的地方" class="headerlink" title="找到 Vue 实例被初始化的地方"></a>找到 <code>Vue</code> 实例被初始化的地方</h2><p>我们肯定不能这个文件打开看看，那个文件打开看看，一顿乱看。最好是给自己理出一条线路，然后带有目的去看。接下来我们一步步先找到 <code>Vue</code> 实例的初始化过程，大致了解一下<code>src</code>文件夹中的代码是如何联系起来的，然后确定一下后面看代码的思路。</p>
 <h3 id="找到入口文件"><a href="#找到入口文件" class="headerlink" title="找到入口文件"></a>找到入口文件</h3><p>上一节中提到，打开<code>scripts/config.js</code>可以查看入口文件，那我们就去看一下<code>web-full-dev</code>的入口文件在哪。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'web-full-dev'</span>: &#123;</span><br><span class="line">  entry: resolve(<span class="string">'web/entry-runtime-with-compiler.js'</span>),</span><br><span class="line">  dest: resolve(<span class="string">'dist/vue.js'</span>),</span><br><span class="line">  format: <span class="string">'umd'</span>,</span><br><span class="line">  env: <span class="string">'development'</span>,</span><br><span class="line">  alias: &#123; he: <span class="string">'./entity-decoder'</span> &#125;,</span><br><span class="line">  banner</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
 <p>可以看到入口在<code>resolve(&#39;web/entry-runtime-with-compiler.js&#39;)</code>。</p>
 <p><code>resolve</code>函数干的活，是将参数用<code>/</code>分割取第一个元素（这里得到的就是<code>web</code>啦），然后去<code>alias</code>中找（这里找到的是<code>../src/platforms/web</code>），然后再拼接上后面的元素，返回拼接后的结果。所以这里返回的就是<code>../src/platforms/web/entry-runtime-with-compiler.js</code>，入口文件找到了。</p>
-<h3 id="Vue实例的初始化过程"><a href="#Vue实例的初始化过程" class="headerlink" title="Vue实例的初始化过程"></a>Vue实例的初始化过程</h3><ol>
-<li><code>entry-runtime-with-compiler.js</code></li>
-</ol>
-<p>打开<code>entry-runtime-with-compiler.js</code>看一下吧，开始是一堆的导入，其中有我们比较关心的一个：</p>
+<h3 id="Vue实例的初始化过程"><a href="#Vue实例的初始化过程" class="headerlink" title="Vue实例的初始化过程"></a>Vue实例的初始化过程</h3><h4 id="entry-runtime-with-compiler-js"><a href="#entry-runtime-with-compiler-js" class="headerlink" title="entry-runtime-with-compiler.js"></a><code>entry-runtime-with-compiler.js</code></h4><p>打开<code>entry-runtime-with-compiler.js</code>看一下吧，开始是一堆的导入，其中有我们比较关心的一个：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'./runtime/index'</span></span><br></pre></td></tr></table></figure>
 <p>等会儿再进去看它，先来大致看一下<code>entry-runtime-with-compiler.js</code>都干了什么事儿：</p>
 <ul>
@@ -537,10 +521,7 @@
 </li>
 </ul>
 <p>所以<code>entry-runtime-with-compiler.js</code>主要干了一件事儿：将<code>template</code>转成<code>render</code>函数。可以对比<code>entry-runtime.js</code>，它的里面就超级简单，导入<code>Vue</code>后，直接导出了。</p>
-<ol>
-<li><code>./runtime/index</code></li>
-</ol>
-<p>一开始还是一堆的导入，其中又发现了一条导入<code>Vue</code>，等会儿过去看看：</p>
+<h4 id="runtime-index"><a href="#runtime-index" class="headerlink" title="./runtime/index"></a><code>./runtime/index</code></h4><p>一开始还是一堆的导入，其中又发现了一条导入<code>Vue</code>，等会儿过去看看：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'core/index'</span></span><br></pre></td></tr></table></figure>
 <p>先看一下<code>./runtime/index</code>干的事儿：</p>
 <ul>
@@ -565,10 +546,7 @@
 </li>
 </ul>
 <p>所以<code>./runtime/index</code>中主要是给<code>Vue</code>补充了跟平台相关的功能特性。打开<code>weex</code>文件夹中对应的位置可以对比看一下。在<code>weex</code>环境下的<code>Vue</code>是没有提供<code>v-show</code>、<code>v-model</code>指令的，<code>component</code>还多提供了一个<code>Richtext</code>组件。</p>
-<ol>
-<li><code>core/index</code></li>
-</ol>
-<p>打开后发现这里的<code>Vue</code>也是导入进来的：</p>
+<h4 id="core-index"><a href="#core-index" class="headerlink" title="core/index"></a><code>core/index</code></h4><p>打开后发现这里的<code>Vue</code>也是导入进来的：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'./instance/index'</span></span><br></pre></td></tr></table></figure>
 <p><code>core/index</code>中主要做的事情包括：</p>
 <ul>
@@ -584,10 +562,7 @@
 </li>
 </ul>
 <p>在阅读代码时一定要注意方法或属性是加在<code>Vue</code>上的，还是加在<code>Vue.prototype</code>上的。</p>
-<ol>
-<li><code>./instance/index</code></li>
-</ol>
-<p>终于看到了定义 <code>Vue</code> 的地方，它是一个构造函数，所以在开发环境中判断了是否用<code>new</code>来调用，没用的话给出警告提示。然后调用了<code>_init</code>方法。</p>
+<h4 id="instance-index"><a href="#instance-index" class="headerlink" title="./instance/index"></a><code>./instance/index</code></h4><p>终于看到了定义 <code>Vue</code> 的地方，它是一个构造函数，所以在开发环境中判断了是否用<code>new</code>来调用，没用的话给出警告提示。然后调用了<code>_init</code>方法。</p>
 <p>下面调用了一堆<code>**Mixin</code>方法，上面的<code>_init</code>方法就是在<code>initMixin</code>中加上的。这里可以看到一个<code>Vue</code>实例大致包括：状态、事件、生命周期、渲染等几个部分，打开各个文件就会发现<a href="https://cn.vuejs.org/v2/api/" target="_blank" rel="external">API文档</a>中大部分实例方法的实现过程，以及各选项的用途。所以<strong>这些地方是我们后面要重点看的</strong>。</p>
 <p>下面看一下每一部分都做了什么事儿：</p>
 <ul>
@@ -659,7 +634,7 @@
           
             <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
           
-            <a href="/tags/Vue-js/" rel="tag"># Vue.js</a>
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
           
             <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
           
@@ -841,7 +816,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#找到-Vue-实例被初始化的地方"><span class="nav-number">2.</span> <span class="nav-text">找到 Vue 实例被初始化的地方</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#找到入口文件"><span class="nav-number">2.1.</span> <span class="nav-text">找到入口文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vue实例的初始化过程"><span class="nav-number">2.2.</span> <span class="nav-text">Vue实例的初始化过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他补充"><span class="nav-number">3.</span> <span class="nav-text">其他补充</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#clone代码"><span class="nav-number">1.1.</span> <span class="nav-text">clone代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#了解项目结构。"><span class="nav-number">1.2.</span> <span class="nav-text">了解项目结构。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#了解代码风格。"><span class="nav-number">1.3.</span> <span class="nav-text">了解代码风格。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#了解项目是如何打包的。"><span class="nav-number">1.4.</span> <span class="nav-text">了解项目是如何打包的。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装依赖包"><span class="nav-number">1.5.</span> <span class="nav-text">安装依赖包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#准备调试"><span class="nav-number">1.6.</span> <span class="nav-text">准备调试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行项目"><span class="nav-number">1.7.</span> <span class="nav-text">运行项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#准备官方API文档"><span class="nav-number">1.8.</span> <span class="nav-text">准备官方API文档</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#找到-Vue-实例被初始化的地方"><span class="nav-number">2.</span> <span class="nav-text">找到 Vue 实例被初始化的地方</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#找到入口文件"><span class="nav-number">2.1.</span> <span class="nav-text">找到入口文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vue实例的初始化过程"><span class="nav-number">2.2.</span> <span class="nav-text">Vue实例的初始化过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#entry-runtime-with-compiler-js"><span class="nav-number">2.2.1.</span> <span class="nav-text">entry-runtime-with-compiler.js</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#runtime-index"><span class="nav-number">2.2.2.</span> <span class="nav-text">./runtime/index</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#core-index"><span class="nav-number">2.2.3.</span> <span class="nav-text">core/index</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#instance-index"><span class="nav-number">2.2.4.</span> <span class="nav-text">./instance/index</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他补充"><span class="nav-number">3.</span> <span class="nav-text">其他补充</span></a></li></ol></div>
             
 
           </div>
