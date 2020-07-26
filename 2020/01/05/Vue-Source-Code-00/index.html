@@ -119,7 +119,7 @@
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="看 Vue.js 源码的重要性不必多说了，无论是出于对技术的好奇，还是想要更好的使用 Vue.js，还是要应付面试，都需要我们沉浸下来好好琢磨一下它的源码。Vue.js 的代码经过了全世界这么多的程序员的审视，代码的设计性、规范性、严谨性等等，一定有很多值得我们学习借鉴的地方，自己在看的时候还是要多用心思考。
 我目前找到两份总结的比较系统全面文档，一份是Vue.js技术解密，划分了每一章，可以一目">
-<meta property="og:updated_time" content="2020-07-26T04:43:35.011Z">
+<meta property="og:updated_time" content="2020-07-26T04:48:21.584Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue.js源码学习 —— 起步">
 <meta name="twitter:description" content="看 Vue.js 源码的重要性不必多说了，无论是出于对技术的好奇，还是想要更好的使用 Vue.js，还是要应付面试，都需要我们沉浸下来好好琢磨一下它的源码。Vue.js 的代码经过了全世界这么多的程序员的审视，代码的设计性、规范性、严谨性等等，一定有很多值得我们学习借鉴的地方，自己在看的时候还是要多用心思考。
@@ -407,11 +407,8 @@
 <p>我目前找到两份总结的比较系统全面文档，一份是<a href="https://ustbhuangyi.github.io/vue-analysis/v2/prepare/" target="_blank" rel="external">Vue.js技术解密</a>，划分了每一章，可以一目了然我们当下分析的目标是什么。还有一份是<a href="http://caibaojian.com/vue-design/art/" target="_blank" rel="external">Vue技术内幕</a>，真的是带着读着从头开始几乎逐行代码解读。感谢大神们对社区的贡献！但是我们仍有必要整理一份自己分析的笔记，在梳理的过程中，这些知识会逐渐内化成自己掌握的。我们不是在看小说，完全靠读别人的文章会大大减少去思考的机会，最终时间花了，却收效甚微。对我来说，写Demo，然后调试验证，会理解的深一些。后面的系列文章中我也会尽量给出例子，希望你能跟着看下去，并拿例子到浏览器中打断点调试一遍。</p>
 <p>这篇文章会先说一下开始看代码前的准备工作，介绍一下 <code>Vue.js</code> 项目的整体结构，然后再讲一下后面会怎样着手看代码。</p>
 <a id="more"></a>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="clone代码"><a href="#clone代码" class="headerlink" title="clone代码"></a>clone代码</h3><ol>
-<li><p>clone <code>Vue.js</code> <a href="https://github.com/vuejs/vue" target="_blank" rel="external">源码</a> 到本地。我clone的是<code>2.6.11</code>版本，后面的分析也会基于该版本。</p>
-<p>以前写分享源码的文章，基本上是贴源代码，再加上注释说明，这次我会尽量不去贴源代码，所以你一定要将代码clone下来，打开放在旁边。要看源码，如果连代码都不clone下来，实在说不过去啦。</p>
-</li>
-</ol>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="clone代码"><a href="#clone代码" class="headerlink" title="clone代码"></a>clone代码</h3><p>clone <code>Vue.js</code> <a href="https://github.com/vuejs/vue" target="_blank" rel="external">源码</a> 到本地。我clone的是<code>2.6.11</code>版本，后面的分析也会基于该版本。</p>
+<p>  以前写分享源码的文章，基本上是贴源代码，再加上注释说明，这次我会尽量不去贴源代码，所以你一定要将代码clone下来，打开放在旁边。要看源码，如果连代码都不clone下来，实在说不过去啦。</p>
 <h3 id="了解项目结构。"><a href="#了解项目结构。" class="headerlink" title="了解项目结构。"></a>了解项目结构。</h3><p>在 <a href="https://github.com/vuejs/vue/blob/dev/.github/CONTRIBUTING.md" target="_blank" rel="external">Vue.js Contributing Guide</a>介绍了每个目录放的内容，我翻译了一下如下：</p>
 <ul>
 <li><p><strong><code>scripts</code></strong>: 包括与打包相关的脚本和配置文件。通常你不需要接触它们。但是，熟悉下面的文件会对你自己有帮助：</p>
@@ -499,7 +496,7 @@
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'web-full-dev'</span>: &#123;</span><br><span class="line">  entry: resolve(<span class="string">'web/entry-runtime-with-compiler.js'</span>),</span><br><span class="line">  dest: resolve(<span class="string">'dist/vue.js'</span>),</span><br><span class="line">  format: <span class="string">'umd'</span>,</span><br><span class="line">  env: <span class="string">'development'</span>,</span><br><span class="line">  alias: &#123; he: <span class="string">'./entity-decoder'</span> &#125;,</span><br><span class="line">  banner</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
 <p>可以看到入口在<code>resolve(&#39;web/entry-runtime-with-compiler.js&#39;)</code>。</p>
 <p><code>resolve</code>函数干的活，是将参数用<code>/</code>分割取第一个元素（这里得到的就是<code>web</code>啦），然后去<code>alias</code>中找（这里找到的是<code>../src/platforms/web</code>），然后再拼接上后面的元素，返回拼接后的结果。所以这里返回的就是<code>../src/platforms/web/entry-runtime-with-compiler.js</code>，入口文件找到了。</p>
-<h3 id="Vue实例的初始化过程"><a href="#Vue实例的初始化过程" class="headerlink" title="Vue实例的初始化过程"></a>Vue实例的初始化过程</h3><h4 id="entry-runtime-with-compiler-js"><a href="#entry-runtime-with-compiler-js" class="headerlink" title="entry-runtime-with-compiler.js"></a><code>entry-runtime-with-compiler.js</code></h4><p>打开<code>entry-runtime-with-compiler.js</code>看一下吧，开始是一堆的导入，其中有我们比较关心的一个：</p>
+<h3 id="Vue实例的初始化过程"><a href="#Vue实例的初始化过程" class="headerlink" title="Vue实例的初始化过程"></a>Vue实例的初始化过程</h3><h4 id="entry-runtime-with-compiler-js"><a href="#entry-runtime-with-compiler-js" class="headerlink" title="entry-runtime-with-compiler.js"></a>entry-runtime-with-compiler.js</h4><p>打开<code>entry-runtime-with-compiler.js</code>看一下吧，开始是一堆的导入，其中有我们比较关心的一个：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'./runtime/index'</span></span><br></pre></td></tr></table></figure>
 <p>等会儿再进去看它，先来大致看一下<code>entry-runtime-with-compiler.js</code>都干了什么事儿：</p>
 <ul>
@@ -521,7 +518,7 @@
 </li>
 </ul>
 <p>所以<code>entry-runtime-with-compiler.js</code>主要干了一件事儿：将<code>template</code>转成<code>render</code>函数。可以对比<code>entry-runtime.js</code>，它的里面就超级简单，导入<code>Vue</code>后，直接导出了。</p>
-<h4 id="runtime-index"><a href="#runtime-index" class="headerlink" title="./runtime/index"></a><code>./runtime/index</code></h4><p>一开始还是一堆的导入，其中又发现了一条导入<code>Vue</code>，等会儿过去看看：</p>
+<h4 id="runtime-index"><a href="#runtime-index" class="headerlink" title="./runtime/index"></a>./runtime/index</h4><p>一开始还是一堆的导入，其中又发现了一条导入<code>Vue</code>，等会儿过去看看：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'core/index'</span></span><br></pre></td></tr></table></figure>
 <p>先看一下<code>./runtime/index</code>干的事儿：</p>
 <ul>
@@ -546,7 +543,7 @@
 </li>
 </ul>
 <p>所以<code>./runtime/index</code>中主要是给<code>Vue</code>补充了跟平台相关的功能特性。打开<code>weex</code>文件夹中对应的位置可以对比看一下。在<code>weex</code>环境下的<code>Vue</code>是没有提供<code>v-show</code>、<code>v-model</code>指令的，<code>component</code>还多提供了一个<code>Richtext</code>组件。</p>
-<h4 id="core-index"><a href="#core-index" class="headerlink" title="core/index"></a><code>core/index</code></h4><p>打开后发现这里的<code>Vue</code>也是导入进来的：</p>
+<h4 id="core-index"><a href="#core-index" class="headerlink" title="core/index"></a>core/index</h4><p>打开后发现这里的<code>Vue</code>也是导入进来的：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'./instance/index'</span></span><br></pre></td></tr></table></figure>
 <p><code>core/index</code>中主要做的事情包括：</p>
 <ul>
@@ -562,7 +559,7 @@
 </li>
 </ul>
 <p>在阅读代码时一定要注意方法或属性是加在<code>Vue</code>上的，还是加在<code>Vue.prototype</code>上的。</p>
-<h4 id="instance-index"><a href="#instance-index" class="headerlink" title="./instance/index"></a><code>./instance/index</code></h4><p>终于看到了定义 <code>Vue</code> 的地方，它是一个构造函数，所以在开发环境中判断了是否用<code>new</code>来调用，没用的话给出警告提示。然后调用了<code>_init</code>方法。</p>
+<h4 id="instance-index"><a href="#instance-index" class="headerlink" title="./instance/index"></a>./instance/index</h4><p>终于看到了定义 <code>Vue</code> 的地方，它是一个构造函数，所以在开发环境中判断了是否用<code>new</code>来调用，没用的话给出警告提示。然后调用了<code>_init</code>方法。</p>
 <p>下面调用了一堆<code>**Mixin</code>方法，上面的<code>_init</code>方法就是在<code>initMixin</code>中加上的。这里可以看到一个<code>Vue</code>实例大致包括：状态、事件、生命周期、渲染等几个部分，打开各个文件就会发现<a href="https://cn.vuejs.org/v2/api/" target="_blank" rel="external">API文档</a>中大部分实例方法的实现过程，以及各选项的用途。所以<strong>这些地方是我们后面要重点看的</strong>。</p>
 <p>下面看一下每一部分都做了什么事儿：</p>
 <ul>
@@ -583,20 +580,20 @@
 </ul>
 <p>所以后面可以按照上面的每一块去看，可以说其他文件中的内容几乎都是为这几部分服务的，这里每一块都弄懂了，基本上<code>Vue</code>背后的原理就理解的差不多了。</p>
 <p>此外，还有一个骨头要啃下来，就是将<code>template</code>编译成<code>render</code>函数的编译器的实现。</p>
-<h2 id="其他补充"><a href="#其他补充" class="headerlink" title="其他补充"></a>其他补充</h2><ol>
+<h2 id="其他补充"><a href="#其他补充" class="headerlink" title="其他补充"></a>其他补充</h2><ul>
 <li><p>在对<code>Vue</code>的设计上可以看到，是从最开始核心的部分，到最后导出供开发者使用的<code>Vue</code>，一层层在给<code>Vue</code>拓展功能。</p>
 </li>
 <li><p>在整个项目的设计上，每一个文件夹放的都是一个明确的模块功能，并且都会提供一个对外导入使用的<code>index.js</code>文件。</p>
 </li>
 <li><p>在阅读代码时会发现，有的地方用<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty" target="_blank" rel="external"><code>Object.defineProperty</code></a>给对象添加属性或方法，有的地方又是直接赋值，这两种方式导致的对象的属性描述不同。下面举个例子说明：</p>
 </li>
-</ol>
+</ul>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Cat</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">Object</span>.defineProperty(Cat.prototype, <span class="string">'eat'</span>, &#123;</span><br><span class="line">  value: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="built_in">console</span>.log(<span class="string">'eating...'</span>) &#125;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">Object</span>.getOwnPropertyDescriptor(Cat.prototype, <span class="string">'eat'</span>))</span><br><span class="line"><span class="comment">// &#123;writable: false, enumerable: false, configurable: false, value: ƒ&#125;</span></span><br><span class="line"></span><br><span class="line">Cat.prototype.getName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.name</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">Object</span>.getOwnPropertyDescriptor(Cat.prototype, <span class="string">'getName'</span>))</span><br><span class="line"><span class="comment">// &#123;writable: true, enumerable: true, configurable: true, value: ƒ&#125;</span></span><br></pre></td></tr></table></figure>
 <p>使用<code>Object.defineProperty</code>给对象添加属性，如果没有明确指出，<code>writable</code>、<code>enumerable</code>和<code>configurable</code>默认都是<code>false</code>的。</p>
 <p>但是直接给对象的属性赋值，<code>writable</code>、<code>enumerable</code>和<code>configurable</code>是<code>true</code>的。</p>
-<ol>
+<ul>
 <li>在<code>entry-runtime-with-compiler.js</code>中我们看到有这样一段代码：</li>
-</ol>
+</ul>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* istanbul ignore if */</span></span><br><span class="line"><span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; config.performance &amp;&amp; mark) &#123;</span><br><span class="line">  mark(<span class="string">'compile'</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 省略中间代码...</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* istanbul ignore if */</span></span><br><span class="line"><span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; config.performance &amp;&amp; mark) &#123;</span><br><span class="line">  mark(<span class="string">'compile end'</span>)</span><br><span class="line">  measure(<span class="string">`vue <span class="subst">$&#123;this._name&#125;</span> compile`</span>, <span class="string">'compile'</span>, <span class="string">'compile end'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这段代码是在开发环境下，如果开发者设置了<code>Vue.config.performance = true</code>，会记录中间这段代码的执行时间，我们可以在Chrome的devtools中的Performance板块看到该耗时记录。上面记录的是将<code>template</code>转换成<code>render</code>函数的耗时。后面我们在看代码的过程中，还会遇到这样的代码，因为跟主线业务没有太大关系，可以忽略掉。</p>
 <p>但是记录代码段耗时时长的这段代码还是可以借鉴到我们平时的开发中的，<code>mark</code>、<code>measure</code>位于<code>core/util/perf</code>中。</p>
