@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,Vue,源码分析," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。
+这篇文章要看的代码主要位于文件core/instance/init.js中和文件core/util/options.js中。
+
+我没有在文章中大量的贴源码，一定要将源码clone到本地哦。
+
+预备知识选项 指的是在创建Vue的实例对象或“子类”构造器时传入的每项键值对。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue.js源码学习 —— 合并选项前的预处理">
+<meta property="og:url" content="http://shinancao.github.io/2020/01/07/Vue-Source-Code-01/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。
+这篇文章要看的代码主要位于文件core/instance/init.js中和文件core/util/options.js中。
+
+我没有在文章中大量的贴源码，一定要将源码clone到本地哦。
+
+预备知识选项 指的是在创建Vue的实例对象或“子类”构造器时传入的每项键值对。">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-merge-options-5.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-merge-options-6.jpg">
+<meta property="og:updated_time" content="2020-07-26T13:21:41.284Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue.js源码学习 —— 合并选项前的预处理">
+<meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。
+这篇文章要看的代码主要位于文件core/instance/init.js中和文件core/util/options.js中。
+
+我没有在文章中大量的贴源码，一定要将源码clone到本地哦。
+
+预备知识选项 指的是在创建Vue的实例对象或“子类”构造器时传入的每项键值对。">
+<meta name="twitter:image" content="http://shinancao.github.io/images/vue-merge-options-5.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2020/01/07/Vue-Source-Code-01/"/>
+
+
+
+
+
+  <title>Vue.js源码学习 —— 合并选项前的预处理 | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-portfolio">
+          <a href="/portfolio/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br />
+            
+            项目
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/01/07/Vue-Source-Code-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Vue.js源码学习 —— 合并选项前的预处理</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-07T16:40:32+08:00">
+                2020-01-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="external">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
+<p>这篇文章要看的代码主要位于文件<code>core/instance/init.js</code>中和文件<code>core/util/options.js</code>中。</p>
+<blockquote>
+<p>我没有在文章中大量的贴源码，一定要将源码clone到本地哦。</p>
+</blockquote>
+<h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><p><em>选项</em> 指的是在创建<code>Vue</code>的实例对象或“子类”构造器时传入的每项键值对。因为<code>Vue</code>内部是用一个<code>options</code>变量接收的，所以通常就把这些传入的键值对叫选项了。可以在<code>Vue</code>的<a href="https://cn.vuejs.org/v2/api/" target="_blank" rel="external">官方API文档</a>中查看暴露给开发者使用的选项。</p>
+<p><em>合并选项</em> 指的是合并构造器中的选项和创建实例对象时传入的选项。因为大部分<a href="https://cn.vuejs.org/v2/api/" target="_blank" rel="external">官方API文档</a>中的选项都是即可以传入构造器中，也可以传入实例对象中的。所以就会有合并选项的过程，不然有重复的情况怎么办呢。</p>
+<a id="more"></a>
+<p>因为这些选项都是开发者传入的，所以至少需要确保传入选项的类型、选项的命名等是对的。还有像<code>props</code>和<code>inject</code>这样的选项，<code>Vue</code>既允许传入数组类型也允许传入对象类型，那在<code>Vue</code>内部就必须要将其统一成一种类型。后续的处理过程都会依赖于各个选项，所以首选确保它们是可用的非常重要。</p>
+<p>创建<code>Vue</code>实例时调用的<code>Vue.prototype._init</code>方法进行初始化，位于<code>core/instance/init.js</code>文件中，我们这篇文章会大致看一下它内部做的事情，然后主要分析合并选项的部分。合并选项调用的是<code>mergeOptions</code>函数，来自文件<code>core/util/options.js</code>中。</p>
+<p>创建<code>Vue</code>的“子类”构造器通常使用的是<code>Vue.extend</code>API，它的实现位于文件<code>core/global-api/extend.js</code>中。今天不打算分析它，但是后面举例子的时候要用到，所以先大致了解一下。<code>Vue.extend</code>的内部也会发生一次选项合并，与初始化实例对象时使用的是同一个函数，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Sub.options = mergeOptions(</span><br><span class="line">  Super.options,</span><br><span class="line">  extendOptions</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><code>Super.options</code>是父类的构造器选项，<code>extendOptions</code>是开发者传入的选项，合并后的选项就是子类构造器的选项了。</p>
+<p>无论是子类构造器还是实例对象，那最最开始要去合并的肯定是开发者传入的选项，和<code>Vue</code>自身的选项<code>Vue.options</code>啦，所以咱们得先了解一下<code>Vue.options</code>中最开始都有什么选项。这些选项的注册在<code>initGlobalAPI(Vue)</code>中，位于文件<code>core/global-api/index.js</code>中：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Vue.options = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</span><br><span class="line">ASSET_TYPES.forEach(type =&gt; &#123;</span><br><span class="line">  Vue.options[type + <span class="string">'s'</span>] = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// this is used to identify the "base" constructor to extend all plain-object</span></span><br><span class="line"><span class="comment">// components with in Weex's multi-instance scenarios.</span></span><br><span class="line">Vue.options._base = Vue</span><br></pre></td></tr></table></figure>
+<p><code>ASSET_TYPES</code>定义在文件<code>shared/constants.js</code>中：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> ASSET_TYPES = [</span><br><span class="line">  <span class="string">'component'</span>,</span><br><span class="line">  <span class="string">'directive'</span>,</span><br><span class="line">  <span class="string">'filter'</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>可以看到一开始注册的是资源选项<code>components</code>、<code>directives</code>、<code>filters</code>，这几个选项是和平台特性相关的，所以此处还是直接将它们设置成了空对象。然后各个平台自己去添加这几个项目中的具体内容。我们研究<code>web</code>端的，经过了文件<code>platform/web/runtime/index.js</code>中的添加后，此时<code>Vue.options</code>的内容如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  components: &#123;</span><br><span class="line">    KeepAlive,</span><br><span class="line">    Transition,</span><br><span class="line">    TransitionGroup</span><br><span class="line">  &#125;,</span><br><span class="line">  directives: &#123;</span><br><span class="line">    model,</span><br><span class="line">    show</span><br><span class="line">  &#125;,</span><br><span class="line">  filters: &#123;&#125;,</span><br><span class="line">  _base: ƒ Vue(options)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先铺垫到这里，下面看一下<code>Vue.prototype._init</code>方法内的大致实现过程。</p>
+<h2 id="Vue-prototype-init"><a href="#Vue-prototype-init" class="headerlink" title="Vue.prototype._init"></a>Vue.prototype._init</h2><p><code>initMixin</code>函数为<code>Vue.prototype</code>增加了<code>_init</code>方法，这个方法主要做的事情如下：</p>
+<ul>
+<li><p>定义了常量<code>vm</code>，指向<code>this</code>。</p>
+<p>因为Vue设计时借鉴了MVVM模式，所以作者把指向<code>Vue</code>实例的变量命名为了<code>vm</code>。</p>
+</li>
+<li><p>全局变量<code>uid</code>自增1，赋值给了<code>vm._uid</code>，这使得开发者的项目中的每个<code>Vue</code>实例都会有一个唯一uid。</p>
+</li>
+<li><p>开发环境下记录<code>Vue</code>实例初始化的耗时，在<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="external">Vue.js源码学习 —— 起步</a>中已经讲过了这个耗时记录，这里不赘述了。</p>
+</li>
+<li><p><code>vm._isVue</code> 设置为<code>true</code>，代码注释中写了，为了避免该对象被响应系统观察到，等看响应部分的代码时再具体看它有啥用。</p>
+</li>
+<li><p>调用<code>mergeOptions</code>函数合并选项，这里是今天要重点看的，也是初始化过程中很重要的一步，下面细讲。</p>
+</li>
+<li><p><code>vm._self</code> 和 <code>vm._renderProxy</code>设置为当前对象，估计也是后面哪块要用到了，现在这里留个疑问，后面遇到再来解释。</p>
+</li>
+<li><p>调用了各个<code>init**</code>的初始化函数，每个初始化函数放到看那一部分的代码时再说。</p>
+</li>
+<li><p><code>beforeCreate</code>和<code>created</code>两个回调函数被调用了。为什么这样放置这两个函数的调用时机，我们后面看完各部分的初始化过程，看看能否得到答案。</p>
+</li>
+<li><p>执行<code>vm.$mount</code>挂载<code>vm</code>，这个过程可以单独开一篇详细说了，暂时先放下。</p>
+</li>
+</ul>
+<p>下面主要来看合并选项的部分。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// merge options</span></span><br><span class="line"><span class="keyword">if</span> (options &amp;&amp; options._isComponent) &#123;</span><br><span class="line">  <span class="comment">// optimize internal component instantiation</span></span><br><span class="line">  <span class="comment">// since dynamic options merging is pretty slow, and none of the</span></span><br><span class="line">  <span class="comment">// internal component options needs special treatment.</span></span><br><span class="line">  initInternalComponent(vm, options)</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  vm.$options = mergeOptions(</span><br><span class="line">    resolveConstructorOptions(vm.constructor),</span><br><span class="line">    options || &#123;&#125;,</span><br><span class="line">    vm</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>if (options &amp;&amp; options._isComponent)</code>这句判断，<code>_isComponent</code>它是一个内部选项。搜索整个项目会发现<code>_isComponent</code>置为<code>true</code>出现在了<code>create-component.js</code>中，跳过去可以发现，<code>_isComponent</code>是在Vue创建组件时用到的。和我们今天要研究的合并选项没有关系，具体的细节暂时先放下。</p>
+<p><code>else</code>的部分才是真正地处理合并选项，合并后的结果会赋值给<code>vm.$options</code>，我们知道实例对象的<code>$options</code>是开发者可以使用的。</p>
+<p>接下来就主要看一下<code>mergeOptions</code>函数的实现。</p>
+<h2 id="mergeOptions"><a href="#mergeOptions" class="headerlink" title="mergeOptions"></a>mergeOptions</h2><p>该函数的定义如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * Merge two option objects into a new one.</span><br><span class="line"> * Core utility used in both instantiation and inheritance.</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">mergeOptions</span> (<span class="params"></span><br><span class="line">  parent: Object,</span><br><span class="line">  child: Object,</span><br><span class="line">  vm?: Component</span><br><span class="line"></span>): <span class="title">Object</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...省略具体实现</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="传参"><a href="#传参" class="headerlink" title="传参"></a>传参</h3><p>正如前面看到的，在创建实例对象时的传参如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vm.$options = mergeOptions(</span><br><span class="line">  resolveConstructorOptions(vm.constructor),</span><br><span class="line">  options || &#123;&#125;,</span><br><span class="line">  vm</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><code>mergeOptions</code>函数需要传入3个参数，第1个参数传的是当前实例对象的构造器的选项，第2个参数<code>options</code>就是创建<code>Vue</code>实例时传入的选项，第3个参数就是当前实例自身。</p>
+<blockquote>
+<p>那第1个参数为什么不直接传<code>vm.constructor.options</code>呢？</p>
+</blockquote>
+<p>其实如果没有继承的情况下，比如<code>const vm = new Vue(options)</code>时，第1个参数直接传<code>vm.constructor.options</code>就行了。那<code>resolveConstructorOptions</code>函数的作用是什么呢？这个函数的定义如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">resolveConstructorOptions</span> (<span class="params">Ctor: Class&lt;Component&gt;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> options = Ctor.options</span><br><span class="line">  <span class="keyword">if</span> (Ctor.super) &#123;</span><br><span class="line">    <span class="keyword">const</span> superOptions = resolveConstructorOptions(Ctor.super)</span><br><span class="line">    <span class="keyword">const</span> cachedSuperOptions = Ctor.superOptions</span><br><span class="line">    <span class="keyword">if</span> (superOptions !== cachedSuperOptions) &#123;</span><br><span class="line">      <span class="comment">// super option changed,</span></span><br><span class="line">      <span class="comment">// need to resolve new options.</span></span><br><span class="line"></span><br><span class="line">      <span class="comment">// ...省略具体实现</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> options</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>构造器有<code>super</code>属性时，说明当前构造器继承了另一个构造器。我们知道使用<code>Vue.extend</code>可以创建一个<code>Vue</code>的子类构造器。</p>
+<p><code>resolveConstructorOptions</code>函数的作用主要是在父类构造器的选项发生改变时，重新获取构造器当前构造器的选项。这其实是在修复issues中的<a href="https://github.com/vuejs/vue/issues/4976" target="_blank" rel="external">bug#4976</a>这个bug。这个bug导致了<a href="https://github.com/vuejs/vue-class-component" target="_blank" rel="external"><code>vue-class-component</code></a>的hot-reload不起作用，也无法使用<code>CSS Modules</code>。我们目前应该还不会遇到父类构造器的选项发生改变的情况。</p>
+<p>咱们用一个非常简单的例子，先对合并选项有一个整体的印象。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// merge options with no super</span></span><br><span class="line"><span class="keyword">const</span> options = &#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  data: &#123;</span><br><span class="line">    message: <span class="string">'Hello Vue!'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> app = <span class="keyword">new</span> Vue(options)</span><br></pre></td></tr></table></figure>
+<p>上面的例子中<code>app</code>的构造器就是<code>Vue</code>，所以发生合并的就是<code>Vue.options</code>和例子中定义的<code>options</code>。在“预备知识”的部分说了<code>Vue.options</code>的内容如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  components: &#123;</span><br><span class="line">    KeepAlive,</span><br><span class="line">    Transition,</span><br><span class="line">    TransitionGroup</span><br><span class="line">  &#125;,</span><br><span class="line">  directives: &#123;</span><br><span class="line">    model,</span><br><span class="line">    show</span><br><span class="line">  &#125;,</span><br><span class="line">  filters: &#123;&#125;,</span><br><span class="line">  _base: ƒ Vue(options)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>例子中的<code>options</code>的内容如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  data: &#123;</span><br><span class="line">    message: <span class="string">'Hello Vue!'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>合并后的结果会赋值给<code>app.$options</code>，所以此时<code>app.$options</code>的内容如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  components: &#123;</span><br><span class="line">    <span class="string">'__proto__'</span>: &#123;</span><br><span class="line">      KeepAlive,</span><br><span class="line">      Transition,</span><br><span class="line">      TransitionGroup</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data: ƒ mergedInstanceDataFn(),</span><br><span class="line">  directives: &#123;</span><br><span class="line">    <span class="string">'__proto__'</span>: &#123;</span><br><span class="line">      model,</span><br><span class="line">      show</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  filters: &#123;&#125;,</span><br><span class="line">  _base: ƒ Vue(options)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到选项都合并到一起了，但似乎并不是简单的将两个对象的键值对合并在一起，后面说“合并选项的策略”时就会揭晓答案。</p>
+<p>传参了解到这差不多了，下面到<code>mergeOptions</code>的函数内部看看如何实现的。</p>
+<h3 id="校验组件的名称"><a href="#校验组件的名称" class="headerlink" title="校验组件的名称"></a>校验组件的名称</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">  checkComponents(child)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>开发环境下会先校验开发者传入的<code>components</code>选项中的组件名称是否符合要求。校验的规则在<code>validateComponentName</code>函数中，如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">validateComponentName</span> (<span class="params">name: string</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!<span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">`^[a-zA-Z][\\-\\.0-9_<span class="subst">$&#123;unicodeRegExp.source&#125;</span>]*$`</span>).test(name)) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      <span class="string">'Invalid component name: "'</span> + name + <span class="string">'". Component names '</span> +</span><br><span class="line">      <span class="string">'should conform to valid custom element name in html5 specification.'</span></span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (isBuiltInTag(name) || config.isReservedTag(name)) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      <span class="string">'Do not use built-in or reserved HTML elements as component '</span> +</span><br><span class="line">      <span class="string">'id: '</span> + name</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>组件的命名需要满足两个<code>if</code>中判断的条件：</p>
+<ol>
+<li><p>以字母开头，大小写都可以，后面可以是<code>-</code>、<code>.</code>、数字、<code>_</code>或特定的<code>unicode</code>值的字符，跳到<code>unicodeRegExp</code>的定义处可以看到具体有哪些字符。组件的命名几乎和<a href="https://www.w3.org/TR/html53/semantics-scripting.html#potentialcustomelementname" target="_blank" rel="external">html5规范</a>中要求的一样，只是这里允许使用大写字母。</p>
+</li>
+<li><p>不能是内置的标签名，跳到<code>isBuiltInTag</code>函数，发现目前内置的标签名是<code>slot</code>和<code>component</code>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * Check if a tag is a built-in tag.</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> isBuiltInTag = makeMap(<span class="string">'slot,component'</span>, <span class="literal">true</span>)</span><br></pre></td></tr></table></figure>
+<p>也不能用保留标签，<code>isReservedTag</code>函数是一个和平台相关的函数，我们现在看的是浏览器环境下的Vue的实现，<code>isReservedTag</code>的实现在文件<code>platform/web/util/element.js</code>中。组件的名称不能是HTML标签，也不能是SVG标签。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> isReservedTag = (tag: string): ?boolean =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> isHTMLTag(tag) || isSVG(tag)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>如果像下面这样，用了不符合要求的标签名（此处用了<code>slot</code>这个内置的标签名），在开发环境下会给出警告信息。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// invalid component name</span></span><br><span class="line"><span class="keyword">const</span> app = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  components: &#123;</span><br><span class="line">    slot: Vue.component()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="合并另一个构造器的选项"><a href="#合并另一个构造器的选项" class="headerlink" title="合并另一个构造器的选项"></a>合并另一个构造器的选项</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">typeof</span> child === <span class="string">'function'</span>) &#123;</span><br><span class="line">  child = child.options</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里说明在创建<code>Vue</code>实例时也可以传<code>Vue</code>构造器的子类，然会合并这个子类构造器的<code>options</code>。举个例子看一下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// options is function</span></span><br><span class="line"><span class="keyword">const</span> Suber = Vue.extend(&#123;</span><br><span class="line">  data: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123; message: <span class="string">'Hello Vue!'</span> &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="built_in">console</span>.log(Suber.options)</span><br><span class="line"><span class="comment">// &#123;components: &#123;…&#125;, directives: &#123;…&#125;, filters: &#123;…&#125;, _base: ƒ, data: ƒ, …&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> vm = <span class="keyword">new</span> Vue(Suber)</span><br></pre></td></tr></table></figure>
+<p><code>Vue.extend</code>内部会合并<code>Vue.options</code>和开发者传入的<code>options</code>，所以<code>Suber.options</code>此时如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;components: &#123;…&#125;, directives: &#123;…&#125;, filters: &#123;…&#125;, _base: ƒ, data: ƒ, …&#125;</span><br></pre></td></tr></table></figure>
+<p>创建实例对象时将<code>Suber</code>传入，就会执行<code>child = child.options</code>这句了。看来当我们传入一个构造器去创建实例对象时，用到的只是这个构造器的选项。</p>
+<h3 id="规范props选项"><a href="#规范props选项" class="headerlink" title="规范props选项"></a>规范props选项</h3><p>因为Vue.js允许开发者传入<code>props</code>选项时，即可以是数组类型，也可以是对象类型。所以在合并选项之前要将其规范成对象。对象中每个键值对中的值也会规范成一个对象，并且该对象中包含<code>type</code>属性。实现过程在<code>normalizeProps</code>函数中。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">normalizeProps</span> (<span class="params">options: Object, vm: ?Component</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...省略具体实现</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果选项中没有<code>props</code>会直接返回。然后判断<code>props</code>的类型，如果不是数组或对象，在开发环境下会给出警告。</p>
+<p><code>props</code>选项是数组的情况：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// props is array</span></span><br><span class="line"><span class="keyword">const</span> app = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  props: [<span class="string">'height'</span>]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>数组中的元素必须是字符串，否则开发环境下会给出警告信息。</p>
+<p>调用<code>camelize</code>函数将数组中的字符串改为驼峰形式。上面的<code>props</code>会规范成如下形式：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">props: &#123;</span><br><span class="line">  height: &#123;</span><br><span class="line">    type: <span class="literal">null</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>props</code>选项是对象的情况：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// props is object</span></span><br><span class="line"><span class="keyword">const</span> app = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  props: &#123;</span><br><span class="line">    height: <span class="built_in">Number</span>,</span><br><span class="line">    age: &#123;</span><br><span class="line">      type: <span class="built_in">Number</span>,</span><br><span class="line">      <span class="keyword">default</span>: <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>同样调用<code>camelize</code>函数将<code>props</code>对象中的<code>key</code>改为驼峰形式。上面的<code>props</code>会被规范成如下形式：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">props: &#123;</span><br><span class="line">  height: &#123;</span><br><span class="line">    type: <span class="built_in">Number</span></span><br><span class="line">  &#125;,</span><br><span class="line">  age: &#123;</span><br><span class="line">    type: <span class="built_in">Number</span>,</span><br><span class="line">    <span class="keyword">default</span>: <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="规范inject选项"><a href="#规范inject选项" class="headerlink" title="规范inject选项"></a>规范inject选项</h3><p>Vue.js同样也允许开发者在传入<code>inject</code>选项时，即可以是数组类型也可以是对象类型的。同样也是会统一规范成对象。对象中每个键值对中的值也是一个对象，并且含有<code>from</code>属性。实现过程在<code>normalizeInject</code>函数中：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">normalizeInject</span> (<span class="params">options: Object, vm: ?Component</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...省略实现过程</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果选项中没有<code>inject</code>会直接返回。<code>inject</code>选项如果不是是数组或对象，会在开发环境下会给出警告信息。</p>
+<p><code>inject</code>选项是数组的情况：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// inject is array</span></span><br><span class="line"><span class="keyword">const</span> Child = &#123;</span><br><span class="line">  inject: [<span class="string">'foo'</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>会被规范成如下形式：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">inject: &#123;</span><br><span class="line">  foo: &#123; <span class="keyword">from</span>: <span class="string">'foo'</span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>inject</code>选项是对象的情况：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// inject is object</span></span><br><span class="line"><span class="keyword">const</span> Child = &#123;</span><br><span class="line">  inject: &#123;</span><br><span class="line">    foo: &#123; <span class="keyword">default</span>: <span class="string">'foo'</span> &#125;,</span><br><span class="line">    bar: <span class="string">'bar'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>会被规范成如下形式：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">inject: &#123;</span><br><span class="line">  bar: &#123;<span class="keyword">from</span>: <span class="string">'bar'</span>&#125;</span><br><span class="line">  foo: &#123;<span class="keyword">from</span>: <span class="string">'foo'</span>, <span class="keyword">default</span>: <span class="string">'foo'</span>&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="规范directives选项"><a href="#规范directives选项" class="headerlink" title="规范directives选项"></a>规范directives选项</h3><p>先看个使用<code>directives</code>注册局部指令的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;div id=<span class="string">"app"</span> v-focus v-off&gt;&lt;/div&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">// directives options</span></span><br><span class="line"><span class="keyword">const</span> app = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  directives: &#123;</span><br><span class="line">    focus: &#123;</span><br><span class="line">      inserted: <span class="function"><span class="keyword">function</span> (<span class="params">el</span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'v-focus'</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    off: <span class="function"><span class="keyword">function</span> (<span class="params">el</span>) </span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'v-off'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>我们知道自定义一个指令对象时，可以提供在几个<a href="https://cn.vuejs.org/v2/guide/custom-directive.html" target="_blank" rel="external">钩子函数</a>，这样Vue.js就知道要在组件生命周期中的哪个时机去执行这个指令了。但是开发者也可以不提供钩子函数，这时会规范成了在<code>bind</code>和<code>update</code>时执行。实现过程在<code>normalizeDirectives</code>函数中：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">normalizeDirectives</span> (<span class="params">options: Object</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...省略具体实现</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在选项中有<code>directives</code>时，会判断每个键值对的值是否是一个函数，如果是，就会将其值改为对象，<code>key</code>就是<code>bind</code>和<code>update</code>，值都是该函数。</p>
+<p>比如上面的<code>off</code>指令，会规范成如下形式：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">directives: &#123;</span><br><span class="line">  focus: &#123;</span><br><span class="line">    inserted: <span class="function"><span class="keyword">function</span>(<span class="params">el</span>) </span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'v-focus'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  off: &#123;</span><br><span class="line">    bind: <span class="function"><span class="keyword">function</span>(<span class="params">el</span>) </span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'v-off'</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    update: <span class="function"><span class="keyword">function</span>(<span class="params">el</span>) </span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'v-off'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="合并extends和mixins选项"><a href="#合并extends和mixins选项" class="headerlink" title="合并extends和mixins选项"></a>合并extends和mixins选项</h3><p>再接着往下看：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Apply extends and mixins on the child options,</span></span><br><span class="line"><span class="comment">// but only if it is a raw options object that isn't</span></span><br><span class="line"><span class="comment">// the result of another mergeOptions call.</span></span><br><span class="line"><span class="comment">// Only merged options has the _base property.</span></span><br><span class="line"><span class="keyword">if</span> (!child._base) &#123;</span><br><span class="line">  <span class="keyword">if</span> (child.extends) &#123;</span><br><span class="line">    parent = mergeOptions(parent, child.extends, vm)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (child.mixins) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>, l = child.mixins.length; i &lt; l; i++) &#123;</span><br><span class="line">      parent = mergeOptions(parent, child.mixins[i], vm)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>child._base</code>是用来判断<code>child</code>是否来自另一个<code>mergeOptions</code>函数调用的结果，如果有<code>_base</code>选项说明已经合并过了。如果没有，那<code>child</code>就是开发者最初传入的选项。</p>
+<blockquote>
+<p>我们在“预备知识”小节已经介绍过<code>Vue.options</code>的内容，其中就有<code>_base</code>选项。也讲到合并最最开始都是和<code>Vue.options</code>合并的，所以只要合并了一次选项中就会有<code>_base</code>选项。</p>
+</blockquote>
+<p>然后判断如果开发者传入了<code>extends</code>选项，就递归调用<code>mergeOptions</code>函数，将当前构造器选项和<code>extends</code>中的选项合并。<code>mergeOptions</code>函数会返回一个新的对象，所以这里会得到一个新的<code>parent</code>对象。</p>
+<p>同样地，如果开发者传入了<code>mixins</code>选项，递归调用<code>mergeOptions</code>函数，将所有<code>mixins</code>中的选项最后都合并到<code>parent</code>上。注意，<code>mixins</code>是数组类型的，所以这里用了循环。</p>
+<p>下面分别举个传入<code>extends</code>和<code>mixins</code>选项的例子，然后在浏览器中调试看一下合并后的结果：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// extends options</span></span><br><span class="line"><span class="keyword">const</span> CompA = &#123;</span><br><span class="line">  props: [<span class="string">'height'</span>]</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 在没有调用 `Vue.extend` 时候继承 CompA</span></span><br><span class="line"><span class="keyword">const</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  extends: CompA</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>合并后的<code>options</code>如下：</p>
+<p><img src="/images/vue-merge-options-5.jpg"></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// mixins options</span></span><br><span class="line"><span class="keyword">var</span> mixin = &#123;</span><br><span class="line">  created: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="built_in">console</span>.log(<span class="number">1</span>) &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  created: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="built_in">console</span>.log(<span class="number">2</span>) &#125;,</span><br><span class="line">  mixins: [mixin]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>合并后的<code>options</code>如下：</p>
+<p><img src="/images/vue-merge-options-6.jpg"></p>
+<p>可以看到合并后的选项中还有<code>extends</code>和<code>mixins</code>，如果不做是否合并过的判断，递归调用就会一直调用下去了。</p>
+<h3 id="合并选项"><a href="#合并选项" class="headerlink" title="合并选项"></a>合并选项</h3><p>上面所有的操作还都只是在为接下来的合并选项做预处理，下面才开始真正地合并过程。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> options = &#123;&#125;</span><br><span class="line"><span class="keyword">let</span> key</span><br><span class="line"><span class="keyword">for</span> (key <span class="keyword">in</span> parent) &#123;</span><br><span class="line">  mergeField(key)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> (key <span class="keyword">in</span> child) &#123;</span><br><span class="line">  <span class="keyword">if</span> (!hasOwn(parent, key)) &#123;</span><br><span class="line">    mergeField(key)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">mergeField</span> (<span class="params">key</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> strat = strats[key] || defaultStrat</span><br><span class="line">  options[key] = strat(parent[key], child[key], vm, key)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> options</span><br></pre></td></tr></table></figure>
+<p>首先新创建一个空的<code>options</code>对象，最后返回的也是这个<code>options</code>对象，所以说<code>mergeOptions</code>函数返回的是一个新的合并后的对象。</p>
+<p>先将<code>parent</code>中的选项放入<code>options</code>中，然后再将<code>child</code>中在<code>parent</code>里没有的选项放入<code>options</code>中。</p>
+<p>如果<code>parent</code>和<code>child</code>有相同的<code>key</code>时该怎么处理呢？是覆盖还是合并？所以在<code>mergeField</code>函数中我们看到使用了一个全局变量<code>strats</code>，它是一个哈希表，以各个选项的名称为<code>key</code>，选项对应的合并策略为<code>value</code>。</p>
+<p>所以接下来的重点就是分析每个选项具体是怎样合并的了。这篇文章已经太长了，我会再开一篇来专门介绍选项的合并策略。</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2020/01/07/Vue-Source-Code-01/" target="_blank" rel="external">http://shinancao.cn/2020/01/07/Vue-Source-Code-01/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/05/Vue-Source-Code-00/" rel="next" title="Vue.js源码学习 —— 起步">
+                <i class="fa fa-chevron-left"></i> Vue.js源码学习 —— 起步
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/15/HTTP-Cookie/" rel="prev" title="HTTP cookie">
+                HTTP cookie <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="意林" />
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#预备知识"><span class="nav-number">1.</span> <span class="nav-text">预备知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-prototype-init"><span class="nav-number">2.</span> <span class="nav-text">Vue.prototype._init</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mergeOptions"><span class="nav-number">3.</span> <span class="nav-text">mergeOptions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#传参"><span class="nav-number">3.1.</span> <span class="nav-text">传参</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#校验组件的名称"><span class="nav-number">3.2.</span> <span class="nav-text">校验组件的名称</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#合并另一个构造器的选项"><span class="nav-number">3.3.</span> <span class="nav-text">合并另一个构造器的选项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#规范props选项"><span class="nav-number">3.4.</span> <span class="nav-text">规范props选项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#规范inject选项"><span class="nav-number">3.5.</span> <span class="nav-text">规范inject选项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#规范directives选项"><span class="nav-number">3.6.</span> <span class="nav-text">规范directives选项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#合并extends和mixins选项"><span class="nav-number">3.7.</span> <span class="nav-text">合并extends和mixins选项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#合并选项"><span class="nav-number">3.8.</span> <span class="nav-text">合并选项</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
