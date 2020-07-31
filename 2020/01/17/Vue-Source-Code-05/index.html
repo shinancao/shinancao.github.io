@@ -122,7 +122,7 @@
 如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的Vue.js源码学习 —— VNode/createElement，再来看今天这篇会轻松很多。
 今天这篇文章是接着上一篇Vue.js源码学习 —— createComponent的，代码主要位于文">
 <meta property="og:image" content="http://shinancao.github.io/images/vue-async-component-1.jpg">
-<meta property="og:updated_time" content="2020-07-31T12:35:14.841Z">
+<meta property="og:updated_time" content="2020-07-31T12:39:35.037Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue.js源码学习 —— 异步组件的实现">
 <meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。
@@ -415,6 +415,7 @@
 <p>我没有在文章中大量的贴源码，一定要将源码clone到本地哦。</p>
 </blockquote>
 <p>关于异步组件的介绍可以翻阅<a href="https://cn.vuejs.org/v2/guide/components-dynamic-async.html#%E5%BC%82%E6%AD%A5%E7%BB%84%E4%BB%B6" target="_blank" rel="external">官方文档#异步组件</a>一节。</p>
+<a id="more"></a>
 <h2 id="resolveAsyncComponent"><a href="#resolveAsyncComponent" class="headerlink" title="resolveAsyncComponent"></a>resolveAsyncComponent</h2><p><code>resolveAsyncComponent</code>函数的实现位于文件<code>core/vdom/resolve-async-component.js</code>中。可以看到里面的实现相对复杂一些，这是因为Vue允许我们使用3种方式来创建异步组件，所以处理的情况较多。这3种方式包括：直接使用异步函数、使用<code>Promise</code>对象、使用包装了各种加载状态的对象（也就是高阶组件）。</p>
 <p>咱们先从最简单的使用异步函数开始看。</p>
 <h3 id="传异步函数"><a href="#传异步函数" class="headerlink" title="传异步函数"></a>传异步函数</h3><p>先看个使用异步函数创建异步组件的例子：</p>
