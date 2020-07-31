@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,Vue,源码分析," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。
+如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的Vue.js源码学习 —— VNode/createElement，再来看今天这篇会轻松很多。
+今天这篇文章是接着上一篇Vue.js源码学习 —— createComponent的，代码主要位于文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue.js源码学习 —— 异步组件的实现">
+<meta property="og:url" content="http://shinancao.github.io/2020/01/17/Vue-Source-Code-05/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。
+如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的Vue.js源码学习 —— VNode/createElement，再来看今天这篇会轻松很多。
+今天这篇文章是接着上一篇Vue.js源码学习 —— createComponent的，代码主要位于文">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-async-component-1.jpg">
+<meta property="og:updated_time" content="2020-07-31T12:35:14.841Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue.js源码学习 —— 异步组件的实现">
+<meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。
+如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的Vue.js源码学习 —— VNode/createElement，再来看今天这篇会轻松很多。
+今天这篇文章是接着上一篇Vue.js源码学习 —— createComponent的，代码主要位于文">
+<meta name="twitter:image" content="http://shinancao.github.io/images/vue-async-component-1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2020/01/17/Vue-Source-Code-05/"/>
+
+
+
+
+
+  <title>Vue.js源码学习 —— 异步组件的实现 | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-portfolio">
+          <a href="/portfolio/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br />
+            
+            项目
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/01/17/Vue-Source-Code-05/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Vue.js源码学习 —— 异步组件的实现</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-17T16:40:32+08:00">
+                2020-01-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="external">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
+<p>如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/12/Vue-Source-Code-03/" target="_blank" rel="external">Vue.js源码学习 —— VNode/createElement</a>，再来看今天这篇会轻松很多。</p>
+<p>今天这篇文章是接着上一篇<a href="http://shinancao.cn/2020/01/15/Vue-Source-Code-04/" target="_blank" rel="external">Vue.js源码学习 —— createComponent</a>的，代码主要位于文件<code>core/vdom/resolve-async-component.js</code>中。</p>
+<blockquote>
+<p>我没有在文章中大量的贴源码，一定要将源码clone到本地哦。</p>
+</blockquote>
+<p>关于异步组件的介绍可以翻阅<a href="https://cn.vuejs.org/v2/guide/components-dynamic-async.html#%E5%BC%82%E6%AD%A5%E7%BB%84%E4%BB%B6" target="_blank" rel="external">官方文档#异步组件</a>一节。</p>
+<h2 id="resolveAsyncComponent"><a href="#resolveAsyncComponent" class="headerlink" title="resolveAsyncComponent"></a>resolveAsyncComponent</h2><p><code>resolveAsyncComponent</code>函数的实现位于文件<code>core/vdom/resolve-async-component.js</code>中。可以看到里面的实现相对复杂一些，这是因为Vue允许我们使用3种方式来创建异步组件，所以处理的情况较多。这3种方式包括：直接使用异步函数、使用<code>Promise</code>对象、使用包装了各种加载状态的对象（也就是高阶组件）。</p>
+<p>咱们先从最简单的使用异步函数开始看。</p>
+<h3 id="传异步函数"><a href="#传异步函数" class="headerlink" title="传异步函数"></a>传异步函数</h3><p>先看个使用异步函数创建异步组件的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> child = &#123;</span><br><span class="line">  name: <span class="string">'child'</span>,</span><br><span class="line">  props: [<span class="string">'msg'</span>],</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">return</span> h(<span class="string">'p'</span>, <span class="string">`<span class="subst">$&#123;this.msg&#125;</span>`</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 异步函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">async</span> (<span class="params">resolve, reject</span>) </span>&#123;</span><br><span class="line">  setTimeout(() =&gt; &#123;</span><br><span class="line">    resolve(child)</span><br><span class="line">  &#125;, <span class="number">10</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  data: &#123; message: <span class="string">'hello world'</span> &#125;,</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">return</span> h(<span class="keyword">async</span>, &#123; props: &#123; msg: <span class="keyword">this</span>.message &#125; &#125;) <span class="comment">// data</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可以将其放到浏览器中调试看一下执行过程，比纯看代码容易理解一些。</p>
+</blockquote>
+<p>此时会直接走到下面这个<code>if</code>中，上面的<code>if</code>都不满足条件：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (owner &amp;&amp; !isDef(factory.owners)) &#123;</span><br><span class="line">  <span class="keyword">const</span> owners = factory.owners = [owner]</span><br><span class="line">  <span class="keyword">let</span> sync = <span class="literal">true</span></span><br><span class="line">  <span class="keyword">let</span> timerLoading = <span class="literal">null</span></span><br><span class="line">  <span class="keyword">let</span> timerTimeout = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line">  ;(owner: any).$on(<span class="string">'hook:destroyed'</span>, () =&gt; remove(owners, owner))</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> forceRender = (renderCompleted: boolean) =&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> resolve = once((res: <span class="built_in">Object</span> | Class&lt;Component&gt;) =&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> reject = once(reason =&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> res = factory(resolve, reject)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (isObject(res)) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  sync = <span class="literal">false</span></span><br><span class="line">  <span class="comment">// return in case resolved synchronously</span></span><br><span class="line">  <span class="keyword">return</span> factory.loading</span><br><span class="line">      ? factory.loadingComp</span><br><span class="line">      : factory.resolved</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>owner</code>是当前正在渲染的实例对象，在等异步的内容执行结束后，该<code>owner</code>会作为强制刷新的上下文对象。</p>
+<p>先来看这一句：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> res = factory(resolve, reject)</span><br></pre></td></tr></table></figure>
+<p>在我们的例子中，<code>res</code>在<code>factory</code>函数（也就是例子中的<code>async</code>函数）执行完得到的值是<code>undefined</code>，所以<code>isObject(res)</code>是<code>false</code>，走到了<code>return</code>语句。现在<code>factory</code>的<code>loading</code>、<code>loadingComp</code>、<code>resolved</code>属性都没有值，所以<code>resolveAsyncComponent</code>函数最终返回了<code>undefined</code>。</p>
+<p>再来看<code>resolve</code>函数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> resolve = once((res: <span class="built_in">Object</span> | Class&lt;Component&gt;) =&gt; &#123;</span><br><span class="line">  <span class="comment">// cache resolved</span></span><br><span class="line">  factory.resolved = ensureCtor(res, baseCtor)</span><br><span class="line">  <span class="comment">// invoke callbacks only if this is not a synchronous resolve</span></span><br><span class="line">  <span class="comment">// (async resolves are shimmed as synchronous during SSR)</span></span><br><span class="line">  <span class="keyword">if</span> (!sync) &#123;</span><br><span class="line">    forceRender(<span class="literal">true</span>)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    owners.length = <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><code>resolve</code>函数做的事：</p>
+<ul>
+<li><p>给<code>factory</code>增加一个<code>resolved</code>的属性，来缓存这个异步组件的构造函数，等到这个组件到了真正要创建的时候会用到。</p>
+</li>
+<li><p>如果是开发者传入的是异步的<code>resolve</code>，就调用<code>forceRender</code>重新走遍创建组件的流程。如果传入的是同步的<code>resolve</code>，那第一次执行<code>resolveAsyncComponent</code>函数时，就会将创建组件了，所以将<code>owners.length</code>设置为0。</p>
+<p>为什么同步的<code>resolve</code>，在执行到<code>resolve</code>时，<code>sync</code>是<code>true</code>呢？</p>
+<p>因为在执行<code>factory(resolve, reject)</code>这句话时，如果<code>resolve</code>是同步的，就会在<code>factory</code>内部执行<code>resolve</code>函数了，而此时<code>sync</code>还没有被设置成<code>false</code>。</p>
+</li>
+<li><p><code>ensureCtor</code>函数的作用就是确保能得到正确的构造器函数，像我们的例子中给<code>resolve</code>函数传入的是选项对象，<code>ensureCtor</code>函数内部就会调用<code>extend</code>方法用传入的选项对象生成一个构造器函数。</p>
+</li>
+<li><p><code>once</code>函数的作用就是确保<code>resolve</code>只执行一次，这是有必要的，因为<code>resolve</code>的执行是开发者控制的。</p>
+</li>
+</ul>
+<p>再来看一下<code>reject</code>函数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> reject = once(reason =&gt; &#123;</span><br><span class="line">  process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; warn(</span><br><span class="line">    <span class="string">`Failed to resolve async component: <span class="subst">$&#123;String(factory)&#125;</span>`</span> +</span><br><span class="line">    (reason ? <span class="string">`\nReason: <span class="subst">$&#123;reason&#125;</span>`</span> : <span class="string">''</span>)</span><br><span class="line">  )</span><br><span class="line">  <span class="keyword">if</span> (isDef(factory.errorComp)) &#123;</span><br><span class="line">    factory.error = <span class="literal">true</span></span><br><span class="line">    forceRender(<span class="literal">true</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><code>reject</code>函数做的事：</p>
+<ul>
+<li><p>首先在开发环境下给出告警信息，组件创建失败啦。</p>
+</li>
+<li><p>如果开发者设置<code>error</code>项，就会调用<code>forceRender</code>函数，这会导致创建开发设置的异常情况的组件。<code>errorComp</code>在下面的代码中会看到是何时放到<code>factory</code>上的。</p>
+</li>
+</ul>
+<p><code>forceRender</code>函数中主要就干了两件事，调用<code>owner</code>的<code>$forceUpdate()</code>方法重新触发创建组件。<code>$forceUpdate()</code>的实现等看到文件<code>core/instance/render.js</code>中的代码时再讲。但是通过调试看函数调用栈可以发现，这个方法会导致重新走进<code>resolveAsyncComponent</code>函数。</p>
+<p><img src="/images/vue-async-component-1.jpg"></p>
+<h3 id="传Promise对象"><a href="#传Promise对象" class="headerlink" title="传Promise对象"></a>传Promise对象</h3><p>再来看使用<code>Promise</code>对象创建异步组件的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">async</span> (<span class="params">resolve, reject</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>((resolve, reject) =&gt; &#123;</span><br><span class="line">    setTimeout(() =&gt; &#123;</span><br><span class="line">      <span class="comment">// child 还是上面例子中的</span></span><br><span class="line">      resolve(child)</span><br><span class="line">    &#125;, <span class="number">10</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  data: &#123; message: <span class="string">'hello world'</span> &#125;,</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">return</span> h(<span class="keyword">async</span>, &#123; props: &#123; msg: <span class="keyword">this</span>.message &#125; &#125;) <span class="comment">// data</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这时就会走到下面这段代码了：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isObject(res)) &#123;</span><br><span class="line">  <span class="keyword">if</span> (isPromise(res)) &#123;</span><br><span class="line">    <span class="comment">// () =&gt; Promise</span></span><br><span class="line">    <span class="keyword">if</span> (isUndef(factory.resolved)) &#123;</span><br><span class="line">      res.then(resolve, reject)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sync = <span class="literal">false</span></span><br><span class="line"><span class="comment">// return in case resolved synchronously</span></span><br><span class="line"><span class="keyword">return</span> factory.loading</span><br><span class="line">  ? factory.loadingComp</span><br><span class="line">  : factory.resolved</span><br></pre></td></tr></table></figure>
+<p>首先判断<code>factory</code>是否已经有<code>resolved</code>属性了，如果已经有了，说<code>resolve</code>函数已经执行过了，也就是开发者是同步调用的<code>resolve</code>。如果是异步调用的<code>resolve</code>，就给该<code>Promise</code>对象添加了一个<code>then</code>方法，等待<code>Promise</code>内的异步事件执行结束后<code>resolve</code>或<code>reject</code>就会被触发了。</p>
+<p>所以可以看到，在<code>resolve</code>是异步调用的时候，此时<code>resolveAsyncComponent</code>函数还是返回<code>undefined</code>。</p>
+<h3 id="传包装了加载状态的对象"><a href="#传包装了加载状态的对象" class="headerlink" title="传包装了加载状态的对象"></a>传包装了加载状态的对象</h3><p>还是先举个例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> LoadingComponent = &#123;</span><br><span class="line">  name: <span class="string">'LoadingComponent'</span>,</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">return</span> h(<span class="string">'p'</span>, <span class="string">'loading component...'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ErrorComponent = &#123;</span><br><span class="line">  name: <span class="string">'ErrorComponent'</span>,</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">return</span> h(<span class="string">'p'</span>, <span class="string">'solve component error!'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> AsyncComponent = (resolve, reject) =&gt; (&#123;</span><br><span class="line">  <span class="comment">// 需要加载的组件 (应该是一个 `Promise` 对象)</span></span><br><span class="line">  <span class="comment">// async函数还是上面例子中的</span></span><br><span class="line">  component: <span class="keyword">async</span>(resolve, reject),</span><br><span class="line">  <span class="comment">// 异步组件加载时使用的组件</span></span><br><span class="line">  loading: LoadingComponent,</span><br><span class="line">  <span class="comment">// 加载失败时使用的组件</span></span><br><span class="line">  error: ErrorComponent,</span><br><span class="line">  <span class="comment">// 展示加载时组件的延时时间。默认值是 200 (毫秒)</span></span><br><span class="line">  delay: <span class="number">200</span>,</span><br><span class="line">  <span class="comment">// 如果提供了超时时间且组件加载也超时了，</span></span><br><span class="line">  <span class="comment">// 则使用加载失败时使用的组件。默认值是：`Infinity`</span></span><br><span class="line">  timeout: <span class="number">3000</span></span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  data: &#123; message: <span class="string">'hello world'</span> &#125;,</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">return</span> h(AsyncComponent, &#123; props: &#123; msg: <span class="keyword">this</span>.message &#125; &#125;) <span class="comment">// data</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这时候就会执行到下面这段代码中了：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isObject(res)) &#123;</span><br><span class="line">  <span class="keyword">if</span> (isPromise(res)) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isPromise(res.component)) &#123;</span><br><span class="line">    res.component.then(resolve, reject)</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>还是给<code>Promise</code>对象加上了<code>then</code>方法，以便在异步内容执行完后，调用<code>resolve</code>或<code>reject</code>。</p>
+<p>接下来就是对传入了几个状态项进行处理：</p>
+<ul>
+<li><p>如果传了<code>error</code>，会获取对应组件的构造器放入<code>factory.errorComp</code>中。在<code>reject</code>被调用时，<code>factory.error</code>会被置为<code>true</code>。</p>
+</li>
+<li><p>如果传了<code>delay</code>，还是先获取对应组件的构造器放入<code>factory.loadingComp</code>中。然后判断<code>delay</code>为0时，会立即展示这个 <em>loading组件</em>，这时<code>resolveAsyncComponent</code>函数会返回该 <em>loading组件</em> 构造器函数。如果<code>delay</code>大于0，会开启定时器延迟展示 <em>loading组件</em>，这时<code>resolveAsyncComponent</code>函数会返回<code>undefined</code>。</p>
+</li>
+<li><p>如果传了<code>timeout</code>，会马上开启定时器计时，一定时间到了<code>resolve</code>还没有执行，就会调用<code>reject</code>，并在开发环境下给出告警信息。</p>
+</li>
+</ul>
+<p>现在再回头看下面几个<code>if</code>判断就明了了吧：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isTrue(factory.error) &amp;&amp; isDef(factory.errorComp)) &#123;</span><br><span class="line">  <span class="keyword">return</span> factory.errorComp</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (isDef(factory.resolved)) &#123;</span><br><span class="line">  <span class="keyword">return</span> factory.resolved</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (isTrue(factory.loading) &amp;&amp; isDef(factory.loadingComp)) &#123;</span><br><span class="line">  <span class="keyword">return</span> factory.loadingComp</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="createAsyncPlaceholder"><a href="#createAsyncPlaceholder" class="headerlink" title="createAsyncPlaceholder"></a>createAsyncPlaceholder</h3><p>从上面的分析可以看出<code>resolveAsyncComponent</code>函数只有在传了<code>loading</code>并且<code>delay</code>为0时，会返回 <em>loading组件</em> 的构造器函数，其他情况都是返回<code>undefined</code>。</p>
+<p>返回<code>undefined</code>时，在<code>createComponent</code>函数中，会调用<code>createAsyncPlaceholder</code>返回一个空节点，这样就不会渲染内容到页面上。</p>
+<p>返回 <em>loading组件</em> 的构造器函数时，就会接着执行<code>createComponent</code>函数后面的代码了，最终返回这个组件的节点。</p>
+<p>异步组件的实现过程到此就了解的差不多了，相信我们以后的开发中使用异步组件会更加灵活。</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2020/01/17/Vue-Source-Code-05/" target="_blank" rel="external">http://shinancao.cn/2020/01/17/Vue-Source-Code-05/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/15/Vue-Source-Code-04/" rel="next" title="Vue.js源码学习 —— createComponent">
+                <i class="fa fa-chevron-left"></i> Vue.js源码学习 —— createComponent
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/15/HTTP-Cookie/" rel="prev" title="HTTP cookie">
+                HTTP cookie <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="意林" />
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#resolveAsyncComponent"><span class="nav-number">1.</span> <span class="nav-text">resolveAsyncComponent</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#传异步函数"><span class="nav-number">1.1.</span> <span class="nav-text">传异步函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#传Promise对象"><span class="nav-number">1.2.</span> <span class="nav-text">传Promise对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#传包装了加载状态的对象"><span class="nav-number">1.3.</span> <span class="nav-text">传包装了加载状态的对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#createAsyncPlaceholder"><span class="nav-number">1.4.</span> <span class="nav-text">createAsyncPlaceholder</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

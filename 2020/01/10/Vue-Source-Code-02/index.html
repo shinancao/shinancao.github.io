@@ -129,7 +129,7 @@
 我没有在文章中大量的贴源码，一定要将源码clone到本地哦。
 
 预备知识Vue.o">
-<meta property="og:updated_time" content="2020-07-27T04:12:19.561Z">
+<meta property="og:updated_time" content="2020-07-29T04:33:00.752Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue.js源码学习 —— 选项的合并策略">
 <meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。
@@ -457,7 +457,7 @@
 <blockquote>
 <p>为什么此时<code>data</code>选项的类型必须是一个函数呢？</p>
 </blockquote>
-<p>通过前面的分析，我们知道构造器的选项会与其所有实例对象的选项合并，就会导致<code>data</code>在所有的实例对象中共享。如果<code>data</code>是一个普通对象，就会导致一个组件中改了<code>data</code>中的值，其他组件也会受影响。<code>data</code>是函数时，所有实例对象拥有的是函数返回值的副本，所以不会有影响。</p>
+<p>通过前面的分析，我们知道构造器的选项会与其所有实例对象的选项合并，就会导致<code>data</code>在所有的实例对象中共享。如果<code>data</code>是一个普通对象，就会导致一个使用了该组件的实例对象改变了<code>data</code>中的值时，其他使用该组件的实例对象获取到的<code>data</code>也会受影响。<code>data</code>是函数时，所有实例对象拥有的是函数返回值的副本，所以不会有影响。</p>
 <p>再接着看<code>mergeDataOrFn</code>函数，在<code>vm</code>没有值，也就是合并发生在创建子类构造器时，是直接将<code>childVal</code>或<code>parentVal</code>返回的，并没有用函数来包装，所以开发者此时一定要传函数。</p>
 <p>还是通过例子一步一步来看，先举个合并发生在创建子类构造器时的例子：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// data option in constructors</span></span><br><span class="line"><span class="keyword">const</span> Parent = Vue.extend(&#123;</span><br><span class="line">  data: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123; foo: <span class="string">'foo'</span> &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
@@ -699,7 +699,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">61</span>
+                <span class="site-state-item-count">63</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
