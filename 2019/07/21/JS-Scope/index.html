@@ -408,10 +408,10 @@
 <h2 id="全局作用域"><a href="#全局作用域" class="headerlink" title="全局作用域"></a>全局作用域</h2><p><code>script</code>标签直接包围的区域就是JavaScript中的全局作用域，定义在全局作用域中的变量叫作全局变量，全局变量在所有作用域中都可见。全局变量在浏览器窗口打开时创建，在浏览器关闭时销毁。在JavaScript中有3种方式定义全局变量。第1种是在任何函数之外放置一个<code>var</code>语句：</p>
 <figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = <span class="keyword">value</span>;</span><br></pre></td></tr></table></figure>
 <p>第2种是直接给全局对象添加一个属性。全局对象是所有全局变量的容器。在Web浏览器里，全局对象是window：</p>
-<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">window</span>.foo = <span class="keyword">value</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">window.foo</span> = value<span class="comment">;</span></span><br></pre></td></tr></table></figure>
 <p>在全局作用域中定义的函数同样也会绑定为window对象的方法，所以当不确定变量和函数是否属于全局作用域时，可以打印window来看一下。</p>
 <p>第3种是直接使用未经声明的变量，这被称为隐式的全局变量：</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">foo</span> = value;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">foo</span> = value<span class="comment">;</span></span><br></pre></td></tr></table></figure>
 <p>还记得大学时刚开始写JavaScript代码，也不管三七二十一，就在一个<code>.js</code>文件写完所有的逻辑，变量也是定义一次恨不得从头用到尾。但是过渡使用全局变量会导致代码的可读性、复用性、可维护性大大降低，还可能导致与引用的其他<code>.js</code>文件中的变量发生命名冲突。在《JavaScript语言精粹》这本书中作者直接把全局变量列在了JavaScript最糟糕的特性第一位。</p>
 <h2 id="块作用域"><a href="#块作用域" class="headerlink" title="块作用域"></a>块作用域</h2><p>一个代码块（扩在一对花括号中的一组语句）会创建一个作用域，这个作用域就是块级作用域。代码块中声明的变量在其外部是不可见的，然而JavaScript中在代码块中用<code>var</code>声明的变量，在包含此代码块的函数的任何位置都是可见的。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(i) <span class="comment">// 仍然能访问到i，并且值为5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -428,7 +428,7 @@
 <p>还有一点，如果能确定一个变量就是局部变量，那最好用<code>let</code>来定义，这样在<code>dev tools</code>中debug时，比较容易观察，用<code>var</code>定义的变量如果跑到了全局作用域，那还要展开<code>window</code>，一点点找。</p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><strong>【1】</strong> 《JavaScript语言精粹》</p>
 <p><strong>【2】</strong> 《你不知道的JavaScript》</p>
-<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2019/07/21/JS-Scope/" target="_blank" rel="external">http://shinancao.cn/2019/07/21/JS-Scope/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="external">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2019/07/21/JS-Scope/" target="_blank" rel="noopener">http://shinancao.cn/2019/07/21/JS-Scope/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="noopener">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
 </div>
       
     </div>

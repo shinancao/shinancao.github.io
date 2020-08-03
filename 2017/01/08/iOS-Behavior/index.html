@@ -405,7 +405,7 @@
       
 
       
-        <h2 id="开场白"><a href="#开场白" class="headerlink" title="开场白"></a>开场白</h2><p>8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇<a href="https://objccn.io/issue-13-3/" target="_blank" rel="external">iOS中的行为</a>已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。</p>
+        <h2 id="开场白"><a href="#开场白" class="headerlink" title="开场白"></a>开场白</h2><p>8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇<a href="https://objccn.io/issue-13-3/" target="_blank" rel="noopener">iOS中的行为</a>已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。</p>
 <a id="more"></a>
 <h2 id="进入主题"><a href="#进入主题" class="headerlink" title="进入主题"></a>进入主题</h2><p>行为是一个负责实现一个指定功能的对象，在iOS中就是一个封装了特定功能，继承于NSObject的普通对象。运用行为，实际上就是组合模式，将每个不可再划分的功能模块单独封装起来，然后再通过一定手段组装起来。这样的设计至少有以下点好处：</p>
 <ul>
@@ -417,7 +417,7 @@
 <p>减少<code>ViewController</code>中的代码是自然的啦，对于职责单一的功能自然也是容易复用和容易测试的，那对于第2点和第3点怎么做到的呢？那就是借助IB中一个强大的但是经常被忽略的功能，<code>Object</code>这个控件。同时借助在IB中设置运行时属性，达到可视化编程。对于<code>StoryBoard</code>和<code>Xib</code>都有这个控件。</p>
 <p><img src="/images/iOS-IB-Object.png" width="121" height="169"></p>
 <p><img src="/images/iOS-Behavior-IB.png" width="331" height="216"></p>
-<p><em>Talk is cheap, Show me the code</em>，演示的demo:<a href="https://github.com/shinancao/BehaviorDemo" target="_blank" rel="external">https://github.com/shinancao/BehaviorDemo</a></p>
+<p><em>Talk is cheap, Show me the code</em>，演示的demo:<a href="https://github.com/shinancao/BehaviorDemo" target="_blank" rel="noopener">https://github.com/shinancao/BehaviorDemo</a></p>
 <p>这里面举了几个例子，是目前我能想到的行为可以应用到的场景。</p>
 <h4 id="基础行为的构建"><a href="#基础行为的构建" class="headerlink" title="基础行为的构建"></a>基础行为的构建</h4><ul>
 <li>ImagePickerBehavior</li>
@@ -445,10 +445,10 @@
 <p>这也是我的一个思考吧，实际开发中我还没有这样用过。后来接触到了一个架构模式<code>VIPER</code>，可以让<code>View</code>中不去处理那么多逻辑。但是使用下来也有些其他的问题，以后再另外写文章总结啦。</p>
 <h4 id="行为的生命周期"><a href="#行为的生命周期" class="headerlink" title="行为的生命周期"></a>行为的生命周期</h4><p>在Interface Builder中创建的行为，如果没有另外的对象对其引用，它将会在被创建后立刻移除。如果真的需要该行为常住，也尽量不要将行为定义成Controller的一个属性。这有可能导致行为与Controller过多的耦合，而且当不需要这个行为时，还要在Controller中去清除这个行为。可以通过Objective-C运行时将行为与Controller进行绑定，Demo中有演示。</p>
 <p><a href="http://shinancao.github.io/2017/01/12/iOS-Tester-1/">下一篇文章</a>说了一下给这些<code>Behavior</code>写单元测试的一些感受~</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><h4 id="介绍行为相关的"><a href="#介绍行为相关的" class="headerlink" title="介绍行为相关的"></a>介绍行为相关的</h4><p><a href="https://www.objc.io/issues/13-architecture/behaviors/" target="_blank" rel="external">https://www.objc.io/issues/13-architecture/behaviors/</a></p>
-<p><a href="https://github.com/zziking/KIZBehavior" target="_blank" rel="external">https://github.com/zziking/KIZBehavior</a></p>
-<h4 id="涉及到动画实现的"><a href="#涉及到动画实现的" class="headerlink" title="涉及到动画实现的"></a>涉及到动画实现的</h4><p><a href="http://five.agency/how-to-create-an-interactive-blur-effect-in-ios8/" target="_blank" rel="external">http://five.agency/how-to-create-an-interactive-blur-effect-in-ios8/</a></p>
-<p><a href="https://github.com/ltebean/LTNavigationBar" target="_blank" rel="external">https://github.com/ltebean/LTNavigationBar</a></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><h4 id="介绍行为相关的"><a href="#介绍行为相关的" class="headerlink" title="介绍行为相关的"></a>介绍行为相关的</h4><p><a href="https://www.objc.io/issues/13-architecture/behaviors/" target="_blank" rel="noopener">https://www.objc.io/issues/13-architecture/behaviors/</a></p>
+<p><a href="https://github.com/zziking/KIZBehavior" target="_blank" rel="noopener">https://github.com/zziking/KIZBehavior</a></p>
+<h4 id="涉及到动画实现的"><a href="#涉及到动画实现的" class="headerlink" title="涉及到动画实现的"></a>涉及到动画实现的</h4><p><a href="http://five.agency/how-to-create-an-interactive-blur-effect-in-ios8/" target="_blank" rel="noopener">http://five.agency/how-to-create-an-interactive-blur-effect-in-ios8/</a></p>
+<p><a href="https://github.com/ltebean/LTNavigationBar" target="_blank" rel="noopener">https://github.com/ltebean/LTNavigationBar</a></p>
 <blockquote>
 <p>转载请注明出处：</p>
 <p>作者：意林</p>

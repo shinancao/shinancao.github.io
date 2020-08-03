@@ -404,7 +404,7 @@
       
 
       
-        <p>天气王是在watchOS 2已经发布了一段时间才开始做Apple Watch版本的，虽然这时网上已经有大量的Blog来介绍怎么开发一个Watch App，但是在准备开发时我还是迷茫了几天，不知道从何下手，不知道一个Watch App的结构要怎样搭建。直到看到了猫神的这篇文章<a href="https://onevcat.com/2015/08/watchos2/" target="_blank" rel="external">《30分钟开发一个简单的watchOS 2 app》</a>，才开了点窍= =！。后来想了一下，这些文章大部分介绍的都是<code>WatchConnectivity</code>中一些api的使用，大多是没有网络请求部分的，没有站在一个旁观者的角度去把Watch App的大致结构梳理一下，而是一头扎进了具体的某个技术细节点去讲解。</p>
+        <p>天气王是在watchOS 2已经发布了一段时间才开始做Apple Watch版本的，虽然这时网上已经有大量的Blog来介绍怎么开发一个Watch App，但是在准备开发时我还是迷茫了几天，不知道从何下手，不知道一个Watch App的结构要怎样搭建。直到看到了猫神的这篇文章<a href="https://onevcat.com/2015/08/watchos2/" target="_blank" rel="noopener">《30分钟开发一个简单的watchOS 2 app》</a>，才开了点窍= =！。后来想了一下，这些文章大部分介绍的都是<code>WatchConnectivity</code>中一些api的使用，大多是没有网络请求部分的，没有站在一个旁观者的角度去把Watch App的大致结构梳理一下，而是一头扎进了具体的某个技术细节点去讲解。</p>
 <a id="more"></a>
 <p>在开发前期评估工期时，我们会进行需求细化，现在回头看看当时细化的点真是可笑，大部分都是想当然的…。多希望你在Watch App的开发工期评估时能看到这篇文章，至少能让你对接下来要做的事心里大概有个数。本文会尽我所能将开发前需要了解的点列出来，后续文章会对踩坑最多的技术细节进行总结。</p>
 <h2 id="watchOS-2与watchOS-1的区别"><a href="#watchOS-2与watchOS-1的区别" class="headerlink" title="watchOS 2与watchOS 1的区别"></a>watchOS 2与watchOS 1的区别</h2><p>这几乎是所有准备讲Apple Watch App开发的文章都会提到的点，但是这真的很重要，是一定要了解的。watchOS 1时代，在watch上只是存储一些资源文件和界面文件，主要的业务逻辑都是在iPhone上处理，每一次操作都要通过蓝牙传输数据。到了watchOS 2，watch与iPhone几乎完全脱离开了，它的所有业务逻辑都能在watch上处理了，只是在必要的时候要与iPhone做一些数据同步。有了新的与iPhone数据交互的框架<code>WatchConnectivity</code>，还能自己进行网络请求了，也就是说你将要用一些新的技术，为一个与iPhone不同的设备去开发App了。二者的结构如下图所示：</p>

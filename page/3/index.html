@@ -305,156 +305,6 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/07/17/iOS-autoreleasepool/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="意林">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="意林的小站">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/17/iOS-autoreleasepool/" itemprop="url">__autoreleasepool修饰符的底层实现分析</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-17T20:40:32+08:00">
-                2019-07-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/Objective-C/" itemprop="url" rel="index">
-                    <span itemprop="name">Objective-C</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>还是直接打开objc4的源码看是最直接的了，从苹果的开源网站下载objc4的源码：<a href="https://opensource.apple.com/tarballs/objc4/，我下载的是objc4-750这个版本。之后在工程中找到NSObject.mm这个文件，关于自动释放池的实现都在`AutoreleasePoolPage`这个类中了。在阅读的过程中看不懂的地方可以参考">https://opensource.apple.com/tarballs/objc4/，我下载的是objc4-750这个版本。之后在工程中找到NSObject.mm这个文件，关于自动释放池的实现都在`AutoreleasePoolPage`这个类中了。在阅读的过程中看不懂的地方可以参考</a> draveness 大神的这篇文章：<a href="https://draveness.me/autoreleasepool#objc_autoreleasePoolPush">自动释放池的前世今生 —- 深入解析 autoreleasepool</a>。</p>
-<p>这篇文章是我自己对这块学习做的总结，主要从这两方面入手：系统是如何来设计自动释放池的，以及autorelease对象的push和pop的过程。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/17/iOS-autoreleasepool/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/07/15/iOS-weak/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -556,7 +406,7 @@
       
         
           <p>关于<code>__weak</code>修饰符的作用可能大家都知道，附有<code>__weak</code>修饰符的变量对对象是弱引用，对象的引用计数不会增加，在使用之前，附有<code>__weak</code>修饰符的变量指向的对象会被放到 autoreleasepool 中，等该对象被释放时会同时将其置为nil。但是你知道objc是怎样管理weak对象的吗？《Objective-C高级编程》1.4节对<code>__weak</code>的实现做了大致的讲解，再结合源码我们可以进一步理解<code>__weak</code>的实现过程。</p>
-<p>从苹果的开源网站下载objc4的源码：<a href="https://opensource.apple.com/tarballs/objc4/">https://opensource.apple.com/tarballs/objc4/</a>，我下载的是objc4-750这个版本。之后可以在工程中找到objc-weak.h和objc-weak.mm，从objc-weak.h中可以看到跟weak相关的类和函数，从objc-weak.mm中可以看到对weak对象的增加、删除等操作。weak对象的初始化和销毁等入口函数在NSObject.mm中可以找到。</p>
+<p>从苹果的开源网站下载objc4的源码：<a href="https://opensource.apple.com/tarballs/objc4/" target="_blank" rel="noopener">https://opensource.apple.com/tarballs/objc4/</a>，我下载的是objc4-750这个版本。之后可以在工程中找到objc-weak.h和objc-weak.mm，从objc-weak.h中可以看到跟weak相关的类和函数，从objc-weak.mm中可以看到对weak对象的增加、删除等操作。weak对象的初始化和销毁等入口函数在NSObject.mm中可以找到。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/07/15/iOS-weak/#more" rel="contents">
@@ -705,7 +555,7 @@
 
       
         
-          <p>这篇文章的目测不会太长啦，是对苹果官方文档中<a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/ThreadSafety.html#//apple_ref/doc/uid/10000057i-CH8-SW1">线程同步</a>这一节的学习总结，小伙伴们也可以直接去看官方文档中的介绍。苹果的官方文档真的是个宝藏，没有比它更权威了，对于学习关于iOS中的知识点，建议大家先去刷一遍官方文档中的介绍，不懂的地方再去Google或看大神们的blog来补齐。官方文档的地址再贴一下：<a href="https://developer.apple.com/library/archive/navigation/#">https://developer.apple.com/library/archive/navigation/#</a>，收藏好咯~</p>
+          <p>这篇文章的目测不会太长啦，是对苹果官方文档中<a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/ThreadSafety.html#//apple_ref/doc/uid/10000057i-CH8-SW1" target="_blank" rel="noopener">线程同步</a>这一节的学习总结，小伙伴们也可以直接去看官方文档中的介绍。苹果的官方文档真的是个宝藏，没有比它更权威了，对于学习关于iOS中的知识点，建议大家先去刷一遍官方文档中的介绍，不懂的地方再去Google或看大神们的blog来补齐。官方文档的地址再贴一下：<a href="https://developer.apple.com/library/archive/navigation/#" target="_blank" rel="noopener">https://developer.apple.com/library/archive/navigation/#</a>，收藏好咯~</p>
 <p>这篇文章会分两个部分，先总结一下在iOS中可以用哪些手段来解决线程同步的问题，然后再总结一下写线程安全的代码时要注意的地方。</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1153,7 +1003,7 @@
 
       
         
-          <p>对于iOS的多线程编程，可以使用C语言开发的<a href="https://en.wikipedia.org/wiki/POSIX_Threads">POSIX 线程</a> API，也即<code>pthread</code>，或者Objective-C中提供的对该API的封装<code>NSThread</code>。然而线程管理是一件非常复杂的事，管理不当还会影响程序性能，为了避免开发者可能造成的对线程的糟糕的使用，也为了能更好地利用设备上的多核CPU，苹果在OS X 10.6和iOS4中引入了Grand Central Dispatch (GCD)。对于GCD的描述，在苹果的官方文档中有如下描述：</p>
+          <p>对于iOS的多线程编程，可以使用C语言开发的<a href="https://en.wikipedia.org/wiki/POSIX_Threads" target="_blank" rel="noopener">POSIX 线程</a> API，也即<code>pthread</code>，或者Objective-C中提供的对该API的封装<code>NSThread</code>。然而线程管理是一件非常复杂的事，管理不当还会影响程序性能，为了避免开发者可能造成的对线程的糟糕的使用，也为了能更好地利用设备上的多核CPU，苹果在OS X 10.6和iOS4中引入了Grand Central Dispatch (GCD)。对于GCD的描述，在苹果的官方文档中有如下描述：</p>
 <p>GCD是异步执行任务的技术之一。它将开发者一般在程序中写的管理线程的代码移到了系统级中实现。你要做的事就是定义要执行的任务，然后把任务添加到合适的队列中。GCD负责创建线程执行任务。因为线程管理是系统级的一部分了，所以GCD可统一管理任务并执行，这样就比以前的线程更有效率。</p>
 <p>GCD的执行效率更高，尽管是C语言的API，但是使用起来却很方便，本篇文章将会对我们开发中经常用到的API做一总结，内容比较长，可以在右侧目录找想看的。</p>
 <p>其实Objective-C中也提供了对GCD API的封装，就是<code>NSOperationQueue</code>，它提供了一些GCD无法直接做到的特性。下一篇文章会详细的总结一下<code>NSOperationQueue</code>。</p>
@@ -1765,6 +1615,161 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/05/07/iOS-EffectiveObjC-2/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/05/05/iOS-EffectiveObjC-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/05/iOS-EffectiveObjC-1/" itemprop="url">《Effective Objective-C 2.0》——Interface and API Design  </a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-05T06:40:32+08:00">
+                2019-05-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/Objective-C/" itemprop="url" rel="index">
+                    <span itemprop="name">Objective-C</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>这是《Effective Objective-C 2.0》英文版的Chapter3的笔记</p>
+</blockquote>
+<h3 id="使用前缀避免命名空间冲突"><a href="#使用前缀避免命名空间冲突" class="headerlink" title="使用前缀避免命名空间冲突"></a>使用前缀避免命名空间冲突</h3><ul>
+<li>前缀以至少3个字母定义，因为Apple有权使用任何两个字母组合作为自己类、方法和框架等等的命名前缀。</li>
+<li>在<code>.m</code>中定义的C函数或常量也要在前面加上前缀，因为尽管它在实现文件中，而不是在头文件中声明的，但编译后它仍会出现在top-level symbol中，所以容易发生冲突。</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/05/05/iOS-EffectiveObjC-1/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>

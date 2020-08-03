@@ -305,322 +305,6 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/09/10/JS-Prototype/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="意林">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="意林的小站">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/10/JS-Prototype/" itemprop="url">JavaScript中的原型与继承</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-10T16:40:32+08:00">
-                2019-09-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Web/" itemprop="url" rel="index">
-                    <span itemprop="name">Web</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Web/JavaScript/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaScript</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>JavaScript是基于原型的语言，对象和它的原型对象之间只是建立了关联，这与基于类的语言完全不同。在基于类的语言中，会把一个对象（“类”）的属性和方法复制到另一个对象（“实例”）中，因为在编译期间要确定这个实例所占内存大小。但是JavaScript又提出了构造函数、<code>new</code>运算符，想往基于类的语言特征上靠，这反而让刚从别的语言过来的开发者感到迷糊。例如，本来想按照类的特征去设计代码，发现没办法设置私有属性。更加让人迷惑的是，铺天盖地的资料跟你讲的是原型范围内的东西，用的术语确是类中的，加大了理解难度。ES6中增加了<code>class</code>，规范了对类的使用。<code>class</code>中的各种特性依然是基于原型的，并没有真的把基于类的语言中的那一套搬过来。</p>
-<p>Douglas Crockford 在《JavaScript语言精粹》这本书中讲的特别好，一语中的：</p>
-<blockquote>
-<p>JavaScript是一门弱类型语言，从不需要类型转换。对象继承关系变得无关紧要。对于一个对象来说重要的是它能做什么，而不是它从哪里来。</p>
-</blockquote>
-<p>把重点转移到一个对象能做什么，如何复用其他对象的功能上，一切问题思考起来都变得简单很多。JavaScript中对象和函数的灵活性，使得有很多方式可以达到代码重用的目的。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/09/10/JS-Prototype/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/08/25/JS-Modules/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="意林">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="意林的小站">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/25/JS-Modules/" itemprop="url">JavaScript中的模块</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-25T16:40:32+08:00">
-                2019-08-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Web/" itemprop="url" rel="index">
-                    <span itemprop="name">Web</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Web/JavaScript/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaScript</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>本文将主要介绍一下CommonJS、AMD、CMD，以及ES6 Module，每个部分的讲解足够开始上手使用相应的模块化工具，所以本文会略长，可以直接定位到需要的小节看~</p>
-<h2 id="模块系统的演进"><a href="#模块系统的演进" class="headerlink" title="模块系统的演进"></a>模块系统的演进</h2><blockquote>
-<p>本部分内容摘自：<a href="https://zhaoda.net/webpack-handbook/module-system.html">https://zhaoda.net/webpack-handbook/module-system.html</a></p>
-</blockquote>
-<p>模块系统主要解决模块的定义、依赖和导出，先来看看已经存在的模块系统。</p>
-<h3 id="script标签"><a href="#script标签" class="headerlink" title="script标签"></a><code>script</code>标签</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"module1.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"module2.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"libraryA.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"module3.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>这是最原始的 JavaScript 文件加载方式，如果把每一个文件看做是一个模块，那么他们的接口通常是暴露在全局作用域下，也就是定义在 window 对象中，不同模块的接口调用都是一个作用域中，一些复杂的框架，会使用命名空间的概念来组织这些模块的接口，典型的例子如 <a href="https://yuilibrary.com/">YUI</a> 库。</p>
-<p>这种原始的加载方式暴露了一些显而易见的弊端：</p>
-<ul>
-<li>全局作用域下容易造成变量冲突</li>
-<li>文件只能按照 <code>&lt;script&gt;</code> 的书写顺序进行加载</li>
-<li>开发人员必须主观解决模块和代码库的依赖关系</li>
-<li>在大型项目中各种资源难以管理，长期积累的问题导致代码库混乱不堪</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/25/JS-Modules/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/08/19/JS-Obj-Type/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -919,7 +603,7 @@
         
           <p>还记得上大学那会做课程设计，我当时做了一个花卉网站，用<code>java</code>开发的，页面全是用<code>JSP</code>写的，还有那段时间特别流行的用<code>PHP</code>写Web页面。这些页面都是需要跟服务器端的代码部署再同一容器下的，页面中的动态内容都是在服务器端生成的，到了客户端只是展示而已。用这种方式开发网站并没有明确的前后端分工。</p>
 <p>2005年<code>AJAX</code>概念的提出改变了这一切，它让客户端可以自行请求API接口，与服务器端交互，并且在不刷新页面的情况下更改网页中的局部内容，<code>AJAX</code>得以实现的核心就是<code>XMLHttpRequest</code>，现在各大浏览器厂商都支持了这一技术。</p>
-<p>在<a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/AJAX/Getting_Started">MDN</a>上，对<code>Ajax</code>的描述如下：</p>
+<p>在<a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/AJAX/Getting_Started" target="_blank" rel="noopener">MDN</a>上，对<code>Ajax</code>的描述如下：</p>
 <blockquote>
 <p>AJAX是异步的JavaScript和XML（Asynchronous JavaScript And XML）。简单点说，就是使用 XMLHttpRequest 对象与服务器通信。 它可以使用JSON，XML，HTML和text文本等格式发送和接收数据。AJAX最吸引人的就是它的“异步”特性，也就是说它可以在不重新刷新页面的情况下与服务器通信，交换数据，或更新页面。</p>
 <p>你可以使用AJAX最主要的两个特性做下列事：</p>
@@ -1236,7 +920,7 @@
       
         
           <p>JavaScript是允许在书写代码时先使用变量，之后再声明该变量，对于函数也是，你可以先使用函数，之后再声明该函数。</p>
-<h2 id="变量提升"><a href="#变量提升" class="headerlink" title="变量提升"></a>变量提升</h2><p>JS引擎会在解释JavaScript代码之前进行编译，编译的时候就会去声明变量，并确定变量所属的作用域。也就是在执行JavaScript代码之前会将所有变量声明放在作用域的最顶部，但是赋值或其他运行逻辑保持不变（如果变了那还得了…）。<a href="https://developer.mozilla.org/zh-CN/docs/Glossary/Hoisting">MDN</a>中介绍说，<em>变量和函数声明在代码里的位置是不会动的，而是在编译阶段被放入内存中</em>，在物理层面不会进行移动。</p>
+<h2 id="变量提升"><a href="#变量提升" class="headerlink" title="变量提升"></a>变量提升</h2><p>JS引擎会在解释JavaScript代码之前进行编译，编译的时候就会去声明变量，并确定变量所属的作用域。也就是在执行JavaScript代码之前会将所有变量声明放在作用域的最顶部，但是赋值或其他运行逻辑保持不变（如果变了那还得了…）。<a href="https://developer.mozilla.org/zh-CN/docs/Glossary/Hoisting" target="_blank" rel="noopener">MDN</a>中介绍说，<em>变量和函数声明在代码里的位置是不会动的，而是在编译阶段被放入内存中</em>，在物理层面不会进行移动。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/08/02/JS-Promote/#more" rel="contents">
@@ -1534,7 +1218,7 @@
 
       
         
-          <p>闭包（Closure）有着非常强大的作用，尤其是在像<code>Swift</code>、<code>JavaScript</code>这种可以直接把函数当成值来使用的编程语言中，闭包几乎无处不在。在《JavaScript语言精粹》一书中，作者将闭包列为了JavaScript的优美特性之一，可见理解闭包很重要。在<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures">MDN</a>上对闭包的描述如下：</p>
+          <p>闭包（Closure）有着非常强大的作用，尤其是在像<code>Swift</code>、<code>JavaScript</code>这种可以直接把函数当成值来使用的编程语言中，闭包几乎无处不在。在《JavaScript语言精粹》一书中，作者将闭包列为了JavaScript的优美特性之一，可见理解闭包很重要。在<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures" target="_blank" rel="noopener">MDN</a>上对闭包的描述如下：</p>
 <blockquote>
 <p>函数和对其周围状态（<strong>lexical environment，词法环境</strong>）的引用捆绑在一起构成闭包（closure）。也就是说，闭包可以让你从内部函数访问外部函数作用域。在 JavaScript 中，每当函数被创建，就会在函数生成时生成闭包。</p>
 </blockquote>
@@ -1842,6 +1526,305 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/07/20/Programming-thinking-1/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/07/18/JS-Tips-parseInt-Number/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/07/18/JS-Tips-parseInt-Number/" itemprop="url">JS Tips - Number(x) vs parseInt(x)</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-18T16:40:32+08:00">
+                2019-07-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="Number-x"><a href="#Number-x" class="headerlink" title="Number(x)"></a>Number(x)</h2><p><code>Number</code>从命名可以看出来它是JavaScript的一个类，有点类似于java中的自动装箱。但既然是个类，我们就可以<code>new</code>一个<code>Number</code>对象出来，但该对象与<code>Number()</code>还是有区别的，使用时要注意。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/07/18/JS-Tips-parseInt-Number/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/07/17/iOS-autoreleasepool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/07/17/iOS-autoreleasepool/" itemprop="url">__autoreleasepool修饰符的底层实现分析</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-17T20:40:32+08:00">
+                2019-07-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/Objective-C/" itemprop="url" rel="index">
+                    <span itemprop="name">Objective-C</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>还是直接打开objc4的源码看是最直接的了，从苹果的开源网站下载objc4的源码：<a href="https://opensource.apple.com/tarballs/objc4/，我下载的是objc4-750这个版本。之后在工程中找到NSObject.mm这个文件，关于自动释放池的实现都在`AutoreleasePoolPage`这个类中了。在阅读的过程中看不懂的地方可以参考" target="_blank" rel="noopener">https://opensource.apple.com/tarballs/objc4/，我下载的是objc4-750这个版本。之后在工程中找到NSObject.mm这个文件，关于自动释放池的实现都在`AutoreleasePoolPage`这个类中了。在阅读的过程中看不懂的地方可以参考</a> draveness 大神的这篇文章：<a href="https://draveness.me/autoreleasepool#objc_autoreleasePoolPush" target="_blank" rel="noopener">自动释放池的前世今生 —- 深入解析 autoreleasepool</a>。</p>
+<p>这篇文章是我自己对这块学习做的总结，主要从这两方面入手：系统是如何来设计自动释放池的，以及autorelease对象的push和pop的过程。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/07/17/iOS-autoreleasepool/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>

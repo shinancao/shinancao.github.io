@@ -95,7 +95,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
 
 
-  <meta name="keywords" content="github,CocoaPods,Carthage,开源,">
+  <meta name="keywords" content="github,开源,CocoaPods,Carthage,">
 
 
 
@@ -112,7 +112,7 @@
 
 
 <meta name="description" content="几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：https://github.com/shinancao/ImageCycleScrollView，以供参考。下面记录一下这个过程中踩到的坑。">
-<meta name="keywords" content="github,CocoaPods,Carthage,开源">
+<meta name="keywords" content="github,开源,CocoaPods,Carthage">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使开源库同时支持CocoaPods和Carthage集成">
 <meta property="og:url" content="http://shinancao.github.io/2017/07/16/Project-Design-4/index.html">
@@ -408,7 +408,7 @@
       
 
       
-        <p>几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：<a href="https://github.com/shinancao/ImageCycleScrollView" target="_blank" rel="external">https://github.com/shinancao/ImageCycleScrollView</a>，以供参考。下面记录一下这个过程中踩到的坑。</p>
+        <p>几经波折终于弄好了让一个开源库即支持CocoaPods集成又支持Carthage集成，完整的项目：<a href="https://github.com/shinancao/ImageCycleScrollView" target="_blank" rel="noopener">https://github.com/shinancao/ImageCycleScrollView</a>，以供参考。下面记录一下这个过程中踩到的坑。</p>
 <a id="more"></a>
 <h3 id="目录结构的设计"><a href="#目录结构的设计" class="headerlink" title="目录结构的设计"></a>目录结构的设计</h3><p>一开始把目录结构设计好很重要，否则在后面发现不对的时候，很有可能就要在github中把原来的仓库删掉，再重头新建一次，我就在实施的过程中删除了3、4次，最后才弄好。下面是几点要注意的：</p>
 <ul>
@@ -421,14 +421,14 @@
 <h3 id="依赖第三方库"><a href="#依赖第三方库" class="headerlink" title="依赖第三方库"></a>依赖第三方库</h3><p>如果你的库没有依赖其他第三方的库，那就变得容易多了，上面的目录结构搭建好后可以直接进行CocoaPods和Carthage的相应操作了。如果依赖了其他库，这里要注意一下，<strong>用Carthage来集成该第三方库</strong>，不要用CocoaPods。对于CocoaPods，在podspec（还不知道podspec是啥？最后面会再说一下支持CocoaPods和Carthage集成的操作过程。）中可以指定<code>s.dependency &quot;&quot;</code>，这样在别人用CocoaPods集成时，CocoaPods会将依赖的第三方库一同下载下来并配置好。但是对于Carthage没有地方可以这样指定，所以只能曲线救国一下，在集成第三方库时，使用<code>carthage update --use-submodules</code>。加上了<code>--use-submodules</code>标志后，Carthage在下载完成后，会将其作为git submodules进行依赖。然后把原工程的xcodeproj和第三方库的xcodeproj合并成一个xcworkspace，这样在别人用Carthage集成时，除了会把自己的开源库下载下来，也会把依赖的第三方库同时下载下来。</p>
 <h3 id="加入Travis-CI"><a href="#加入Travis-CI" class="headerlink" title="加入Travis CI"></a>加入Travis CI</h3><p>你一定已经在很多github上的项目里看到过这个图标吧。</p>
 <p><img src="/images/WX20170710-142114.png" width="55" height="19"></p>
-<p>Travis可以对github上的项目进行持续构建，集成它的步骤也很简单，到官网注册：<a href="https://travis-ci.org/" target="_blank" rel="external">https://travis-ci.org/</a>，进行github帐号关联，然后在项目里添加<code>.travis.yml</code>文件，在该文件中指定编译环境等。我在尝试的过程中，改了好多次才最终编译成功了。配置这个文件有几个要注意的坑：</p>
+<p>Travis可以对github上的项目进行持续构建，集成它的步骤也很简单，到官网注册：<a href="https://travis-ci.org/" target="_blank" rel="noopener">https://travis-ci.org/</a>，进行github帐号关联，然后在项目里添加<code>.travis.yml</code>文件，在该文件中指定编译环境等。我在尝试的过程中，改了好多次才最终编译成功了。配置这个文件有几个要注意的坑：</p>
 <ul>
 <li>Travis默认使用xctool进行编译，但是xcode的版本指定的是8.0以上，xctool已经不支持了。需要指定用xcodebuild编译。</li>
 <li><code>/Users/travis/.travis/job_stages: line 156: shell_session_update: command not found</code>这个错误可以忽略，如果编译失败，先排查一下其他问题。</li>
 <li>如果用Carthage集成第三方库了，要进行Carthage的相关指定。</li>
 </ul>
 <p>下面是我这个用Swift开发的库的<code>.travis.yml</code>：</p>
-<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">language: objective-c</span><br><span class="line">osx_image: xcode8.3</span><br><span class="line">xcode_workspace: ImageCycleScrollView</span><br><span class="line">xcode_scheme: ImageCycleScrollView</span><br><span class="line">xcode_sdk: iphonesimulator10.3</span><br><span class="line">before_install:</span><br><span class="line">  -<span class="ruby"> xcodebuild -showsdks</span><br><span class="line"></span>  -<span class="ruby"> brew update</span><br><span class="line"></span>  -<span class="ruby"> brew outdated carthage <span class="params">||</span> brew upgrade carthage</span><br><span class="line"></span>before_script:</span><br><span class="line">  -<span class="ruby"> carthage bootstrap</span><br><span class="line"></span>before_deploy:</span><br><span class="line">  -<span class="ruby"> carthage build --no-skip-current</span><br><span class="line"></span>  -<span class="ruby"> carthage archive $FRAMEWORK_NAME</span><br><span class="line"></span>script:</span><br><span class="line">    -<span class="ruby"> xcodebuild clean build -sdk iphonesimulator1<span class="number">0</span>.<span class="number">3</span> -workspace ImageCycleScrollView.xcworkspace -scheme ImageCycleScrollView CODE_SIGNING_REQUIRED=NO</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">language: objective-c</span><br><span class="line">osx_image: xcode8.3</span><br><span class="line">xcode_workspace: ImageCycleScrollView</span><br><span class="line">xcode_scheme: ImageCycleScrollView</span><br><span class="line">xcode_sdk: iphonesimulator10.3</span><br><span class="line">before_install:</span><br><span class="line">  - xcodebuild -showsdks</span><br><span class="line">  - brew update</span><br><span class="line">  - brew outdated carthage || brew<span class="built_in"> upgrade </span>carthage</span><br><span class="line">before_script:</span><br><span class="line">  - carthage bootstrap</span><br><span class="line">before_deploy:</span><br><span class="line">  - carthage build --no-skip-current</span><br><span class="line">  - carthage archive <span class="variable">$FRAMEWORK_NAME</span></span><br><span class="line">script:</span><br><span class="line">    - xcodebuild clean build -sdk iphonesimulator10.3 -workspace ImageCycleScrollView.xcworkspace -scheme ImageCycleScrollView <span class="attribute">CODE_SIGNING_REQUIRED</span>=<span class="literal">NO</span></span><br></pre></td></tr></table></figure>
 <h3 id="支持CocoaPods"><a href="#支持CocoaPods" class="headerlink" title="支持CocoaPods"></a>支持CocoaPods</h3><ul>
 <li>添加{project}.podspec文件：<code>pod spec create ImageCycleScrollView</code></li>
 </ul>
@@ -461,7 +461,7 @@
 <h3 id="完善README"><a href="#完善README" class="headerlink" title="完善README"></a>完善README</h3><p>最后，再美化一下README.md，看起来会正宗一些，哈哈。</p>
 <p><img src="/images/WX20170710-155047.png" width="400" height="323"></p>
 <p>=========================11月1日更新==========================</p>
-<p>弄了一个生成同时支持Cocoapods和Carthage的工程模板，一键生成，让自己专注在源码上：<br><a href="https://github.com/shinancao/pod-carthage-template" target="_blank" rel="external">https://github.com/shinancao/pod-carthage-template</a></p>
+<p>弄了一个生成同时支持Cocoapods和Carthage的工程模板，一键生成，让自己专注在源码上：<br><a href="https://github.com/shinancao/pod-carthage-template" target="_blank" rel="noopener">https://github.com/shinancao/pod-carthage-template</a></p>
 
       
     </div>
@@ -493,11 +493,11 @@
           
             <a href="/tags/github/" rel="tag"># github</a>
           
+            <a href="/tags/开源/" rel="tag"># 开源</a>
+          
             <a href="/tags/CocoaPods/" rel="tag"># CocoaPods</a>
           
             <a href="/tags/Carthage/" rel="tag"># Carthage</a>
-          
-            <a href="/tags/开源/" rel="tag"># 开源</a>
           
         </div>
       

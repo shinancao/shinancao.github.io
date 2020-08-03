@@ -403,7 +403,7 @@
 
       
         <blockquote>
-<p>这是一篇对偶然看的一段讲解Layout事件调用顺序的英文文章的大致翻译。原文链接：<a href="http://www.devdiv.com/layout_-blog-6399-51990.html" target="_blank" rel="external">http://www.devdiv.com/layout_-blog-6399-51990.html</a>，好像已经打开不了，囧。讲解的还算比较清晰，记录下来，留着以后查看~</p>
+<p>这是一篇对偶然看的一段讲解Layout事件调用顺序的英文文章的大致翻译。原文链接：<a href="http://www.devdiv.com/layout_-blog-6399-51990.html" target="_blank" rel="noopener">http://www.devdiv.com/layout_-blog-6399-51990.html</a>，好像已经打开不了，囧。讲解的还算比较清晰，记录下来，留着以后查看~</p>
 </blockquote>
 <a id="more"></a>
 <h3 id="updateConstraints"><a href="#updateConstraints" class="headerlink" title="updateConstraints"></a>updateConstraints</h3><p>在用<code>autoLayout</code>时，要立即出发<code>updateConstraints</code>，调用<code>updateConstraintsIfNeeded</code>，在没用<code>autoLayout</code>时要触发<code>updateConstraints</code>，调用<code>setNeedsUpdateConstraints</code>，但是不应该手动调用<code>updateConstraints</code>。在重写<code>updateConstraints</code>时一定要调用<code>[super updateConstraints]</code>，当有约束在运行时会动态的添加或删除时，就重写这个方法在里面处理。<code>updateConstraints</code>的执行并不会导致界面真的发生变化。</p>

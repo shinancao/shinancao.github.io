@@ -425,7 +425,7 @@
 <ul>
 <li>查看iPhone是否已经有一个叫<code>RHRevealLoader</code>的目录</li>
 </ul>
-<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l <span class="regexp">/Library/</span> | <span class="keyword">grep</span> RHRevealLoader</span><br></pre></td></tr></table></figure>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l /<span class="keyword">Library</span>/ | <span class="type">grep</span> RHRevealLoader</span><br></pre></td></tr></table></figure>
 <p>如果没有的话，就创建一个<code>mkdir /Library/RHRevealLoader</code></p>
 <ul>
 <li>启动Reveal，选择Help -&gt; Show Reveal Library in Finder，点击进去，会打开一个叫<code>iOS-Libraries</code>的文件夹。要把这里的<code>libReveal.dylib</code>通过scp上传到iPhone中。</li>
@@ -439,8 +439,8 @@
 <p><img src="http://ojx1pmrk7.bkt.clouddn.com/WX20170409-184454@2x.png" width="400" height="252"></p>
 <p>试了几次，在不在设置 -&gt; Reveal -&gt; Enabled Applications中打开App，都是可以在Reveal中正常看到的。</p>
 <h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><ol>
-<li><a href="http://chaosky.me/2016/07/27/iOS-Security-Defense-Reveal/" target="_blank" rel="external">http://chaosky.me/2016/07/27/iOS-Security-Defense-Reveal/</a></li>
-<li><a href="https://itony.me/433.html" target="_blank" rel="external">https://itony.me/433.html</a></li>
+<li><a href="http://chaosky.me/2016/07/27/iOS-Security-Defense-Reveal/" target="_blank" rel="noopener">http://chaosky.me/2016/07/27/iOS-Security-Defense-Reveal/</a></li>
+<li><a href="https://itony.me/433.html" target="_blank" rel="noopener">https://itony.me/433.html</a></li>
 </ol>
 
       

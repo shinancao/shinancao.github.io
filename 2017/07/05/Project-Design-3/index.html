@@ -95,7 +95,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
 
 
-  <meta name="keywords" content="design,开源,">
+  <meta name="keywords" content="开源,design,">
 
 
 
@@ -112,7 +112,7 @@
 
 
 <meta name="description" content="前段时间做了一个万年历App，在github中搜索了一下日历，果然不出所料，一大批开源的日历控件。纠结了一下，要是自己从头写要考虑的东西很多，而且用的思路基本上也是这些开源控件的思路（后面会总结一下大致有几种思路来实现一个日历）。于是最终决定用现有的轮子，没成想就掉到深坑里去了。后来上线了第一个版本后，赶紧自己写了一个。同时不免思考了一下，怎么样设计一个开源的界面控件，别人用起来才舒服呢。">
-<meta name="keywords" content="design,开源">
+<meta name="keywords" content="开源,design">
 <meta property="og:type" content="article">
 <meta property="og:title" content="什么样的开源界面控件才最好用">
 <meta property="og:url" content="http://shinancao.github.io/2017/07/05/Project-Design-3/index.html">
@@ -409,7 +409,7 @@
 <ul>
 <li>隐藏实现的细节，对于<code>Objective-C</code>就是将公开的接口放到<code>.h</code>文件中，其余的实现过程中的辅助方法放到<code>.m</code>文件中。对于<code>Swift</code>就是利用<code>fileprivate</code>、<code>private</code>、<code>public</code>等域关键字来做限制。</li>
 <li>公开接口的设计，我目前想到有3种方式：<ol>
-<li>将可定制的控件暴露出去，比如有一个<code>label</code>，公开后，就可以通过<code>xxView.label.textColor = UIColor.yellow</code>这样来设置。但可以控制该<code>label</code>不能被调用者创建，对于<code>Objective-C</code>，可以设置为<code>readonly</code>的。对于<code>Swift</code>，可以将<code>set</code>方法设置为<code>private</code>的：<code>public private(set) var label: UILabel?</code>。<ol>
+<li>将可定制的控件暴露出去，比如有一个<code>label</code>，公开后，就可以通过<code>xxView.label.textColor = UIColor.yellow</code>这样来设置。但可以控制该<code>label</code>不能被调用者创建，对于<code>Objective-C</code>，可以设置为<code>readonly</code>的。对于<code>Swift</code>，可以将<code>set</code>方法设置为<code>private</code>的：<code>public private(set) var label: UILabel?</code>。<ol start="2">
 <li>暴露方法出去供使用者调用，将控件保持在内部，这样使用者能进行哪些定制一目了然，也完全受限于控件的开发人员了。</li>
 <li>走配置文件，将所有定制时需要的资源都定义到一个类似<code>Appearance.h</code>这样的文件中，或者plist等文件中。调用者在使用时来改相应的资源配置即可，无需再去关心代码细节，但其实也是对源代码进行了改动，如果是把控件封装成了一个<code>Framework</code>，这种方式就不太适合。</li>
 </ol>
@@ -426,12 +426,12 @@
 <li>走配置文件来定制控件的样式在这里就比较适用了，否则在控件的实现稍微复杂些时，可能要通过<code>delegate</code>来让外界设置样式。太频繁的判断<code>delegate</code>的方法是否存在，然后调用，其实也会对性能有一定的影响。（我这次找的这个日历控件就是这么干的 = =）</li>
 <li>在实现时的重点思考不是别人可能会定制哪些地方，我要怎样暴露接口他才改起来方便。而是别人要添加一个视图时，或改一个视图位置时，怎样才能快速的找到要改动的位置。</li>
 </ul>
-<p>我按照以上的这种想法，重写的日历控件：<a href="https://github.com/shinancao/TestCalendarView" target="_blank" rel="external">https://github.com/shinancao/TestCalendarView</a>，不仅思路简单，而且快速滑动也很流畅，客观您感兴趣可以看一下~ </p>
+<p>我按照以上的这种想法，重写的日历控件：<a href="https://github.com/shinancao/TestCalendarView" target="_blank" rel="noopener">https://github.com/shinancao/TestCalendarView</a>，不仅思路简单，而且快速滑动也很流畅，客观您感兴趣可以看一下~ </p>
 <h2 id="日历可以有哪些方式来实现？"><a href="#日历可以有哪些方式来实现？" class="headerlink" title="日历可以有哪些方式来实现？"></a>日历可以有哪些方式来实现？</h2><p>从github上开源的日历控件看，主要的实现方式有以下几种：</p>
 <ul>
 <li>用<code>UICollectionView</code>来做，这是最简单的方式了，不用考虑每一行月份View要复用的情况。每个月份是一个<code>section</code>，每一天是一个<code>cell</code>，重写<code>UICollectionViewFlowLayout</code>，计算一下每个<code>cell</code>的位置大小。</li>
 <li>重写UIView的<code>drawRect</code>方法，将日历画出。每个月份画出来，翻页的处理添加手势，然后给layer添加动画。这种方式在性能方面比较糟糕，<code>drawRect</code>被称作内存魔鬼，不恰当的使用会使内存暴增。</li>
-<li>用<code>UIScrollView</code>来做，这种方式就非常灵活，想怎么来就怎么来，我写的这个日历就是用<code>UIScrollView</code>实现的。只是要自己管理一下View的复用。每一天可以用<code>UIControl</code>，每个月份用一个<code>UIView</code>，我这里每个星期也用一个<code>UIView</code>封装起来了。说一下<strong>复用</strong>，比较常见的复用就是用3个View，在第一个View要移出屏幕的时候，立即把它移动到最后。但是这种方式有个很大的问题，就是无法应对测试同学的暴力活动，通过<code>Instruments</code>检测，<code>addSubview</code>和<code>removeFromSuperview</code>都是非常耗时的。在用<code>UIScrollView</code>做图片的循环滚动时发现了一种复用方式，避免了去不停的添加和移除View。在滑动在第一个View的边缘或者最后一个View的边缘时，通过设置<code>contentOffset</code>将<code>UIScrollview</code>置到中间位置，更新与View绑定的数据源。这样在视觉效果上还是不停的在滚动，感兴趣的话可以看一下<a href="https://github.com/shinancao/TestCalendarView/blob/master/TestCalendarView/CalendarContentViewController.swift" target="_blank" rel="external">代码</a>。   </li>
+<li>用<code>UIScrollView</code>来做，这种方式就非常灵活，想怎么来就怎么来，我写的这个日历就是用<code>UIScrollView</code>实现的。只是要自己管理一下View的复用。每一天可以用<code>UIControl</code>，每个月份用一个<code>UIView</code>，我这里每个星期也用一个<code>UIView</code>封装起来了。说一下<strong>复用</strong>，比较常见的复用就是用3个View，在第一个View要移出屏幕的时候，立即把它移动到最后。但是这种方式有个很大的问题，就是无法应对测试同学的暴力活动，通过<code>Instruments</code>检测，<code>addSubview</code>和<code>removeFromSuperview</code>都是非常耗时的。在用<code>UIScrollView</code>做图片的循环滚动时发现了一种复用方式，避免了去不停的添加和移除View。在滑动在第一个View的边缘或者最后一个View的边缘时，通过设置<code>contentOffset</code>将<code>UIScrollview</code>置到中间位置，更新与View绑定的数据源。这样在视觉效果上还是不停的在滚动，感兴趣的话可以看一下<a href="https://github.com/shinancao/TestCalendarView/blob/master/TestCalendarView/CalendarContentViewController.swift" target="_blank" rel="noopener">代码</a>。   </li>
 </ul>
 <p>以上都只是自己的一些看法，有不同想法欢迎在评论去留言哦~~  </p>
 <p><em>终于写完啦，从动笔写第一段到全文完，拖了好像快1个月啦，拖的我自己都佩服自己了ㄟ( ▔, ▔ )ㄏ</em>        </p>
@@ -464,9 +464,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/design/" rel="tag"># design</a>
-          
             <a href="/tags/开源/" rel="tag"># 开源</a>
+          
+            <a href="/tags/design/" rel="tag"># design</a>
           
         </div>
       

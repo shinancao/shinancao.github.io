@@ -417,7 +417,7 @@
 <p><img src="/images/git_directory.png"></p>
 <p>其中的<code>config</code>文件包含了当前仓库在本地的源、分支等等信息，它的基本内容如下，我这里配置了两个remote：</p>
 <a id="more"></a>
-<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[core]</span><br><span class="line">	repositoryformatversion = <span class="number">0</span></span><br><span class="line">	filemode = <span class="literal">true</span></span><br><span class="line">	bare = <span class="literal">false</span></span><br><span class="line">	logallrefupdates = <span class="literal">true</span></span><br><span class="line">	ignorecase = <span class="literal">true</span></span><br><span class="line">	precomposeunicode = <span class="literal">true</span></span><br><span class="line">[remote <span class="string">"origin"</span>]</span><br><span class="line">	url = git@github.com:shinancao/Xib2ObjC.git</span><br><span class="line">	fetch = +refs<span class="regexp">/heads/</span>*:refs<span class="regexp">/remotes/origin/</span>*</span><br><span class="line">[remote <span class="string">"github"</span>]  <span class="regexp">//gi</span>thub是我给这个remote的命名</span><br><span class="line">	url = git@github.com:shinancao/Xib2ObjC.git</span><br><span class="line">	fetch = +refs<span class="regexp">/heads/</span>*:refs<span class="regexp">/remotes/github/</span>*</span><br><span class="line">[branch <span class="string">"master"</span>]</span><br><span class="line">	remote = origin</span><br><span class="line">	merge = refs/heads/master</span><br><span class="line">[user]</span><br><span class="line">	email = shinancao666@<span class="number">163.</span>com</span><br><span class="line">	name = shinancao</span><br></pre></td></tr></table></figure>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[core]</span><br><span class="line">	repositoryformatversion = <span class="number">0</span></span><br><span class="line">	filemode = <span class="literal">true</span></span><br><span class="line">	bare = <span class="literal">false</span></span><br><span class="line">	logallrefupdates = <span class="literal">true</span></span><br><span class="line">	ignorecase = <span class="literal">true</span></span><br><span class="line">	precomposeunicode = <span class="literal">true</span></span><br><span class="line">[remote <span class="string">"origin"</span>]</span><br><span class="line">	url = git@github.com:shinancao/Xib2ObjC.git</span><br><span class="line">	fetch = +refs<span class="regexp">/heads/</span>*:refs<span class="regexp">/remotes/origin/</span>*</span><br><span class="line">[remote <span class="string">"github"</span>]  //github是我给这个remote的命名</span><br><span class="line">	url = git@github.com:shinancao/Xib2ObjC.git</span><br><span class="line">	fetch = +refs<span class="regexp">/heads/</span>*:refs<span class="regexp">/remotes/github/</span>*</span><br><span class="line">[branch <span class="string">"master"</span>]</span><br><span class="line">	remote = origin</span><br><span class="line">	merge = refs/heads/master</span><br><span class="line">[user]</span><br><span class="line">	email = shinancao666@<span class="number">163.</span>com</span><br><span class="line">	name = shinancao</span><br></pre></td></tr></table></figure>
 <p>当然，<code>config</code>还可以配置其他项。</p>
 <p>再说一下<code>refs</code>文件夹：<br><img src="/images/refs.png"></p>
 <p><code>refs/remotes</code>存放着当前各remote在本地的，以分支命名的文件，文件中记录着拉取时最近一次的commit id，使用<code>git branch -r</code>查看的就是它下面的所有分支。</p>
@@ -429,7 +429,7 @@
 <p><img src="/images/remote.png"></p>
 <p>此时在<code>config</code>最下面多了几行，<code>git remote -v</code>列出的也是<code>config</code>中记录的所有remote：</p>
 <p><img src="/images/remote_1.png"></p>
-<h3 id="checkout"><a href="#checkout" class="headerlink" title="checkout"></a>checkout</h3><p>在<code>testRemote</code>对应的远程仓库<code>git@github.com:shinancao/Xib2ObjC.git</code>有两个分支<code>master</code>和<code>test</code>，现在要基于<code>master</code>创建一个新分支<code>test1</code>：</p>
+<h3 id="checkout"><a href="#checkout" class="headerlink" title="checkout"></a>checkout</h3><p>在<code>testRemote</code>对应的远程仓库<a href="mailto:`git@github.com" target="_blank" rel="noopener">`git@github.com</a>:shinancao/Xib2ObjC.git<code>有两个分支</code>master<code>和</code>test<code>，现在要基于</code>master<code>创建一个新分支</code>test1`：</p>
 <p><img src="/images/checkout_1.png"></p>
 <p>报错了，提示没有<code>testRemote/master</code>这个分支。实际上执行<code>git checkout</code>后，会在<code>refs/</code>下找<code>testRemote</code>文件夹，然后再找<code>master</code>文件，找不到就会报上面的错误。在<code>checkout</code>之前可以执行<code>git branch -a</code>查看一下<code>refs/remotes</code>和<code>refs/heads</code>下所有的分支，基于列出的分支创建新分支就不会有问题了。</p>
 <p>如果直接<code>checkout</code>一个分支名，会先查找本地是否有该分支，如果没有就会查找<code>refs/remotes</code>下是否有匹配的分支：</p>
@@ -446,7 +446,7 @@
 <p>因为本地的test3分支就是基于testRemote/master创建的，并且最新代码和fetch回来的一样。</p>
 <p>可以在用<code>git fetch &lt;remote的名字&gt; &lt;分支名&gt;</code>来拉取指定分支的更新，否则项目很大，分支很多，会导致在本地存储很多东西，占用磁盘空间。</p>
 <h3 id="pull"><a href="#pull" class="headerlink" title="pull"></a>pull</h3><p>用<code>git fetch</code>拉取回来的代码，还需要合并到本地的代码里，可以用<code>git merge</code>或<code>git rebase</code>：</p>
-<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git merge testRemote/<span class="keyword">master</span></span><br><span class="line"><span class="title"># 或者</span><br><span class="line">$</span> git rebase testRemote/<span class="literal">master</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git merge testRemote/<span class="literal">master</span></span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line">$ git rebase testRemote/<span class="literal">master</span></span><br></pre></td></tr></table></figure>
 <p>上面的命令在当前分支，合并<code>testRemote/master</code>。</p>
 <p>那其实<code>git pull</code>做就是先取回远程某个分支的代码，然后再与本地指定分支合并：</p>
 <figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>git pull origin <span class="symbol">next:</span>master <span class="comment">#取回origin主机的next分支，与本地的master分支合并</span></span><br><span class="line"><span class="variable">$ </span>git pull origin <span class="keyword">next</span>        <span class="comment">#与当前的分支合并</span></span><br><span class="line"><span class="variable">$ </span>git pull origin             <span class="comment">#当前分支与远程分支存在追踪关系，可省略分支名</span></span><br><span class="line"><span class="variable">$ </span>git pull                    <span class="comment">#如果当前分支只有一个追踪分支，远程主机名也可以省略</span></span><br></pre></td></tr></table></figure>
@@ -455,13 +455,13 @@
 <p>如果在<code>git fetch</code>后要使用<code>git rebase</code>合并，则要指定<code>--rebase</code>：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git pull --rebase <span class="tag">&lt;<span class="name">remote的名字</span>&gt;</span> <span class="tag">&lt;<span class="name">远程分支名</span>&gt;</span>:<span class="tag">&lt;<span class="name">本地分支名</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><ul>
-<li><a href="https://git-scm.com/" target="_blank" rel="external">https://git-scm.com/</a> （遇到问题，还是要多研读官方的文档，会加深理解。）</li>
-<li><a href="http://www.ruanyifeng.com/blog/2014/06/git_remote.html" target="_blank" rel="external">http://www.ruanyifeng.com/blog/2014/06/git_remote.html</a></li>
+<li><a href="https://git-scm.com/" target="_blank" rel="noopener">https://git-scm.com/</a> （遇到问题，还是要多研读官方的文档，会加深理解。）</li>
+<li><a href="http://www.ruanyifeng.com/blog/2014/06/git_remote.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2014/06/git_remote.html</a></li>
 </ul>
 <blockquote>
 <p>转载请注明出处：</p>
 <p>作者：意林</p>
-<p>原文链接：<a href="http://www.shinancao.cn/2019/04/01/Functional-JavaScript-Part1" target="_blank" rel="external">http://www.shinancao.cn/2019/04/01/Functional-JavaScript-Part1</a></p>
+<p>原文链接：<a href="http://www.shinancao.cn/2019/04/01/Functional-JavaScript-Part1" target="_blank" rel="noopener">http://www.shinancao.cn/2019/04/01/Functional-JavaScript-Part1</a></p>
 </blockquote>
 <p>–End–</p>
 
@@ -508,8 +508,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/01/Functional-JavaScript-Part1/" rel="next" title="《Functional Programming in JavaScript》Note - Part1">
-                <i class="fa fa-chevron-left"></i> 《Functional Programming in JavaScript》Note - Part1
+              <a href="/2019/04/15/HTTP-Cookie/" rel="next" title="HTTP cookie">
+                <i class="fa fa-chevron-left"></i> HTTP cookie
               </a>
             
           </div>
