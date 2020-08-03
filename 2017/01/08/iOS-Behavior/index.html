@@ -6,10 +6,10 @@
 
 
 <html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -19,8 +19,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -38,7 +38,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -90,21 +90,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="design,行为," />
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
 
 
+  <meta name="keywords" content="design,行为,">
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
 
 
 
@@ -112,11 +112,13 @@
 
 
 <meta name="description" content="开场白8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇iOS中的行为已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。">
+<meta name="keywords" content="design,行为">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS中的行为">
 <meta property="og:url" content="http://shinancao.github.io/2017/01/08/iOS-Behavior/index.html">
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="开场白8月份的时候由于我们项目急招人，就跟着去面试了一段时间，发现在问到使用过的设计模式时，大部分都说的是代理模式、观察者模式、工厂模式…。今天就来介绍一个模式——行为模式，了解一下，至少在以后的面试中答出一点新鲜的东西也是好的😉。objccn.io的这篇iOS中的行为已经讲解的非常详细了，可以作为一个入门的学习。我这里再额外举一些例子，对我在读这篇文章时一些感到疑惑的地方用代码做个实际演示。">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://shinancao.github.io/images/iOS-IB-Object.png">
 <meta property="og:image" content="http://shinancao.github.io/images/iOS-Behavior-IB.png">
 <meta property="og:updated_time" content="2017-07-22T10:30:00.000Z">
@@ -151,7 +153,7 @@
 
 
 
-  <link rel="canonical" href="http://shinancao.github.io/2017/01/08/iOS-Behavior/"/>
+  <link rel="canonical" href="http://shinancao.github.io/2017/01/08/iOS-Behavior/">
 
 
 
@@ -191,7 +193,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">意林的小站</span>
         <span class="logo-line-after"><i></i></span>
@@ -221,7 +223,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
             首页
           </a>
@@ -231,7 +233,7 @@
         <li class="menu-item menu-item-categories">
           <a href="/categories/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
             分类
           </a>
@@ -241,7 +243,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
             归档
           </a>
@@ -251,7 +253,7 @@
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
             标签
           </a>
@@ -261,7 +263,7 @@
         <li class="menu-item menu-item-portfolio">
           <a href="/portfolio/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-code"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
             
             项目
           </a>
@@ -271,7 +273,7 @@
         <li class="menu-item menu-item-about">
           <a href="/about/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
             关于
           </a>
@@ -310,7 +312,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="意林">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content>
       <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
@@ -346,7 +348,7 @@
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
             
               <span class="post-meta-divider">|</span>
             
@@ -560,7 +562,7 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
             文章目录
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -571,9 +573,7 @@
 
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
-               alt="意林" />
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
           <p class="site-author-name" itemprop="name">意林</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -584,7 +584,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-count">64</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -664,7 +664,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#开场白"><span class="nav-number">1.</span> <span class="nav-text">开场白</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进入主题"><span class="nav-number">2.</span> <span class="nav-text">进入主题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基础行为的构建"><span class="nav-number">2.0.1.</span> <span class="nav-text">基础行为的构建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#组合行为（多路代理）"><span class="nav-number">2.0.2.</span> <span class="nav-text">组合行为（多路代理）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#剥离布局和布局展示的逻辑"><span class="nav-number">2.0.3.</span> <span class="nav-text">剥离布局和布局展示的逻辑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#行为的生命周期"><span class="nav-number">2.0.4.</span> <span class="nav-text">行为的生命周期</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#介绍行为相关的"><span class="nav-number">3.0.1.</span> <span class="nav-text">介绍行为相关的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#涉及到动画实现的"><span class="nav-number">3.0.2.</span> <span class="nav-text">涉及到动画实现的</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#开场白"><span class="nav-number">1.</span> <span class="nav-text">开场白</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进入主题"><span class="nav-number">2.</span> <span class="nav-text">进入主题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基础行为的构建"><span class="nav-number">2.0.1.</span> <span class="nav-text">基础行为的构建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#组合行为（多路代理）"><span class="nav-number">2.0.2.</span> <span class="nav-text">组合行为（多路代理）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#剥离布局和布局展示的逻辑"><span class="nav-number">2.0.3.</span> <span class="nav-text">剥离布局和布局展示的逻辑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#行为的生命周期"><span class="nav-number">2.0.4.</span> <span class="nav-text">行为的生命周期</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#介绍行为相关的"><span class="nav-number">3.0.1.</span> <span class="nav-text">介绍行为相关的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#涉及到动画实现的"><span class="nav-number">3.0.2.</span> <span class="nav-text">涉及到动画实现的</span></a></li></ol></li></div>
             
 
           </div>
@@ -684,7 +684,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
+        <div class="copyright">
   
   &copy; 
   <span itemprop="copyrightYear">2020</span>

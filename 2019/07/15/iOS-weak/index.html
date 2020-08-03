@@ -6,10 +6,10 @@
 
 
 <html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -19,8 +19,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -38,7 +38,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -90,21 +90,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="源码分析,Objective-C,weak," />
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
 
 
+  <meta name="keywords" content="源码分析,Objective-C,weak,">
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
 
 
 
@@ -112,11 +112,13 @@
 
 
 <meta name="description" content="关于__weak修饰符的作用可能大家都知道，附有__weak修饰符的变量对对象是弱引用，对象的引用计数不会增加，在使用之前，附有__weak修饰符的变量指向的对象会被放到 autoreleasepool 中，等该对象被释放时会同时将其置为nil。但是你知道objc是怎样管理weak对象的吗？《Objective-C高级编程》1.4节对__weak的实现做了大致的讲解，再结合源码我们可以进一步理解_">
+<meta name="keywords" content="源码分析,Objective-C,weak">
 <meta property="og:type" content="article">
 <meta property="og:title" content="__weak修饰符的底层实现分析">
 <meta property="og:url" content="http://shinancao.github.io/2019/07/15/iOS-weak/index.html">
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="关于__weak修饰符的作用可能大家都知道，附有__weak修饰符的变量对对象是弱引用，对象的引用计数不会增加，在使用之前，附有__weak修饰符的变量指向的对象会被放到 autoreleasepool 中，等该对象被释放时会同时将其置为nil。但是你知道objc是怎样管理weak对象的吗？《Objective-C高级编程》1.4节对__weak的实现做了大致的讲解，再结合源码我们可以进一步理解_">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-10-20T02:20:27.848Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="__weak修饰符的底层实现分析">
@@ -148,7 +150,7 @@
 
 
 
-  <link rel="canonical" href="http://shinancao.github.io/2019/07/15/iOS-weak/"/>
+  <link rel="canonical" href="http://shinancao.github.io/2019/07/15/iOS-weak/">
 
 
 
@@ -188,7 +190,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">意林的小站</span>
         <span class="logo-line-after"><i></i></span>
@@ -218,7 +220,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
             首页
           </a>
@@ -228,7 +230,7 @@
         <li class="menu-item menu-item-categories">
           <a href="/categories/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
             分类
           </a>
@@ -238,7 +240,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
             归档
           </a>
@@ -248,7 +250,7 @@
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
             标签
           </a>
@@ -258,7 +260,7 @@
         <li class="menu-item menu-item-portfolio">
           <a href="/portfolio/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-code"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
             
             项目
           </a>
@@ -268,7 +270,7 @@
         <li class="menu-item menu-item-about">
           <a href="/about/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
             关于
           </a>
@@ -307,7 +309,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="意林">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content>
       <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
@@ -343,7 +345,7 @@
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
             
               <span class="post-meta-divider">|</span>
             
@@ -604,7 +606,7 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
             文章目录
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -615,9 +617,7 @@
 
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
-               alt="意林" />
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
           <p class="site-author-name" itemprop="name">意林</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -628,7 +628,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-count">64</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -728,7 +728,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
+        <div class="copyright">
   
   &copy; 
   <span itemprop="copyrightYear">2020</span>

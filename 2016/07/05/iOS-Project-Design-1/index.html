@@ -6,10 +6,10 @@
 
 
 <html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -19,8 +19,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -38,7 +38,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -90,21 +90,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="design,static library," />
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
 
 
+  <meta name="keywords" content="design,static library,">
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
 
 
 
@@ -112,11 +112,13 @@
 
 
 <meta name="description" content="写在前面还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我">
+<meta name="keywords" content="design,static library">
 <meta property="og:type" content="article">
 <meta property="og:title" content="用Static Library进行代码组织的一次实践">
 <meta property="og:url" content="http://shinancao.github.io/2016/07/05/iOS-Project-Design-1/index.html">
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="写在前面还是在看喵神那篇讲Apple Watch开发的文章中演示的Demo，注意他里面用到了Framework来管理代码。虽然当时重点是Apple Watch的开发，但是由于本人热衷代码结构设计，所以当时记忆很深刻^_^，想着以后可以试一下。正巧，产品在当前版本中要再加个Today插件，由于数据的存储和获取与之前的Today插件一致，只是界面展示不同而已，但是也必须要再创建一套Target。所以我">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://shinancao.github.io/images/Edit-Scheme.png">
 <meta property="og:updated_time" content="2017-07-22T10:32:59.000Z">
 <meta name="twitter:card" content="summary">
@@ -150,7 +152,7 @@
 
 
 
-  <link rel="canonical" href="http://shinancao.github.io/2016/07/05/iOS-Project-Design-1/"/>
+  <link rel="canonical" href="http://shinancao.github.io/2016/07/05/iOS-Project-Design-1/">
 
 
 
@@ -190,7 +192,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">意林的小站</span>
         <span class="logo-line-after"><i></i></span>
@@ -220,7 +222,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
             首页
           </a>
@@ -230,7 +232,7 @@
         <li class="menu-item menu-item-categories">
           <a href="/categories/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
             分类
           </a>
@@ -240,7 +242,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
             归档
           </a>
@@ -250,7 +252,7 @@
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
             标签
           </a>
@@ -260,7 +262,7 @@
         <li class="menu-item menu-item-portfolio">
           <a href="/portfolio/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-code"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
             
             项目
           </a>
@@ -270,7 +272,7 @@
         <li class="menu-item menu-item-about">
           <a href="/about/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
             关于
           </a>
@@ -309,7 +311,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="意林">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content>
       <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
@@ -345,7 +347,7 @@
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
             
               <span class="post-meta-divider">|</span>
             
@@ -571,7 +573,7 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
             文章目录
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -582,9 +584,7 @@
 
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
-               alt="意林" />
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
           <p class="site-author-name" itemprop="name">意林</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -595,7 +595,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-count">64</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -695,7 +695,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
+        <div class="copyright">
   
   &copy; 
   <span itemprop="copyrightYear">2020</span>

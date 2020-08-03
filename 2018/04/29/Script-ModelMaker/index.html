@@ -6,10 +6,10 @@
 
 
 <html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -19,8 +19,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -38,7 +38,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -90,21 +90,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="shell,script," />
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
 
 
+  <meta name="keywords" content="shell,script,">
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
 
 
 
@@ -112,11 +112,13 @@
 
 
 <meta name="description" content="在开发项目的过程中，必不可少地要创建Model，大部分时候都是对照着服务器返回的json来创建。一个property，一个property去写实在枯燥乏味，尤其是当字段量很大的时候，敲的都要怀疑人生了…。ModelMaker是用Swift Package Manager开发的一个命令行工具，只要指定好Json的文件路径，以及生成Model后要放置的目录，即可自动创建Model了，目前支持创建Obj">
+<meta name="keywords" content="shell,script">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SPM开发的一个命令行工具——ModelMaker">
 <meta property="og:url" content="http://shinancao.github.io/2018/04/29/Script-ModelMaker/index.html">
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="在开发项目的过程中，必不可少地要创建Model，大部分时候都是对照着服务器返回的json来创建。一个property，一个property去写实在枯燥乏味，尤其是当字段量很大的时候，敲的都要怀疑人生了…。ModelMaker是用Swift Package Manager开发的一个命令行工具，只要指定好Json的文件路径，以及生成Model后要放置的目录，即可自动创建Model了，目前支持创建Obj">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://shinancao.github.io/images/modelMaker.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/modelMaker2.PNG">
 <meta property="og:updated_time" content="2018-06-24T04:23:09.000Z">
@@ -151,7 +153,7 @@
 
 
 
-  <link rel="canonical" href="http://shinancao.github.io/2018/04/29/Script-ModelMaker/"/>
+  <link rel="canonical" href="http://shinancao.github.io/2018/04/29/Script-ModelMaker/">
 
 
 
@@ -191,7 +193,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">意林的小站</span>
         <span class="logo-line-after"><i></i></span>
@@ -221,7 +223,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
             首页
           </a>
@@ -231,7 +233,7 @@
         <li class="menu-item menu-item-categories">
           <a href="/categories/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
             分类
           </a>
@@ -241,7 +243,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
             归档
           </a>
@@ -251,7 +253,7 @@
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
             标签
           </a>
@@ -261,7 +263,7 @@
         <li class="menu-item menu-item-portfolio">
           <a href="/portfolio/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-code"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
             
             项目
           </a>
@@ -271,7 +273,7 @@
         <li class="menu-item menu-item-about">
           <a href="/about/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
             关于
           </a>
@@ -310,7 +312,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="意林">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content>
       <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
@@ -346,7 +348,7 @@
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
             
               <span class="post-meta-divider">|</span>
             
@@ -565,7 +567,7 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
             文章目录
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -576,9 +578,7 @@
 
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
-               alt="意林" />
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
           <p class="site-author-name" itemprop="name">意林</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -589,7 +589,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-count">64</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -689,7 +689,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
+        <div class="copyright">
   
   &copy; 
   <span itemprop="copyrightYear">2020</span>

@@ -6,10 +6,10 @@
 
 
 <html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -19,8 +19,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -38,7 +38,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -90,40 +90,39 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="JavaScript,Scope," />
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
 
 
+  <meta name="keywords" content="JavaScript,Scope,">
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
 
 
 
 
 
 
-<meta name="description" content="作为一个稍微有点编程经验的程序员，在学习一门新的编程语言时通常都不用特别关注作用域的问题，因为绝大部分的编程语言中变量的作用域遵循的规则都差不多，开发人员能顺其自然预见一个变量在何处可见，在何时销毁。但是到了JavaScript中，如果再用其他语言的作用域规则往上套，有时会得到让人很迷糊的结果。我觉得这主要是因为JavaScript过渡依赖全局变量，和var声明的变量不具有块级作用域导致的。
-本文">
+<meta name="description" content="作为一个稍微有点编程经验的程序员，在学习一门新的编程语言时通常都不用特别关注作用域的问题，因为绝大部分的编程语言中变量的作用域遵循的规则都差不多，开发人员能顺其自然预见一个变量在何处可见，在何时销毁。但是到了JavaScript中，如果再用其他语言的作用域规则往上套，有时会得到让人很迷糊的结果。我觉得这主要是因为JavaScript过渡依赖全局变量，和var声明的变量不具有块级作用域导致的。 本文">
+<meta name="keywords" content="JavaScript,Scope">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JavaScript中变量的作用域">
 <meta property="og:url" content="http://shinancao.github.io/2019/07/21/JS-Scope/index.html">
 <meta property="og:site_name" content="意林的小站">
-<meta property="og:description" content="作为一个稍微有点编程经验的程序员，在学习一门新的编程语言时通常都不用特别关注作用域的问题，因为绝大部分的编程语言中变量的作用域遵循的规则都差不多，开发人员能顺其自然预见一个变量在何处可见，在何时销毁。但是到了JavaScript中，如果再用其他语言的作用域规则往上套，有时会得到让人很迷糊的结果。我觉得这主要是因为JavaScript过渡依赖全局变量，和var声明的变量不具有块级作用域导致的。
-本文">
+<meta property="og:description" content="作为一个稍微有点编程经验的程序员，在学习一门新的编程语言时通常都不用特别关注作用域的问题，因为绝大部分的编程语言中变量的作用域遵循的规则都差不多，开发人员能顺其自然预见一个变量在何处可见，在何时销毁。但是到了JavaScript中，如果再用其他语言的作用域规则往上套，有时会得到让人很迷糊的结果。我觉得这主要是因为JavaScript过渡依赖全局变量，和var声明的变量不具有块级作用域导致的。 本文">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2020-07-06T03:28:04.800Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaScript中变量的作用域">
-<meta name="twitter:description" content="作为一个稍微有点编程经验的程序员，在学习一门新的编程语言时通常都不用特别关注作用域的问题，因为绝大部分的编程语言中变量的作用域遵循的规则都差不多，开发人员能顺其自然预见一个变量在何处可见，在何时销毁。但是到了JavaScript中，如果再用其他语言的作用域规则往上套，有时会得到让人很迷糊的结果。我觉得这主要是因为JavaScript过渡依赖全局变量，和var声明的变量不具有块级作用域导致的。
-本文">
+<meta name="twitter:description" content="作为一个稍微有点编程经验的程序员，在学习一门新的编程语言时通常都不用特别关注作用域的问题，因为绝大部分的编程语言中变量的作用域遵循的规则都差不多，开发人员能顺其自然预见一个变量在何处可见，在何时销毁。但是到了JavaScript中，如果再用其他语言的作用域规则往上套，有时会得到让人很迷糊的结果。我觉得这主要是因为JavaScript过渡依赖全局变量，和var声明的变量不具有块级作用域导致的。 本文">
 
 
 
@@ -151,7 +150,7 @@
 
 
 
-  <link rel="canonical" href="http://shinancao.github.io/2019/07/21/JS-Scope/"/>
+  <link rel="canonical" href="http://shinancao.github.io/2019/07/21/JS-Scope/">
 
 
 
@@ -191,7 +190,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">意林的小站</span>
         <span class="logo-line-after"><i></i></span>
@@ -221,7 +220,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
             首页
           </a>
@@ -231,7 +230,7 @@
         <li class="menu-item menu-item-categories">
           <a href="/categories/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
             分类
           </a>
@@ -241,7 +240,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
             归档
           </a>
@@ -251,7 +250,7 @@
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
             标签
           </a>
@@ -261,7 +260,7 @@
         <li class="menu-item menu-item-portfolio">
           <a href="/portfolio/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-code"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
             
             项目
           </a>
@@ -271,7 +270,7 @@
         <li class="menu-item menu-item-about">
           <a href="/about/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
             关于
           </a>
@@ -310,7 +309,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="意林">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content>
       <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
@@ -346,7 +345,7 @@
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
             
               <span class="post-meta-divider">|</span>
             
@@ -537,7 +536,7 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
             文章目录
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -548,9 +547,7 @@
 
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
-               alt="意林" />
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
           <p class="site-author-name" itemprop="name">意林</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -561,7 +558,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-count">64</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -661,7 +658,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
+        <div class="copyright">
   
   &copy; 
   <span itemprop="copyrightYear">2020</span>

@@ -6,10 +6,10 @@
 
 
 <html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -19,8 +19,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -38,7 +38,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -90,21 +90,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="watchOS," />
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
 
 
+  <meta name="keywords" content="watchOS,">
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
 
 
 
@@ -112,11 +112,13 @@
 
 
 <meta name="description" content="天气王是在watchOS 2已经发布了一段时间才开始做Apple Watch版本的，虽然这时网上已经有大量的Blog来介绍怎么开发一个Watch App，但是在准备开发时我还是迷茫了几天，不知道从何下手，不知道一个Watch App的结构要怎样搭建。直到看到了猫神的这篇文章《30分钟开发一个简单的watchOS 2 app》，才开了点窍= =！。后来想了一下，这些文章大部分介绍的都是WatchCo">
+<meta name="keywords" content="watchOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="watchOS 2 App开发前需要了解的">
 <meta property="og:url" content="http://shinancao.github.io/2016/06/01/iOS-Watch-1/index.html">
 <meta property="og:site_name" content="意林的小站">
 <meta property="og:description" content="天气王是在watchOS 2已经发布了一段时间才开始做Apple Watch版本的，虽然这时网上已经有大量的Blog来介绍怎么开发一个Watch App，但是在准备开发时我还是迷茫了几天，不知道从何下手，不知道一个Watch App的结构要怎样搭建。直到看到了猫神的这篇文章《30分钟开发一个简单的watchOS 2 app》，才开了点窍= =！。后来想了一下，这些文章大部分介绍的都是WatchCo">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://shinancao.github.io/images/architecture_compared.png">
 <meta property="og:updated_time" content="2017-07-22T10:44:42.000Z">
 <meta name="twitter:card" content="summary">
@@ -150,7 +152,7 @@
 
 
 
-  <link rel="canonical" href="http://shinancao.github.io/2016/06/01/iOS-Watch-1/"/>
+  <link rel="canonical" href="http://shinancao.github.io/2016/06/01/iOS-Watch-1/">
 
 
 
@@ -190,7 +192,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">意林的小站</span>
         <span class="logo-line-after"><i></i></span>
@@ -220,7 +222,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
             首页
           </a>
@@ -230,7 +232,7 @@
         <li class="menu-item menu-item-categories">
           <a href="/categories/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
             分类
           </a>
@@ -240,7 +242,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
             归档
           </a>
@@ -250,7 +252,7 @@
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
             标签
           </a>
@@ -260,7 +262,7 @@
         <li class="menu-item menu-item-portfolio">
           <a href="/portfolio/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-code"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
             
             项目
           </a>
@@ -270,7 +272,7 @@
         <li class="menu-item menu-item-about">
           <a href="/about/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
             关于
           </a>
@@ -309,7 +311,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="意林">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content>
       <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
@@ -345,7 +347,7 @@
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
             
               <span class="post-meta-divider">|</span>
             
@@ -539,7 +541,7 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
             文章目录
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -550,9 +552,7 @@
 
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
-               alt="意林" />
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
           <p class="site-author-name" itemprop="name">意林</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -563,7 +563,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-count">64</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -643,7 +643,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#watchOS-2与watchOS-1的区别"><span class="nav-number">1.</span> <span class="nav-text">watchOS 2与watchOS 1的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#watchOS-1与watchOS-2的App设计"><span class="nav-number">2.</span> <span class="nav-text">watchOS 1与watchOS 2的App设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#watchOS与iOS-UI布局上的不同"><span class="nav-number">3.</span> <span class="nav-text">watchOS与iOS UI布局上的不同</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#分页结构的App"><span class="nav-number">3.0.1.</span> <span class="nav-text">分页结构的App</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#与iPhone的数据同步"><span class="nav-number">4.</span> <span class="nav-text">与iPhone的数据同步</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#watchOS-2与watchOS-1的区别"><span class="nav-number">1.</span> <span class="nav-text">watchOS 2与watchOS 1的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#watchOS-1与watchOS-2的App设计"><span class="nav-number">2.</span> <span class="nav-text">watchOS 1与watchOS 2的App设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#watchOS与iOS-UI布局上的不同"><span class="nav-number">3.</span> <span class="nav-text">watchOS与iOS UI布局上的不同</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#分页结构的App"><span class="nav-number">3.0.1.</span> <span class="nav-text">分页结构的App</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#与iPhone的数据同步"><span class="nav-number">4.</span> <span class="nav-text">与iPhone的数据同步</span></a></li></div>
             
 
           </div>
@@ -663,7 +663,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
+        <div class="copyright">
   
   &copy; 
   <span itemprop="copyrightYear">2020</span>

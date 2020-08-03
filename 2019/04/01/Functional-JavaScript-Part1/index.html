@@ -6,10 +6,10 @@
 
 
 <html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -19,8 +19,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -38,7 +38,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -90,39 +90,35 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="Functional Programming,JavaScript," />
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
 
 
+  <meta name="keywords" content="Functional Programming,JavaScript,">
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1" />
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
 
 
 
 
 
 
-<meta name="description" content="《Functional Programming in JavaScript》笔记
-这本书中的示例代码可以这里找到：https://github.com/luijar/functional-programming-js。
-
-Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也会写大量的function来解决问题，但是我们的function中封装的基本都是解决问题的">
+<meta name="description" content="《Functional Programming in JavaScript》笔记 这本书中的示例代码可以这里找到：https://github.com/luijar/functional-programming-js。  Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也会写大量的function来解决问题，但是我们的function中封装的基本都是解决问题的">
+<meta name="keywords" content="Functional Programming,JavaScript">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《Functional Programming in JavaScript》Note - Part1">
 <meta property="og:url" content="http://shinancao.github.io/2019/04/01/Functional-JavaScript-Part1/index.html">
 <meta property="og:site_name" content="意林的小站">
-<meta property="og:description" content="《Functional Programming in JavaScript》笔记
-这本书中的示例代码可以这里找到：https://github.com/luijar/functional-programming-js。
-
-Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也会写大量的function来解决问题，但是我们的function中封装的基本都是解决问题的">
+<meta property="og:description" content="《Functional Programming in JavaScript》笔记 这本书中的示例代码可以这里找到：https://github.com/luijar/functional-programming-js。  Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也会写大量的function来解决问题，但是我们的function中封装的基本都是解决问题的">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://shinancao.github.io/images/decomposition.png">
 <meta property="og:image" content="http://shinancao.github.io/images/oop_vs_fp.png">
 <meta property="og:image" content="http://shinancao.github.io/images/table.png">
@@ -132,10 +128,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
 <meta property="og:updated_time" content="2020-07-06T03:29:36.861Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="《Functional Programming in JavaScript》Note - Part1">
-<meta name="twitter:description" content="《Functional Programming in JavaScript》笔记
-这本书中的示例代码可以这里找到：https://github.com/luijar/functional-programming-js。
-
-Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也会写大量的function来解决问题，但是我们的function中封装的基本都是解决问题的">
+<meta name="twitter:description" content="《Functional Programming in JavaScript》笔记 这本书中的示例代码可以这里找到：https://github.com/luijar/functional-programming-js。  Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也会写大量的function来解决问题，但是我们的function中封装的基本都是解决问题的">
 <meta name="twitter:image" content="http://shinancao.github.io/images/decomposition.png">
 
 
@@ -164,7 +157,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
 
 
 
-  <link rel="canonical" href="http://shinancao.github.io/2019/04/01/Functional-JavaScript-Part1/"/>
+  <link rel="canonical" href="http://shinancao.github.io/2019/04/01/Functional-JavaScript-Part1/">
 
 
 
@@ -204,7 +197,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">意林的小站</span>
         <span class="logo-line-after"><i></i></span>
@@ -234,7 +227,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
             首页
           </a>
@@ -244,7 +237,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
         <li class="menu-item menu-item-categories">
           <a href="/categories/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
             分类
           </a>
@@ -254,7 +247,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
             归档
           </a>
@@ -264,7 +257,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
             标签
           </a>
@@ -274,7 +267,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
         <li class="menu-item menu-item-portfolio">
           <a href="/portfolio/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-code"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
             
             项目
           </a>
@@ -284,7 +277,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
         <li class="menu-item menu-item-about">
           <a href="/about/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
             关于
           </a>
@@ -323,7 +316,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="意林">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content>
       <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
@@ -359,7 +352,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
             
               <span class="post-meta-divider">|</span>
             
@@ -706,7 +699,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
             文章目录
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -717,9 +710,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
 
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
-               alt="意林" />
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
           <p class="site-author-name" itemprop="name">意林</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -730,7 +721,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-count">64</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -830,7 +821,7 @@ Part 1 —— 入门Why Functional?1)什么是函数式编程？以往我们也�
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
+        <div class="copyright">
   
   &copy; 
   <span itemprop="copyrightYear">2020</span>
