@@ -120,7 +120,7 @@
 <meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的Vue.js源码学习 —— VNode/createElement和Vue.js源码学习 —— createComponent，有了前面这些铺垫再来看今天这篇会轻松很多。 今天这篇文章要看的代码主">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://shinancao.github.io/images/vue-patch-1.jpg">
-<meta property="og:updated_time" content="2020-08-03T04:52:27.316Z">
+<meta property="og:updated_time" content="2020-08-03T13:28:43.162Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue.js源码学习 —— patch">
 <meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的Vue.js源码学习 —— VNode/createElement和Vue.js源码学习 —— createComponent，有了前面这些铺垫再来看今天这篇会轻松很多。 今天这篇文章要看的代码主">
@@ -406,11 +406,10 @@
       
         <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
 <p>如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/12/Vue-Source-Code-03/" target="_blank" rel="noopener">Vue.js源码学习 —— VNode/createElement</a>和<a href="http://shinancao.cn/2020/01/15/Vue-Source-Code-04/" target="_blank" rel="noopener">Vue.js源码学习 —— createComponent</a>，有了前面这些铺垫再来看今天这篇会轻松很多。</p>
-<p>今天这篇文章要看的代码主要位于文件<code>core/vdom/patch.js</code>中。</p>
+<p>今天这篇文章要看的代码主要位于文件<code>core/vdom/patch.js</code>中。主要会先看一下<code>patch</code>执行的整个流程，以及从<code>vnode</code>到<code>node</code>的准换过程。</p>
 <blockquote>
 <p>我没有在文章中大量的贴源码，一定要将源码clone到本地哦。</p>
 </blockquote>
-<p>今天这篇文章主要会先看一下<code>patch</code>执行的整个流程，以及从<code>vnode</code>到<code>node</code>的创建过程。</p>
 <h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><h3 id="patch"><a href="#patch" class="headerlink" title="patch"></a>patch</h3><p><code>patch</code>也就是打补丁，是将虚拟DOM节点转为真实DOM节点的过程。</p>
 <h3 id="directives"><a href="#directives" class="headerlink" title="directives"></a>directives</h3><p><code>directives</code>也即指令，通过使用指令用户获得了能够直接操作真实DOM的能力。</p>
 <p>如果你细心观察项目中的文件，可能已经发现了有两处出现了<code>directives</code>，一处是<code>core/vdom/modules/directives.js</code>，一处是<code>platforms/web/runtime/directives</code>（当然，<code>server</code>和<code>weex</code>也有相应的<code>directives</code>文件夹），这两处的用途是什么呢？</p>
@@ -440,7 +439,7 @@
 <h2 id="patch-1"><a href="#patch-1" class="headerlink" title="patch"></a>patch</h2><p><code>patch.js</code>这个文件中的代码没有用<code>flow</code>进行类型注解，作者在文件开头给了注释说明：</p>
 <blockquote>
 <p>Not type-checking this because this file is perf-critical and the cost of making flow understand it is not worth it.</p>
-<p>没有做类型检车，因为这个文件对性能至关重要，让<code>flow</code>来理解它带来的成本是不值得的。</p>
+<p>没有做类型检查，因为这个文件对性能至关重要，让<code>flow</code>来理解它带来的成本是不值得的。</p>
 </blockquote>
 <p><code>patch</code>函数的参数和返回如下：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">patch</span> (<span class="params">oldVnode, vnode, hydrating, removeOnly</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">return</span> vnode.elm</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -469,9 +468,9 @@
 </li>
 <li><p>如果<code>oldVnode</code>和<code>vnode</code>都存在，这时又分两种情况，两个节点是否是相同的节点：</p>
 <ul>
-<li><p>如果是相同的节点，则调用<code>patchVnode</code>函数决定要如何更新节点。</p>
+<li><p>如果是相同类型的节点，则调用<code>patchVnode</code>函数决定要如何更新节点。</p>
 </li>
-<li><p>如果不是相同的节点，则调用<code>createElm</code>函数创建新的DOM元素，然后更新父节点中关联的DOM元素为刚创建的DOM元素，最后再将旧节点移除掉。</p>
+<li><p>如果不是相同类型的节点，则调用<code>createElm</code>函数创建新的DOM元素，然后更新父节点中关联的DOM元素为刚创建的DOM元素，最后再将旧节点移除掉。</p>
 </li>
 </ul>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> isRealElement = isDef(oldVnode.nodeType)</span><br></pre></td></tr></table></figure>
@@ -496,11 +495,16 @@
 <p>除此之外，在<a href="http://shinancao.cn/2020/01/15/Vue-Source-Code-04/" target="_blank" rel="noopener">Vue.js源码学习 —— createComponent</a>这篇文章的最后我们说<code>componentVNodeHooks</code>中的钩子函数会在给组件的<code>vnode</code>打补丁（<code>patch</code>）期间会被调用。这些钩子函数是放在<code>vnode.data.hook</code>中的，主要包括：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// inline hooks to be invoked on component VNodes during patch</span></span><br><span class="line"><span class="keyword">const</span> componentVNodeHooks = &#123;</span><br><span class="line">  init (vnode: VNodeWithData, <span class="attr">hydrating</span>: boolean): ?boolean &#123;<span class="comment">/* ... */</span>&#125;,</span><br><span class="line">  prepatch (oldVnode: MountedComponentVNode, <span class="attr">vnode</span>: MountedComponentVNode) &#123;<span class="comment">/* ... */</span>&#125;,</span><br><span class="line">  insert (vnode: MountedComponentVNode) &#123;<span class="comment">/* ... */</span>&#125;,</span><br><span class="line">  destroy (vnode: MountedComponentVNode) &#123;<span class="comment">/* ... */</span>&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>以上所有的钩子函数都在<code>invokeCreateHooks</code>、<code>invokeInsertHook</code> 、<code>invokeDestroyHook</code>、<code>removeAndInvokeRemoveHook</code>等函数中对应地得到执行。当然，有的钩子函数可能不需要抽出一个单独的函数，比如<code>prepatch</code>，是在<code>patchVnode</code>函数中直接被调用的。</p>
+<p><strong>这里就可以为VNodeData中<code>attrs</code>、<code>class</code>等等字段的用途找到答案了</strong>，比如在触发<code>create</code>钩子时<code>updateAttrs(oldVnode, vnode)</code>会被执行，这个函数位于<code>platforms/web/runtime/modules/attrs.js</code>中，打开改文件后可以看到就是从<code>vnode.data.attrs</code>取的DOM元素的<code>attribute</code>的<code>key</code>和<code>value</code>，然后再调用<code>el.setAttribute(key, value)</code>等方法去修改DOM元素的<code>attribute</code>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">updateAttrs</span> (<span class="params">oldVnode: VNodeWithData, vnode: VNodeWithData</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">const</span> elm = vnode.elm</span><br><span class="line">  <span class="keyword">const</span> oldAttrs = oldVnode.data.attrs || &#123;&#125;</span><br><span class="line">  <span class="keyword">let</span> attrs: any = vnode.data.attrs || &#123;&#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">for</span> (key <span class="keyword">in</span> attrs) &#123;</span><br><span class="line">    cur = attrs[key]</span><br><span class="line">    old = oldAttrs[key]</span><br><span class="line">    <span class="keyword">if</span> (old !== cur) &#123;</span><br><span class="line">      setAttr(elm, key, cur)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="sameVnode"><a href="#sameVnode" class="headerlink" title="sameVnode"></a>sameVnode</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sameVnode</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    a.key === b.key &amp;&amp; (</span><br><span class="line">      (</span><br><span class="line">        a.tag === b.tag &amp;&amp;</span><br><span class="line">        a.isComment === b.isComment &amp;&amp;</span><br><span class="line">        isDef(a.data) === isDef(b.data) &amp;&amp;</span><br><span class="line">        sameInputType(a, b)</span><br><span class="line">      ) || (</span><br><span class="line">        isTrue(a.isAsyncPlaceholder) &amp;&amp;</span><br><span class="line">        a.asyncFactory === b.asyncFactory &amp;&amp;</span><br><span class="line">        isUndef(b.asyncFactory.error)</span><br><span class="line">      )</span><br><span class="line">    )</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里可以知道判断两个节点的条件，首先两个节点的<code>key</code>必须相同，否则会直接返回<code>false</code>。然后分普通组件和异步组件两种情况：</p>
+<p>可以看到判断两个节点是否是相同类型的节点的条件：</p>
 <ul>
-<li>普通组件：<code>tag</code>相同，并且<code>isComment</code>值相同，有无<code>data</code>项相同，如果是<code>input</code>元素，<code>input</code>的类型也要相同。</li>
-<li>异步组件：<code>a</code>节点的<code>isAsyncPlaceholder</code>属性为<code>true</code>，两个节点的<code>asyncFactory</code>指向同一个函数，并且<code>b</code>节点没有发生<code>error</code>。</li>
+<li><p>两个节点的<code>key</code>必须相同，否则会直接返回<code>false</code></p>
+</li>
+<li><p>如果是普通组件：<code>tag</code>相同，并且<code>isComment</code>值相同，有无<code>data</code>项相同，如果是<code>input</code>元素，<code>input</code>的类型也要相同。</p>
+</li>
+<li>如果是异步组件：<code>a</code>节点的<code>isAsyncPlaceholder</code>属性为<code>true</code>，两个节点的<code>asyncFactory</code>指向同一个函数，并且<code>b</code>节点没有发生<code>error</code>。</li>
 </ul>
 <h3 id="createElm"><a href="#createElm" class="headerlink" title="createElm"></a>createElm</h3><p><code>createElm</code>函数的大致流程如下：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createElm</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  vnode,</span></span></span><br><span class="line"><span class="function"><span class="params">  insertedVnodeQueue,</span></span></span><br><span class="line"><span class="function"><span class="params">  parentElm,</span></span></span><br><span class="line"><span class="function"><span class="params">  refElm,</span></span></span><br><span class="line"><span class="function"><span class="params">  nested,</span></span></span><br><span class="line"><span class="function"><span class="params">  ownerArray,</span></span></span><br><span class="line"><span class="function"><span class="params">  index</span></span></span><br><span class="line"><span class="function"><span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">if</span> (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> data = vnode.data</span><br><span class="line">  <span class="keyword">const</span> children = vnode.children</span><br><span class="line">  <span class="keyword">const</span> tag = vnode.tag</span><br><span class="line">  <span class="keyword">if</span> (isDef(tag)) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    vnode.elm = vnode.ns</span><br><span class="line">      ? nodeOps.createElementNS(vnode.ns, tag)</span><br><span class="line">      : nodeOps.createElement(tag, vnode)</span><br><span class="line">    setScope(vnode)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (__WEEX__) &#123;</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      createChildren(vnode, children, insertedVnodeQueue)</span><br><span class="line">      <span class="keyword">if</span> (isDef(data)) &#123;</span><br><span class="line">        invokeCreateHooks(vnode, insertedVnodeQueue)</span><br><span class="line">      &#125;</span><br><span class="line">      insert(parentElm, vnode.elm, refElm)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isTrue(vnode.isComment)) &#123;</span><br><span class="line">    vnode.elm = nodeOps.createComment(vnode.text)</span><br><span class="line">    insert(parentElm, vnode.elm, refElm)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    vnode.elm = nodeOps.createTextNode(vnode.text)</span><br><span class="line">    insert(parentElm, vnode.elm, refElm)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -607,6 +611,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2020/01/22/Vue-Source-Code-07/" rel="prev" title="Vue.js源码学习 —— diff算法">
+                Vue.js源码学习 —— diff算法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -678,7 +686,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">64</span>
+                <span class="site-state-item-count">65</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>

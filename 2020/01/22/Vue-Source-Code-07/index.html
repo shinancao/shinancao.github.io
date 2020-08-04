@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="JavaScript,Vue,源码分析,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 本篇文章是接着上一篇文章Vue.js源码学习 —— patch的，中。上一篇文章分析了patch执行的整个流程，以及从vnode到node的准换的过程。这篇文章将继续分析如果oldVnode和vnode是相同类型的元素时将如何更新DOM树。 今天这篇文章要看的代码主要位">
+<meta name="keywords" content="JavaScript,Vue,源码分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue.js源码学习 —— diff算法">
+<meta property="og:url" content="http://shinancao.github.io/2020/01/22/Vue-Source-Code-07/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 本篇文章是接着上一篇文章Vue.js源码学习 —— patch的，中。上一篇文章分析了patch执行的整个流程，以及从vnode到node的准换的过程。这篇文章将继续分析如果oldVnode和vnode是相同类型的元素时将如何更新DOM树。 今天这篇文章要看的代码主要位">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-1.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-2.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-3.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-4.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-5.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-6.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-7.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-8.jpg">
+<meta property="og:updated_time" content="2020-08-04T10:42:14.487Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue.js源码学习 —— diff算法">
+<meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 本篇文章是接着上一篇文章Vue.js源码学习 —— patch的，中。上一篇文章分析了patch执行的整个流程，以及从vnode到node的准换的过程。这篇文章将继续分析如果oldVnode和vnode是相同类型的元素时将如何更新DOM树。 今天这篇文章要看的代码主要位">
+<meta name="twitter:image" content="http://shinancao.github.io/images/vue-patch-diff-1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2020/01/22/Vue-Source-Code-07/">
+
+
+
+
+
+  <title>Vue.js源码学习 —— diff算法 | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-portfolio">
+          <a href="/portfolio/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
+            
+            项目
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/01/22/Vue-Source-Code-07/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Vue.js源码学习 —— diff算法</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-22T16:40:32+08:00">
+                2020-01-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
+<p>本篇文章是接着上一篇文章<a href="http://shinancao.cn/2020/01/20/Vue-Source-Code-06/" target="_blank" rel="noopener">Vue.js源码学习 —— patch</a>的，中。上一篇文章分析了<code>patch</code>执行的整个流程，以及从<code>vnode</code>到<code>node</code>的准换的过程。这篇文章将继续分析如果<code>oldVnode</code>和<code>vnode</code>是相同类型的元素时将如何更新DOM树。</p>
+<p>今天这篇文章要看的代码主要位于文件<code>core/vdom/patch.js</code>中。</p>
+<blockquote>
+<p>我没有在文章中大量的贴源码，一定要将源码clone到本地哦。</p>
+</blockquote>
+<h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><p>在一些面经中总会遇到这样一个问题：Vue 或 React 是怎样使得在<code>patch</code>的过程中<code>diff</code>的时间复杂度从<code>O(n^3)</code>优化到<code>O(n)</code>的呢？</p>
+<p><code>React</code>在其<a href="https://zh-hans.reactjs.org/docs/reconciliation.html" target="_blank" rel="noopener">官方文档</a>中对<code>diff</code>算法有详细地说明，建议看一下。因为 Vue 的做法和 React 差不多，先看这个文档的说明，再来看代码理解起来会轻松一些。在文档中有这样一段说明：</p>
+<blockquote>
+<p>这个算法问题有一些通用的解决方案，即生成将一棵树转换成另一棵树的最小操作数。 然而，即使在<a href="https://grfia.dlsi.ua.es/ml/algorithms/references/editsurvey_bille.pdf" target="_blank" rel="noopener">最前沿的算法</a>中，该算法的复杂程度为 O(n^3)，其中 n 是树中元素的数量。</p>
+<p>如果在 React 中使用了该算法，那么展示 1000 个元素所需要执行的计算量将在十亿的量级范围。这个开销实在是太过高昂。于是 React 在以下两个假设的基础之上提出了一套 O(n) 的启发式算法：</p>
+<ol>
+<li>两个不同类型的元素会产生出不同的树；</li>
+<li>开发者可以通过 key prop 来暗示哪些子元素在不同的渲染下能保持稳定；</li>
+</ol>
+</blockquote>
+<p>在上一篇文章中分析<code>patch</code>函数的执行流程时，已经可以看到 Vue 对第1点的实现，如果是两个不同类型的节点，会调用<code>createElm</code>函数创建新的DOM元素，再调用<code>removeVnodes</code>函数将旧的节点移除掉。</p>
+<p>今天再来看一下两个节点的类型相同时Vue会如何来处理。</p>
+<a id="more"></a>
+<h2 id="patchVnode"><a href="#patchVnode" class="headerlink" title="patchVnode"></a>patchVnode</h2><p>抽出<code>patchVnode</code>函数的关键路径，我们看一下它的执行流程：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">patchVnode</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  oldVnode,</span></span></span><br><span class="line"><span class="function"><span class="params">  vnode,</span></span></span><br><span class="line"><span class="function"><span class="params">  insertedVnodeQueue,</span></span></span><br><span class="line"><span class="function"><span class="params">  ownerArray,</span></span></span><br><span class="line"><span class="function"><span class="params">  index,</span></span></span><br><span class="line"><span class="function"><span class="params">  removeOnly</span></span></span><br><span class="line"><span class="function"><span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (oldVnode === vnode) &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> elm = vnode.elm = oldVnode.elm</span><br><span class="line"></span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// reuse element for static trees.</span></span><br><span class="line">  <span class="comment">// note we only do this if the vnode is cloned -</span></span><br><span class="line">  <span class="comment">// if the new node is not cloned it means the render functions have been</span></span><br><span class="line">  <span class="comment">// reset by the hot-reload-api and we need to do a proper re-render.</span></span><br><span class="line">  <span class="keyword">if</span> (isTrue(vnode.isStatic) &amp;&amp;</span><br><span class="line">    isTrue(oldVnode.isStatic) &amp;&amp;</span><br><span class="line">    vnode.key === oldVnode.key &amp;&amp;</span><br><span class="line">    (isTrue(vnode.isCloned) || isTrue(vnode.isOnce))</span><br><span class="line">  ) &#123;</span><br><span class="line">    vnode.componentInstance = oldVnode.componentInstance</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...prepatch钩子</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> oldCh = oldVnode.children</span><br><span class="line">  <span class="keyword">const</span> ch = vnode.children</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...update钩子</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (isUndef(vnode.text)) &#123;</span><br><span class="line">    <span class="keyword">if</span> (isDef(oldCh) &amp;&amp; isDef(ch)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isDef(ch)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">        checkDuplicateKeys(ch)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (isDef(oldVnode.text)) nodeOps.setTextContent(elm, <span class="string">''</span>)</span><br><span class="line">      addVnodes(elm, <span class="literal">null</span>, ch, <span class="number">0</span>, ch.length - <span class="number">1</span>, insertedVnodeQueue)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isDef(oldCh)) &#123;</span><br><span class="line">      removeVnodes(oldCh, <span class="number">0</span>, oldCh.length - <span class="number">1</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isDef(oldVnode.text)) &#123;</span><br><span class="line">      nodeOps.setTextContent(elm, <span class="string">''</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (oldVnode.text !== vnode.text) &#123;</span><br><span class="line">    nodeOps.setTextContent(elm, vnode.text)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ... postpatch钩子</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于 <em>树</em> 这种数据结构一般都是用递归来遍历整个树，<code>patchVnode</code>函数也是递归来遍历的，因为在<code>updateChildren</code>函数中又会再调用<code>patchVnode</code>函数。</p>
+<p><code>patchVnode</code>函数中接收的两个参数<code>oldVnode</code>和<code>vnode</code>是两个相同类型的节点，处理时会先更新<code>vnode</code>，再更新<code>vnode</code>的子节点，流程如下：</p>
+<ul>
+<li><p>如果<code>oldVnode</code>与<code>vnode</code>都指向了相同的节点，那两个节点完全相同的，直接返回。</p>
+</li>
+<li><p>更新<code>vnode.elm</code>，直接复用<code>oldVnode.elm</code>，不会再重新创建DOM元素。</p>
+</li>
+<li><p>如果是只渲染一次的元素或组件，直接复用原来组件的实例然后退出函数，不会再创建一次组件的实例。这里其实是对<code>v-once</code>的实现。在Vue官方文档中对<code>v-once</code>的描述如下;</p>
+<blockquote>
+<p>只渲染元素和组件一次。随后的重新渲染，元素/组件及其所有的子节点将被视为静态内容并跳过。这可以用于优化更新性能。</p>
+</blockquote>
+</li>
+<li><p>触发<code>prepatch</code>钩子函数，直接复用原来的组件实例，只去更新<code>props</code>、<code>listeners</code>等。内部的<code>prepatch</code>函数的实现如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> componentVNodeHooks = &#123;</span><br><span class="line">    prepatch (oldVnode: MountedComponentVNode, <span class="attr">vnode</span>: MountedComponentVNode) &#123;</span><br><span class="line">      <span class="keyword">const</span> options = vnode.componentOptions</span><br><span class="line">      <span class="keyword">const</span> child = vnode.componentInstance = oldVnode.componentInstance</span><br><span class="line">      updateChildComponent(</span><br><span class="line">        child,</span><br><span class="line">        options.propsData, <span class="comment">// updated props</span></span><br><span class="line">        options.listeners, <span class="comment">// updated listeners</span></span><br><span class="line">        vnode, <span class="comment">// new parent vnode</span></span><br><span class="line">        options.children <span class="comment">// new children</span></span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>触发<code>update</code>钩子，更新DOM元素的属性，还会更新<code>refs</code>和<code>directives</code>，下面这些函数都会被执行：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ƒ updateAttrs(oldVnode, vnode),</span><br><span class="line">ƒ updateClass(oldVnode, vnode),</span><br><span class="line">ƒ updateDOMListeners(oldVnode, vnode),</span><br><span class="line">ƒ updateDOMProps(oldVnode, vnode),</span><br><span class="line">ƒ updateStyle(oldVnode, vnode),</span><br><span class="line">ƒ update(oldVnode, vnode), <span class="comment">// refs</span></span><br><span class="line">ƒ updateDirectives(oldVnode, vnode)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果<code>vnode.text</code>有值，并且跟<code>oldVnode.text</code>不同，会去更新元素的<code>textContent</code>属性为<code>vnode.text</code>。</p>
+</li>
+<li><p>如果<code>vnode.text</code>没有值，这时要看两个节点的子节点了：</p>
+<ul>
+<li><p>如果两个节点都有子节点，调用<code>updateChildren</code>函数更新子节点。</p>
+</li>
+<li><p>如果只有<code>vnode</code>有子节点，先将原来元素的<code>textContent</code>置为空，然后创建新的子元素添加到DOM中。</p>
+</li>
+<li><p>如果只有<code>oldVnode</code>有子节点，那就将它的所有子元素从DOM中移除掉。</p>
+</li>
+<li><p>如果两个节点都没有子节点，将原来元素的<code>textContent</code>置为空。</p>
+</li>
+</ul>
+</li>
+<li><p>触发<code>postpatch</code>钩子，通知当前节点<code>patch</code>完成。</p>
+</li>
+</ul>
+<p>可以看出<code>patchVnode</code>函数中对相同类型元素的处理与 React 的文档中描述的基本是一致的。</p>
+<h2 id="updateChildren"><a href="#updateChildren" class="headerlink" title="updateChildren"></a>updateChildren</h2><p>抽出了<code>updateChildren</code>函数的主要流程如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">updateChildren</span> (<span class="params">parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> oldStartIdx = <span class="number">0</span></span><br><span class="line">  <span class="keyword">let</span> newStartIdx = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> oldEndIdx = oldCh.length - <span class="number">1</span></span><br><span class="line">  <span class="keyword">let</span> newEndIdx = newCh.length - <span class="number">1</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> oldStartVnode = oldCh[<span class="number">0</span>]</span><br><span class="line">  <span class="keyword">let</span> oldEndVnode = oldCh[oldEndIdx]</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">let</span> newStartVnode = newCh[<span class="number">0</span>]</span><br><span class="line">  <span class="keyword">let</span> newEndVnode = newCh[newEndIdx]</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (oldStartIdx &lt;= oldEndIdx &amp;&amp; newStartIdx &lt;= newEndIdx) &#123;</span><br><span class="line">    <span class="keyword">if</span> (isUndef(oldStartVnode)) &#123;</span><br><span class="line">      oldStartVnode = oldCh[++oldStartIdx] <span class="comment">// Vnode has been moved left</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isUndef(oldEndVnode)) &#123;</span><br><span class="line">      oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sameVnode(oldStartVnode, newStartVnode)) &#123;</span><br><span class="line">      patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)</span><br><span class="line">      <span class="comment">// oldStartVnode.elm 没有移动</span></span><br><span class="line">      oldStartVnode = oldCh[++oldStartIdx]</span><br><span class="line">      newStartVnode = newCh[++newStartIdx]</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sameVnode(oldEndVnode, newEndVnode)) &#123;</span><br><span class="line">      <span class="comment">// 更新节点</span></span><br><span class="line">      patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx)</span><br><span class="line">      <span class="comment">// oldEndVnode.elm 没有移动</span></span><br><span class="line">      oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">      newEndVnode = newCh[--newEndIdx]</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sameVnode(oldStartVnode, newEndVnode)) &#123; <span class="comment">// Vnode moved right</span></span><br><span class="line">      patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx)</span><br><span class="line">      <span class="comment">// oldStartVnode.elm 向右移动了</span></span><br><span class="line">      canMove &amp;&amp; nodeOps.insertBefore(parentElm, oldStartVnode.elm, nodeOps.nextSibling(oldEndVnode.elm))</span><br><span class="line">      oldStartVnode = oldCh[++oldStartIdx]</span><br><span class="line">      newEndVnode = newCh[--newEndIdx]</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sameVnode(oldEndVnode, newStartVnode)) &#123; <span class="comment">// Vnode moved left</span></span><br><span class="line">      patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)</span><br><span class="line">      <span class="comment">// oldEndVnode.elm 向左移动了</span></span><br><span class="line">      canMove &amp;&amp; nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm)</span><br><span class="line">      oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">      newStartVnode = newCh[++newStartIdx]</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// ...特殊情况的处理</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (oldStartIdx &gt; oldEndIdx) &#123;</span><br><span class="line">    <span class="comment">// 说明增加了元素</span></span><br><span class="line">    refElm = isUndef(newCh[newEndIdx + <span class="number">1</span>]) ? <span class="literal">null</span> : newCh[newEndIdx + <span class="number">1</span>].elm</span><br><span class="line">    addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue)</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (newStartIdx &gt; newEndIdx) &#123;</span><br><span class="line">    <span class="comment">// 说明减少了元素</span></span><br><span class="line">    removeVnodes(oldCh, oldStartIdx, oldEndIdx)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>updateChildren</code>函数中设置了4个指针<code>oldStartIdx</code>、<code>newStartIdx</code>、<code>oldEndIdx</code>、<code>newEndIdx</code>分别从数组<code>oldCh</code>和<code>newCh</code>的两端开始向中间扫描，在循环过程中会进行如下处理：</p>
+<ul>
+<li><p><code>oldStartVnode</code>没有值，<code>oldStartIdx</code>指针向右移。</p>
+</li>
+<li><p><code>oldEndVnode</code>没有值，<code>oldEndIdx</code>指针向左移。</p>
+</li>
+<li><p><code>oldStartVnode</code>和<code>newStartVnode</code>是相同类型的元素，调用<code>patchVnode</code>更新节点，将<code>oldStartIdx</code>和<code>newStartIdx</code>指针同时向右移。</p>
+</li>
+<li><p><code>oldEndVnode</code>和<code>newEndVnode</code>是相同类型的元素，调用<code>patchVnode</code>更新节点，将<code>oldEndIdx</code>和<code>newEndIdx</code>指针同时向左移。</p>
+</li>
+<li><p><code>oldStartVnode</code>和<code>newEndVnode</code>是相同类型的元素，调用<code>patchVnode</code>更新节点，在DOM中将<code>oldStartVnode.elm</code>移动到<code>oldEndVnode.elm</code>的后面，最后将<code>oldStartIdx</code>指针向右移，将<code>newEndIdx</code>指针向左移。</p>
+</li>
+<li><p><code>oldEndVnode</code>和<code>newStartVnode</code>是相同类型的元素，调用<code>patchVnode</code>更新节点，在DOM中将<code>oldEndVnode.elm</code>移动到<code>oldStartVnode.elm</code>的前面，最后将<code>oldEndIdx</code>指针左移，将<code>newStartIdx</code>指针右移。</p>
+</li>
+</ul>
+<p>在循环结束后的处理如下：</p>
+<ul>
+<li><p>先判断如果<code>oldStartIdx</code>超过了<code>oldEndIdx</code>说明增加了元素，调用<code>addVnodes</code>函数在DOM中添加新元素。</p>
+<p>这其中隐含了一种情况就是此时<code>newStartIdx</code>也大于<code>newEndIdx</code>，但因为在<code>addVnodes</code>函数中做了判断，所以此时什么也不会执行。这时其实就是<code>oldCh</code>和<code>newCh</code>中的元素个数相同的时候。</p>
+</li>
+<li><p>上一条不成立，再判断如果<code>newStartIdx</code>超过了<code>newEndIdx</code>说明删除了元素，调用<code>removeVnodes</code>函数移除从DOM中移除元素。</p>
+</li>
+</ul>
+<p>以上的处理流程就覆盖了<code>oldCh</code>和<code>newCh</code>对比会发生的所有改动：</p>
+<ul>
+<li>移动了元素</li>
+<li>增加了元素</li>
+<li>删除了元素</li>
+</ul>
+<p>我们还额外注意到了两点：</p>
+<p><strong>1. 在有节点类型相同时，就会又调用<code>patchVnode</code>更新节点。</strong><br><strong>2. 在移动时，移动的只是虚拟节点关联的真实的DOM元素，而虚拟节点本身并没有被移动。</strong></p>
+<p>下面咱们画图举例子直观地看一下循环执行的过程。</p>
+<blockquote>
+<p>假如现在有 A、B、C 三个节点，A、B、C 分别是每个节点的<code>key</code>，改动之后节点列表的顺序变成了 B、A、C 。</p>
+</blockquote>
+<p><img src="/images/vue-patch-diff-1.jpg" width="511"><br><img src="/images/vue-patch-diff-2.jpg" width="511"></p>
+<p>这次移动了元素，A、B 节点对应的DOM元素发生了交换，但是 A、B节点本身的位置没变，所以<code>oldCh</code>中的还是 A、B、C。</p>
+<p><img src="/images/vue-patch-diff-3.jpg" width="511"><br><img src="/images/vue-patch-diff-4.jpg" width="511"></p>
+<p>循环结束了，因为<code>oldStartIdx</code>超过了<code>oldEndIdx</code>，<code>newStartIdx</code>超过了<code>newEndIdx</code>，所以循环结束后不会执行其他操作。</p>
+<blockquote>
+<p>假设现在有 A、B、C 三个节点，A、B、C 分别是每个节点的<code>key</code>，改动之后节点列表的顺序变成了 A、B、D、C 。</p>
+</blockquote>
+<p><img src="/images/vue-patch-diff-5.jpg" width="511"><br><img src="/images/vue-patch-diff-6.jpg" width="511"><br><img src="/images/vue-patch-diff-7.jpg" width="511"><br><img src="/images/vue-patch-diff-8.jpg" width="511"></p>
+<p>最后<code>oldStartIdx</code>超过了<code>oldEndIdx</code>，调用<code>addVnodes</code>函数将<code>D</code>节点关联的元素添加到DOM中。</p>
+<p>上面画图举了单纯移动元素和增加元素的情况，你也可以自己画图看一下删除元素的循环过程。我将单纯移动元素的情况用代码实现了一下，你也可以把它放在浏览器中打断点调试一下。代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> child = &#123;</span><br><span class="line">  name: <span class="string">'child'</span>,</span><br><span class="line">  props: &#123;</span><br><span class="line">    items: &#123;</span><br><span class="line">      type: <span class="built_in">Array</span>,</span><br><span class="line">      <span class="keyword">default</span> () &#123; <span class="keyword">return</span> [] &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">return</span> h(<span class="string">'ul'</span>, <span class="keyword">this</span>.items.map(<span class="function"><span class="params">item</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> h(<span class="string">'li'</span>, &#123; <span class="attr">key</span>: item.id &#125;, <span class="string">`<span class="subst">$&#123;item.id&#125;</span> : <span class="subst">$&#123; item.name &#125;</span> is a <span class="subst">$&#123; item.type &#125;</span>`</span>)</span><br><span class="line">    &#125;))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  data: &#123; </span><br><span class="line">    items: [</span><br><span class="line">      &#123; <span class="attr">name</span>: <span class="string">'alma'</span>, <span class="attr">type</span>: <span class="string">'cat'</span>, <span class="attr">id</span>: <span class="string">'A'</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">name</span>: <span class="string">'ring'</span>, <span class="attr">type</span>: <span class="string">'cat'</span>, <span class="attr">id</span>: <span class="string">'B'</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">name</span>: <span class="string">'winston'</span>, <span class="attr">type</span>: <span class="string">'dog'</span>, <span class="attr">id</span>: <span class="string">'C'</span> &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">let</span> children = [</span><br><span class="line">      h(child, &#123; <span class="attr">props</span>: &#123; <span class="attr">items</span>: <span class="keyword">this</span>.items &#125; &#125;), <span class="comment">// child 组件</span></span><br><span class="line">      h(<span class="string">'button'</span>, &#123;</span><br><span class="line">        on: &#123;</span><br><span class="line">          click: <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="comment">// 移动了元素</span></span><br><span class="line">            <span class="keyword">this</span>.items = [</span><br><span class="line">              &#123; <span class="attr">name</span>: <span class="string">'ring'</span>, <span class="attr">type</span>: <span class="string">'cat'</span>, <span class="attr">id</span>: <span class="string">'B'</span> &#125;,</span><br><span class="line">              &#123; <span class="attr">name</span>: <span class="string">'alma'</span>, <span class="attr">type</span>: <span class="string">'cat'</span>, <span class="attr">id</span>: <span class="string">'A'</span> &#125;,</span><br><span class="line">              &#123; <span class="attr">name</span>: <span class="string">'winston'</span>, <span class="attr">type</span>: <span class="string">'dog'</span>, <span class="attr">id</span>: <span class="string">'C'</span> &#125;</span><br><span class="line">            ]</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, <span class="string">'Click Me'</span>)</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> h(<span class="string">'p'</span>, children)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h2><p>现在我们把相同类型的两个节点的更新情况也分析完了，再结合上一篇中讲到的不同类型节点的处理，可以发现，<code>diff</code>算法只会在同层级进行比较，这样更新一个<code>VNode</code>树，树中的每个节点最多只会被访问一次，所以现在<code>diff</code>的时间复杂度是<code>O(n)</code>。</p>
+<h2 id="列表中的节点为什么需要key"><a href="#列表中的节点为什么需要key" class="headerlink" title="列表中的节点为什么需要key"></a>列表中的节点为什么需要key</h2><p>再来复习一下<code>sameVnode</code>函数的实现：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sameVnode</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    a.key === b.key &amp;&amp; (</span><br><span class="line">      (</span><br><span class="line">        a.tag === b.tag &amp;&amp;</span><br><span class="line">        a.isComment === b.isComment &amp;&amp;</span><br><span class="line">        isDef(a.data) === isDef(b.data) &amp;&amp;</span><br><span class="line">        sameInputType(a, b)</span><br><span class="line">      ) || (</span><br><span class="line">        isTrue(a.isAsyncPlaceholder) &amp;&amp;</span><br><span class="line">        a.asyncFactory === b.asyncFactory &amp;&amp;</span><br><span class="line">        isUndef(b.asyncFactory.error)</span><br><span class="line">      )</span><br><span class="line">    )</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一般情况如果没有提供<code>key</code>，两个<code>tag</code>相同的节点就会认为是相同类型的节点了。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--旧的节点--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>A : alma is a cat<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>B : ring is a cat<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>C : winston is a dog<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--新的节点--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>C : winston is a dog<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>A : alma is a cat<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>B : ring is a cat<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>下面的<code>li</code>节点都会被认为是相同类型的节点，这样每趟循环都会走进下面这段代码，每次调用<code>patchVnode</code>函数都会触发DOM操作，因为要修改<code>li</code>的<code>textContent</code>属性值。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (oldStartIdx &lt;= oldEndIdx &amp;&amp; newStartIdx &lt;= newEndIdx) &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (sameVnode(oldStartVnode, newStartVnode)) &#123;</span><br><span class="line">    patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)</span><br><span class="line">    oldStartVnode = oldCh[++oldStartIdx]</span><br><span class="line">    newStartVnode = newCh[++newStartIdx]</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果给<code>li</code>节点提供一个<code>key</code>，只会触发一次DOM操作，将 C 移动到 A 前面。</p>
+<p><strong>所以给列表中的节点提供<code>key</code>，可以让<code>diff</code>算法明确知道哪些节点是真正的有改动的，哪些是没有变的，进而减少不必要的DOM操作，提高性能。</strong></p>
+<p>如果展示的列表数据有唯一ID，可以用这个ID作为<code>key</code>。有时也会使用数组下标作为<code>key</code>，在数据不会有重新排序的操作的时，这样也是没问题的。如果数组会重新排序，以下标为<code>key</code>时，那在排序后<code>diff</code>算法有可能会将原本不同的元素当成是相同的元素，增加DOM操作，降低性能。而且如果列表是像输入框这样不受控的组件，再以下标为<code>key</code>，经过数组重新排序后，组件中的内容可能会互相篡改。</p>
+<p><code>patch</code>和<code>diff</code>算法到此就了解的差不多了，整个虚拟DOM我们也几乎看完了。下一篇文章说一下<code>Vue</code>实例的挂载过程，把我们之前看过的内容往起串联一下。</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2020/01/22/Vue-Source-Code-07/" target="_blank" rel="noopener">http://shinancao.cn/2020/01/22/Vue-Source-Code-07/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="noopener">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/20/Vue-Source-Code-06/" rel="next" title="Vue.js源码学习 —— patch">
+                <i class="fa fa-chevron-left"></i> Vue.js源码学习 —— patch
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">65</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#预备知识"><span class="nav-number">1.</span> <span class="nav-text">预备知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#patchVnode"><span class="nav-number">2.</span> <span class="nav-text">patchVnode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#updateChildren"><span class="nav-number">3.</span> <span class="nav-text">updateChildren</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时间复杂度"><span class="nav-number">4.</span> <span class="nav-text">时间复杂度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列表中的节点为什么需要key"><span class="nav-number">5.</span> <span class="nav-text">列表中的节点为什么需要key</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
