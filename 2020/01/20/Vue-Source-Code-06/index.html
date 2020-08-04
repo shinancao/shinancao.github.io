@@ -120,7 +120,7 @@
 <meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的Vue.js源码学习 —— VNode/createElement和Vue.js源码学习 —— createComponent，有了前面这些铺垫再来看今天这篇会轻松很多。 今天这篇文章要看的代码主">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://shinancao.github.io/images/vue-patch-1.jpg">
-<meta property="og:updated_time" content="2020-08-03T13:28:43.162Z">
+<meta property="og:updated_time" content="2020-08-04T11:55:54.422Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue.js源码学习 —— patch">
 <meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的Vue.js源码学习 —— VNode/createElement和Vue.js源码学习 —— createComponent，有了前面这些铺垫再来看今天这篇会轻松很多。 今天这篇文章要看的代码主">
@@ -406,7 +406,7 @@
       
         <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
 <p>如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/12/Vue-Source-Code-03/" target="_blank" rel="noopener">Vue.js源码学习 —— VNode/createElement</a>和<a href="http://shinancao.cn/2020/01/15/Vue-Source-Code-04/" target="_blank" rel="noopener">Vue.js源码学习 —— createComponent</a>，有了前面这些铺垫再来看今天这篇会轻松很多。</p>
-<p>今天这篇文章要看的代码主要位于文件<code>core/vdom/patch.js</code>中。主要会先看一下<code>patch</code>执行的整个流程，以及从<code>vnode</code>到<code>node</code>的准换过程。</p>
+<p>今天这篇文章要看的代码主要位于文件<code>core/vdom/patch.js</code>中。主要会先看一下<code>patch</code>执行的整个流程，以及从<code>vnode</code>到<code>node</code>的转换过程。</p>
 <blockquote>
 <p>我没有在文章中大量的贴源码，一定要将源码clone到本地哦。</p>
 </blockquote>

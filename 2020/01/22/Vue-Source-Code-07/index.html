@@ -111,13 +111,13 @@
 
 
 
-<meta name="description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 本篇文章是接着上一篇文章Vue.js源码学习 —— patch的，中。上一篇文章分析了patch执行的整个流程，以及从vnode到node的准换的过程。这篇文章将继续分析如果oldVnode和vnode是相同类型的元素时将如何更新DOM树。 今天这篇文章要看的代码主要位">
+<meta name="description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 本篇文章是接着上一篇文章Vue.js源码学习 —— patch的。上一篇文章分析了patch函数和createElm函数的执行过程，今天将继续分析patchVnode函数和updateChildren函数的实现，也是diff算法的核心内容。 今天这篇文章要看的代码主要位">
 <meta name="keywords" content="JavaScript,Vue,源码分析">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Vue.js源码学习 —— diff算法">
 <meta property="og:url" content="http://shinancao.github.io/2020/01/22/Vue-Source-Code-07/index.html">
 <meta property="og:site_name" content="意林的小站">
-<meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 本篇文章是接着上一篇文章Vue.js源码学习 —— patch的，中。上一篇文章分析了patch执行的整个流程，以及从vnode到node的准换的过程。这篇文章将继续分析如果oldVnode和vnode是相同类型的元素时将如何更新DOM树。 今天这篇文章要看的代码主要位">
+<meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 本篇文章是接着上一篇文章Vue.js源码学习 —— patch的。上一篇文章分析了patch函数和createElm函数的执行过程，今天将继续分析patchVnode函数和updateChildren函数的实现，也是diff算法的核心内容。 今天这篇文章要看的代码主要位">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-1.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-2.jpg">
@@ -127,10 +127,10 @@
 <meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-6.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-7.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/vue-patch-diff-8.jpg">
-<meta property="og:updated_time" content="2020-08-04T10:42:14.487Z">
+<meta property="og:updated_time" content="2020-08-04T11:58:30.430Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue.js源码学习 —— diff算法">
-<meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 本篇文章是接着上一篇文章Vue.js源码学习 —— patch的，中。上一篇文章分析了patch执行的整个流程，以及从vnode到node的准换的过程。这篇文章将继续分析如果oldVnode和vnode是相同类型的元素时将如何更新DOM树。 今天这篇文章要看的代码主要位">
+<meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 本篇文章是接着上一篇文章Vue.js源码学习 —— patch的。上一篇文章分析了patch函数和createElm函数的执行过程，今天将继续分析patchVnode函数和updateChildren函数的实现，也是diff算法的核心内容。 今天这篇文章要看的代码主要位">
 <meta name="twitter:image" content="http://shinancao.github.io/images/vue-patch-diff-1.jpg">
 
 
@@ -412,7 +412,7 @@
 
       
         <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
-<p>本篇文章是接着上一篇文章<a href="http://shinancao.cn/2020/01/20/Vue-Source-Code-06/" target="_blank" rel="noopener">Vue.js源码学习 —— patch</a>的，中。上一篇文章分析了<code>patch</code>执行的整个流程，以及从<code>vnode</code>到<code>node</code>的准换的过程。这篇文章将继续分析如果<code>oldVnode</code>和<code>vnode</code>是相同类型的元素时将如何更新DOM树。</p>
+<p>本篇文章是接着上一篇文章<a href="http://shinancao.cn/2020/01/20/Vue-Source-Code-06/" target="_blank" rel="noopener">Vue.js源码学习 —— patch</a>的。上一篇文章分析了<code>patch</code>函数和<code>createElm</code>函数的执行过程，今天将继续分析<code>patchVnode</code>函数和<code>updateChildren</code>函数的实现，也是<code>diff</code>算法的核心内容。</p>
 <p>今天这篇文章要看的代码主要位于文件<code>core/vdom/patch.js</code>中。</p>
 <blockquote>
 <p>我没有在文章中大量的贴源码，一定要将源码clone到本地哦。</p>

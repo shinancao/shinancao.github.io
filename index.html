@@ -406,7 +406,7 @@
       
         
           <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
-<p>本篇文章是接着上一篇文章<a href="http://shinancao.cn/2020/01/20/Vue-Source-Code-06/" target="_blank" rel="noopener">Vue.js源码学习 —— patch</a>的，中。上一篇文章分析了<code>patch</code>执行的整个流程，以及从<code>vnode</code>到<code>node</code>的准换的过程。这篇文章将继续分析如果<code>oldVnode</code>和<code>vnode</code>是相同类型的元素时将如何更新DOM树。</p>
+<p>本篇文章是接着上一篇文章<a href="http://shinancao.cn/2020/01/20/Vue-Source-Code-06/" target="_blank" rel="noopener">Vue.js源码学习 —— patch</a>的。上一篇文章分析了<code>patch</code>函数和<code>createElm</code>函数的执行过程，今天将继续分析<code>patchVnode</code>函数和<code>updateChildren</code>函数的实现，也是<code>diff</code>算法的核心内容。</p>
 <p>今天这篇文章要看的代码主要位于文件<code>core/vdom/patch.js</code>中。</p>
 <blockquote>
 <p>我没有在文章中大量的贴源码，一定要将源码clone到本地哦。</p>
@@ -573,7 +573,7 @@
         
           <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
 <p>如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/12/Vue-Source-Code-03/" target="_blank" rel="noopener">Vue.js源码学习 —— VNode/createElement</a>和<a href="http://shinancao.cn/2020/01/15/Vue-Source-Code-04/" target="_blank" rel="noopener">Vue.js源码学习 —— createComponent</a>，有了前面这些铺垫再来看今天这篇会轻松很多。</p>
-<p>今天这篇文章要看的代码主要位于文件<code>core/vdom/patch.js</code>中。主要会先看一下<code>patch</code>执行的整个流程，以及从<code>vnode</code>到<code>node</code>的准换过程。</p>
+<p>今天这篇文章要看的代码主要位于文件<code>core/vdom/patch.js</code>中。主要会先看一下<code>patch</code>执行的整个流程，以及从<code>vnode</code>到<code>node</code>的转换过程。</p>
 <blockquote>
 <p>我没有在文章中大量的贴源码，一定要将源码clone到本地哦。</p>
 </blockquote>
