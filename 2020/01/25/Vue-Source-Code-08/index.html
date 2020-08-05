@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="JavaScript,Vue,源码分析,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 到目前为止我们已经知道虚拟节点是如何创建的，组件是如何创建的，patch的过程是如何实现的，那从Vue实例的初始化到最终patch被执行又经过了哪些过程呢？今天我们就来看一下Vue实例对象的挂载过程。 今天这篇文章要看的代码主要位于文件core/instance/lif">
+<meta name="keywords" content="JavaScript,Vue,源码分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue.js源码学习 —— Vue实例挂载的实现">
+<meta property="og:url" content="http://shinancao.github.io/2020/01/25/Vue-Source-Code-08/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 到目前为止我们已经知道虚拟节点是如何创建的，组件是如何创建的，patch的过程是如何实现的，那从Vue实例的初始化到最终patch被执行又经过了哪些过程呢？今天我们就来看一下Vue实例对象的挂载过程。 今天这篇文章要看的代码主要位于文件core/instance/lif">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-mount-1.jpg">
+<meta property="og:updated_time" content="2020-08-05T12:18:51.573Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue.js源码学习 —— Vue实例挂载的实现">
+<meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 到目前为止我们已经知道虚拟节点是如何创建的，组件是如何创建的，patch的过程是如何实现的，那从Vue实例的初始化到最终patch被执行又经过了哪些过程呢？今天我们就来看一下Vue实例对象的挂载过程。 今天这篇文章要看的代码主要位于文件core/instance/lif">
+<meta name="twitter:image" content="http://shinancao.github.io/images/vue-mount-1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2020/01/25/Vue-Source-Code-08/">
+
+
+
+
+
+  <title>Vue.js源码学习 —— Vue实例挂载的实现 | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-portfolio">
+          <a href="/portfolio/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
+            
+            项目
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/01/25/Vue-Source-Code-08/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Vue.js源码学习 —— Vue实例挂载的实现</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-25T16:40:32+08:00">
+                2020-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
+<p>到目前为止我们已经知道虚拟节点是如何创建的，组件是如何创建的，<code>patch</code>的过程是如何实现的，那从<code>Vue</code>实例的初始化到最终<code>patch</code>被执行又经过了哪些过程呢？今天我们就来看一下<code>Vue</code>实例对象的挂载过程。</p>
+<p>今天这篇文章要看的代码主要位于文件<code>core/instance/lifecycle.js</code>中和文件<code>core/instance/render.js</code>中。</p>
+<blockquote>
+<p>我没有在文章中大量的贴源码，一定要将源码clone到本地哦。</p>
+</blockquote>
+<h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><p>举一个使用Vue最简单的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">return</span> h(<span class="string">'p'</span>, <span class="string">'Hello World'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>从前面的分析我们知道经过<code>patch</code>后，会把DOM元素<code>&lt;div id=&quot;#app&quot;&gt;&lt;/div&gt;</code>替换成<code>render(h)</code>返回的虚拟节点关联的元素，也就是<code>&lt;p&gt;Hello World&lt;/p&gt;</code>，页面上显示出了内容。能够触发<code>patch</code>的执行，是因为在<code>Vue</code>实例的初始化中调用了<code>$mount</code>方法，然后一系列的调用过程最终执行到了<code>patch</code>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">initMixin</span> (<span class="params">Vue: Class&lt;Component&gt;</span>) </span>&#123;</span><br><span class="line">  Vue.prototype._init = <span class="function"><span class="keyword">function</span> (<span class="params">options?: Object</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> (vm.$options.el) &#123;</span><br><span class="line">      vm.$mount(vm.$options.el)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>看代码是在有<code>el</code>选项时就会执行<code>$mount</code>方法，那上面的例子也可以改成下面这样：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">return</span> h(<span class="string">'p'</span>, <span class="string">'Hello World'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;).$mount(<span class="string">'#app'</span>)</span><br></pre></td></tr></table></figure>
+<p>说到 <em>挂载</em> 说的就是<code>Vue</code>实例的原型方法<code>$mount</code>内部的一系列执行过程。</p>
+<h2 id="Vue-prototype-mount"><a href="#Vue-prototype-mount" class="headerlink" title="Vue.prototype.$mount"></a>Vue.prototype.$mount</h2><p>在文件<code>platforms/web/entry-runtime-with-compiler.js</code>中，我们看见过<code>Vue.prototype.$mount</code>的实现，今天来具体看一下。抽出关键路径，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将原来的 $mount 缓存起来</span></span><br><span class="line"><span class="keyword">const</span> mount = Vue.prototype.$mount</span><br><span class="line"><span class="comment">// 重新 $mount</span></span><br><span class="line">Vue.prototype.$mount = <span class="function"><span class="keyword">function</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  el?: string | Element,</span></span></span><br><span class="line"><span class="function"><span class="params">  hydrating?: boolean</span></span></span><br><span class="line"><span class="function"><span class="params"></span>): <span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 挂载的元素，模板或 render 返回的节点会替换 el</span></span><br><span class="line">  el = el &amp;&amp; query(el)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> options = <span class="keyword">this</span>.$options</span><br><span class="line">  <span class="comment">// resolve template/el and convert to render function</span></span><br><span class="line">  <span class="keyword">if</span> (!options.render) &#123;</span><br><span class="line">    <span class="keyword">let</span> template = options.template</span><br><span class="line">    <span class="keyword">if</span> (template) &#123;</span><br><span class="line">      <span class="comment">// 如果 template 的值是以'#'开头的，会将该 template 的值作为选择符，</span></span><br><span class="line">      <span class="comment">// 并使用匹配元素的 innerHTML 作为模板。</span></span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">typeof</span> template === <span class="string">'string'</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (template.charAt(<span class="number">0</span>) === <span class="string">'#'</span>) &#123;</span><br><span class="line">          template = idToTemplate(template)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// 如果 template 的值是DOM元素，其该DOM元素的 innerHTML 作为模板</span></span><br><span class="line">      <span class="keyword">else</span> <span class="keyword">if</span> (template.nodeType) &#123;</span><br><span class="line">        template = template.innerHTML</span><br><span class="line">      &#125; </span><br><span class="line">      <span class="comment">// 其他情况视为无效的 template，开发环境下给出告警信息</span></span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">          warn(<span class="string">'invalid template option:'</span> + template, <span class="keyword">this</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (el) &#123;</span><br><span class="line">      <span class="comment">// 没有传 template 时，直接使用 el 元素的 outerHTML 作为模板</span></span><br><span class="line">      template = getOuterHTML(el)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果通过上面拿到了 template，就将 template 编译成 render 函数</span></span><br><span class="line">    <span class="keyword">if</span> (template) &#123;</span><br><span class="line">      <span class="keyword">const</span> &#123; render, staticRenderFns &#125; = compileToFunctions(template, &#123;</span><br><span class="line">        outputSourceRange: process.env.NODE_ENV !== <span class="string">'production'</span>,</span><br><span class="line">        shouldDecodeNewlines,</span><br><span class="line">        shouldDecodeNewlinesForHref,</span><br><span class="line">        delimiters: options.delimiters,</span><br><span class="line">        comments: options.comments</span><br><span class="line">      &#125;, <span class="keyword">this</span>)</span><br><span class="line">      <span class="comment">// 将 render 函数放到 options 上</span></span><br><span class="line">      options.render = render</span><br><span class="line">      <span class="comment">// 如果是静态的内容会被放在staticRenderFns中</span></span><br><span class="line">      options.staticRenderFns = staticRenderFns</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 调用最上面缓存的 $mount</span></span><br><span class="line">  <span class="keyword">return</span> mount.call(<span class="keyword">this</span>, el, hydrating)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，在选项中有<code>render</code>函数时，会忽略<code>template</code>选项，我们之前举的例子都是使用<code>render</code>函数返回页面内容的，现在看一下使用<code>template</code>选项的写法。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/x-template"</span> <span class="attr">id</span>=<span class="string">"demo"</span>&gt;</span></span><br><span class="line"><span class="xml">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123; message &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  template: <span class="string">'#demo'</span>,</span><br><span class="line">  data: &#123; <span class="attr">message</span>: <span class="string">'Hello World'</span> &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 或者 template 直接传DOM节点</span></span><br><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  template: <span class="built_in">document</span>.getElementById(<span class="string">'demo'</span>),</span><br><span class="line">  data: &#123; <span class="attr">message</span>: <span class="string">'Hello World'</span> &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>也可以不传<code>template</code>选项，直接将<code>el</code>的<code>outerHTML</code>当做模板：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span>&#123;&#123; message &#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  data: &#123; <span class="attr">message</span>: <span class="string">'Hello World'</span>&#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>那么之前的<code>Vue.prototype.$mount</code>是在那定义的呢？</p>
+</blockquote>
+<p>其实这个我们之前也看到过，在文件<code>platforms/web/runtime/index.js</code>中：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// public mount method</span></span><br><span class="line">Vue.prototype.$mount = <span class="function"><span class="keyword">function</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  el?: string | Element,</span></span></span><br><span class="line"><span class="function"><span class="params">  hydrating?: boolean</span></span></span><br><span class="line"><span class="function"><span class="params"></span>): <span class="title">Component</span> </span>&#123;</span><br><span class="line">  el = el &amp;&amp; inBrowser ? query(el) : <span class="literal">undefined</span></span><br><span class="line">  <span class="keyword">return</span> mountComponent(<span class="keyword">this</span>, el, hydrating)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里实际调用的是<code>mountComponent</code>函数，那我们就进到这个函数看看做了什么事情。</p>
+<h2 id="mountComponent"><a href="#mountComponent" class="headerlink" title="mountComponent"></a>mountComponent</h2><p><code>mountComponent</code>函数位于文件<code>core/instance/lifecycle.js</code>中，整理了一下它的关键流程如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">mountComponent</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  vm: Component,</span></span></span><br><span class="line"><span class="function"><span class="params">  el: ?Element,</span></span></span><br><span class="line"><span class="function"><span class="params">  hydrating?: boolean</span></span></span><br><span class="line"><span class="function"><span class="params"></span>): <span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!vm.$options.render) &#123;</span><br><span class="line">    vm.$options.render = createEmptyVNode</span><br><span class="line">    <span class="comment">// ... 没有render选项时给出告警信息</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 调用组件生命周期钩子 beforeMount</span></span><br><span class="line">  callHook(vm, <span class="string">'beforeMount'</span>)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> updateComponent = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 调用 vm._render() 获得组件节点</span></span><br><span class="line">    <span class="comment">// 在vm._update()中会触发__patch__，更新页面</span></span><br><span class="line">    vm._update(vm._render(), hydrating)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// we set this to vm._watcher inside the watcher's constructor</span></span><br><span class="line">  <span class="comment">// since the watcher's initial patch may call $forceUpdate (e.g. inside child</span></span><br><span class="line">  <span class="comment">// component's mounted hook), which relies on vm._watcher being already defined</span></span><br><span class="line">  <span class="keyword">new</span> Watcher(vm, updateComponent, noop, &#123;</span><br><span class="line">    before () &#123;</span><br><span class="line">      <span class="keyword">if</span> (vm._isMounted &amp;&amp; !vm._isDestroyed) &#123;</span><br><span class="line">        callHook(vm, <span class="string">'beforeUpdate'</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, <span class="literal">true</span> <span class="comment">/* isRenderWatcher */</span>)</span><br><span class="line">  hydrating = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// manually mounted instance, call mounted on self</span></span><br><span class="line">  <span class="comment">// mounted is called for render-created child components in its inserted hook</span></span><br><span class="line">  <span class="keyword">if</span> (vm.$vnode == <span class="literal">null</span>) &#123;</span><br><span class="line">    vm._isMounted = <span class="literal">true</span></span><br><span class="line">    callHook(vm, <span class="string">'mounted'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> vm</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>总结一下<code>mountComponent</code>函数做的事情：</p>
+<ul>
+<li><p>判断是否有<code>render</code>选项，如果没有在开发环境下给出告警信息。因为后面要依赖<code>render</code>的返回值，所以必须先确保它可用。</p>
+</li>
+<li><p>调用<code>beforeMount</code>钩子，通知用户组件要开始挂载了。</p>
+</li>
+<li><p>执行<code>vm._update</code>更新页面。</p>
+<p>虽然没有<code>updateComponent</code>，而是将它传入给了<code>Watcher</code>，但是在<code>Watcher</code>的构造器中会立马执行它。至于为什么要将<code>updateComponent</code>放入<code>Watcher</code>等后面看到响应系统部分的代码时再找答案。</p>
+</li>
+<li><p>如果<code>vm.$vnode</code>是空的，设置标识已经挂载了，然后调用<code>mounted</code>钩子，通知用户组件已经挂载完成。</p>
+<p>为什么要判断<code>vm.$vnode</code>是空的时，才说明挂载完成了呢？搜索整个项目你会发现给<code>vm.$vnode</code>赋值的地方有两处，一个是在<code>Vue.prototype._render</code>方法中：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; render, _parentVnode &#125; = vm.$options</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">vm.$vnode = _parentVnode</span><br></pre></td></tr></table></figure>
+<p>一处是在<code>updateChildComponent</code>函数中：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vm.$options._parentVnode = parentVnode</span><br><span class="line">vm.$vnode = parentVnode</span><br></pre></td></tr></table></figure>
+<p>而在看<code>createComponent</code>代码时我们知道<code>parentVnode</code>来源于在内部创建组件时，所以如果<code>vm.$vnode</code>不为空说明正在挂载的是模板中依赖的组件，而整个挂载过程还没有完成。</p>
+</li>
+</ul>
+<h2 id="Vue-prototype-render"><a href="#Vue-prototype-render" class="headerlink" title="Vue.prototype._render"></a>Vue.prototype._render</h2><p><code>Vue.prototype._render</code>函数的主要目的就是要拿到<code>render</code>函数返回的<code>vnode</code>，好用于下一步<code>patch</code>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">renderMixin</span> (<span class="params">Vue: Class&lt;Component&gt;</span>) </span>&#123;</span><br><span class="line">  Vue.prototype._render = <span class="function"><span class="keyword">function</span> (<span class="params"></span>): <span class="title">VNode</span> </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> vm: Component = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">const</span> &#123; render, _parentVnode &#125; = vm.$options</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (_parentVnode) &#123;</span><br><span class="line">      vm.$scopedSlots = normalizeScopedSlots(</span><br><span class="line">        _parentVnode.data.scopedSlots,</span><br><span class="line">        vm.$slots,</span><br><span class="line">        vm.$scopedSlots</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// set parent vnode. this allows render functions to have access</span></span><br><span class="line">    <span class="comment">// to the data on the placeholder node.</span></span><br><span class="line">    vm.$vnode = _parentVnode</span><br><span class="line">    <span class="comment">// render self</span></span><br><span class="line">    <span class="keyword">let</span> vnode</span><br><span class="line">    currentRenderingInstance = vm</span><br><span class="line">    vnode = render.call(vm._renderProxy, vm.$createElement)</span><br><span class="line">    currentRenderingInstance = <span class="literal">null</span></span><br><span class="line">    <span class="comment">// if the returned array contains only a single node, allow it</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(vnode) &amp;&amp; vnode.length === <span class="number">1</span>) &#123;</span><br><span class="line">      vnode = vnode[<span class="number">0</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// return empty vnode in case the render function errored out</span></span><br><span class="line">    <span class="keyword">if</span> (!(vnode <span class="keyword">instanceof</span> VNode)) &#123;</span><br><span class="line">      <span class="comment">// 如果 render 函数返回的不是 VNode类型的值，将 vnode 重置为空节点</span></span><br><span class="line">      vnode = createEmptyVNode()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// set parent</span></span><br><span class="line">    vnode.parent = _parentVnode</span><br><span class="line">    <span class="keyword">return</span> vnode</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>_render</code>中的处理流程如下：</p>
+<ul>
+<li><p>设置<code>vm.$scopedSlots</code>和<code>vm.$slots</code>的值，因为在<code>render</code>函数中可能会用到了<code>vm.$scopedSlots</code>和<code>vm.$slots</code>。</p>
+<p><code>normalizeScopedSlots</code>函数的实现涉及的东西比较多，后面说到<code>v-slot</code>的实现时，再具体来看这个函数都做了什么。</p>
+</li>
+<li><p>设置<code>vm.$vnode</code>为选项中的<code>_parentVnode</code>，在要渲染子组件时它会有值。</p>
+</li>
+<li><p>用<code>currentRenderingInstance</code>记录当前正在渲染的实例对象，这个变量在<a href="http://shinancao.cn/2020/01/17/Vue-Source-Code-05/" target="_blank" rel="noopener">异步组件的实现</a>时会用到。</p>
+</li>
+<li><p>执行<code>render</code>函数，在这里将<code>vm.$createElement</code>传了过去。<code>vm._renderProxy</code>是<code>vm</code>的代理对象，做一些校验等。在函数执行后，将<code>currentRenderingInstance</code>置为空。</p>
+</li>
+<li><p>如果<code>render</code>函数的返回值是一个数组，并且只有一个元素，就取出这个元素再赋值给<code>vnode</code>。最后判断<code>vnode</code>的类型必须是<code>VNode</code>，否则将<code>vnode</code>重置为一个空节点。</p>
+</li>
+<li><p>设置<code>vnode.parent</code>为<code>_parentVnode</code>，并将<code>vnode</code>返回。</p>
+</li>
+</ul>
+<h2 id="Vue-prototype-update"><a href="#Vue-prototype-update" class="headerlink" title="Vue.prototype._update"></a>Vue.prototype._update</h2><p><code>Vue.prototype._update</code>函数中的关键代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">lifecycleMixin</span> (<span class="params">Vue: Class&lt;Component&gt;</span>) </span>&#123;</span><br><span class="line">  Vue.prototype._update = <span class="function"><span class="keyword">function</span> (<span class="params">vnode: VNode, hydrating?: boolean</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> vm: Component = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">const</span> prevEl = vm.$el</span><br><span class="line">    <span class="keyword">const</span> prevVnode = vm._vnode</span><br><span class="line">    <span class="comment">// 设置新的_vnode</span></span><br><span class="line">    vm._vnode = vnode</span><br><span class="line">    <span class="comment">// Vue.prototype.__patch__ is injected in entry points</span></span><br><span class="line">    <span class="comment">// based on the rendering backend used.</span></span><br><span class="line">    <span class="keyword">if</span> (!prevVnode) &#123;</span><br><span class="line">      <span class="comment">// initial render</span></span><br><span class="line">      vm.$el = vm.__patch__(vm.$el, vnode, hydrating, <span class="literal">false</span> <span class="comment">/* removeOnly */</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// updates</span></span><br><span class="line">      vm.$el = vm.__patch__(prevVnode, vnode)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// updated hook is called by the scheduler to ensure that children are</span></span><br><span class="line">    <span class="comment">// updated in a parent's updated hook.</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>prevVnode</code>为空时，说明是第一次进行渲染，会将<code>vm.$el</code>作为<code>oldVnode</code>传给<code>patch</code>函数。如果此时<code>vm</code>是开发者创建的实例，<code>vm.$el</code>就是模板要替换的DOM元素。如果<code>vm</code>是模板中子组件实例，<code>vm.$el</code>是<code>undefined</code>。这也是为什么我们在<a href="http://shinancao.cn/2020/01/20/Vue-Source-Code-06/" target="_blank" rel="noopener">Vue.js源码学习 —— patch</a>中举的例子看到的现象：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第一次渲染，`vm`是开发者创建的实例</span></span><br><span class="line"><span class="comment">// oldVnode</span></span><br><span class="line">&lt;div id=<span class="string">"app"</span>&gt;&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">/</span><span class="regexp">/ vnode 也是 h('p', children) 返回的vnode，vnode.parent 是 undefined</span></span><br><span class="line"><span class="regexp">VNode &#123;tag: "p", data: undefined, children: Array(2), text: undefined, elm: undefined, …&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第一次渲染子组件</span></span><br><span class="line"><span class="comment">// oldVnode</span></span><br><span class="line"><span class="literal">undefined</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// vnode 也是 h('p', 'No items found.') 返回的vnode</span></span><br><span class="line">VNode &#123;<span class="attr">tag</span>: <span class="string">"p"</span>, <span class="attr">data</span>: <span class="literal">undefined</span>, <span class="attr">children</span>: <span class="built_in">Array</span>(<span class="number">1</span>), <span class="attr">text</span>: <span class="literal">undefined</span>, <span class="attr">elm</span>: <span class="literal">undefined</span>, …&#125;</span><br></pre></td></tr></table></figure>
+<p>进行<code>patch</code>后，页面中就会显示出内容了，整个挂载过程结束。在浏览器中打断点可以看到上面的调用过程：</p>
+<p><img src="/images/vue-mount-1.jpg"></p>
+<p>到目前为止我们已经把从拿到模板到渲染成DOM的整个过程都分析完了。下一篇文章我们将要看<code>lifecycle.js</code>中的其他方法，这样组件的整个生命周期做的事情就都可以连起来了。</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2020/01/22/Vue-Source-Code-08/" target="_blank" rel="noopener">http://shinancao.cn/2020/01/22/Vue-Source-Code-08/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="noopener">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/22/Vue-Source-Code-07/" rel="next" title="Vue.js源码学习 —— diff算法">
+                <i class="fa fa-chevron-left"></i> Vue.js源码学习 —— diff算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#预备知识"><span class="nav-number">1.</span> <span class="nav-text">预备知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-prototype-mount"><span class="nav-number">2.</span> <span class="nav-text">Vue.prototype.$mount</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mountComponent"><span class="nav-number">3.</span> <span class="nav-text">mountComponent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-prototype-render"><span class="nav-number">4.</span> <span class="nav-text">Vue.prototype._render</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-prototype-update"><span class="nav-number">5.</span> <span class="nav-text">Vue.prototype._update</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
