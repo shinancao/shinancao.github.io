@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="JavaScript,Vue,源码分析,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 在Vue的官方文档中给了一张生命周期图示，可以看到在mounted及其之前的阶段做的事我们基本都看过了。今天我们先把文件core/instance/lifecycle.js中还没有看到的方法看完，然后再把所有的事情串联起来，以便我们对Vue实例的生命周期中发生的事有一个">
+<meta name="keywords" content="JavaScript,Vue,源码分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue.js源码学习 —— Vue实例的生命周期">
+<meta property="og:url" content="http://shinancao.github.io/2020/01/27/Vue-Source-Code-09/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 在Vue的官方文档中给了一张生命周期图示，可以看到在mounted及其之前的阶段做的事我们基本都看过了。今天我们先把文件core/instance/lifecycle.js中还没有看到的方法看完，然后再把所有的事情串联起来，以便我们对Vue实例的生命周期中发生的事有一个">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-08-06T13:39:00.589Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue.js源码学习 —— Vue实例的生命周期">
+<meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 在Vue的官方文档中给了一张生命周期图示，可以看到在mounted及其之前的阶段做的事我们基本都看过了。今天我们先把文件core/instance/lifecycle.js中还没有看到的方法看完，然后再把所有的事情串联起来，以便我们对Vue实例的生命周期中发生的事有一个">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2020/01/27/Vue-Source-Code-09/">
+
+
+
+
+
+  <title>Vue.js源码学习 —— Vue实例的生命周期 | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-portfolio">
+          <a href="/portfolio/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
+            
+            项目
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/01/27/Vue-Source-Code-09/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Vue.js源码学习 —— Vue实例的生命周期</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-27T16:40:32+08:00">
+                2020-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
+<p>在Vue的官方文档中给了一张<a href="https://cn.vuejs.org/v2/guide/instance.html#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%9B%BE%E7%A4%BA" target="_blank" rel="noopener">生命周期图示</a>，可以看到在<code>mounted</code>及其之前的阶段做的事我们基本都看过了。今天我们先把文件<code>core/instance/lifecycle.js</code>中还没有看到的方法看完，然后再把所有的事情串联起来，以便我们对Vue实例的生命周期中发生的事有一个全面的了解。</p>
+<blockquote>
+<p>我没有在文章中大量的贴源码，一定要将源码clone到本地哦。</p>
+</blockquote>
+<h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><p>首先要明确一件事，我们所说的 <em>Vue实例</em> 有两种情况，一种是开发中手动创建的Vue实例，通常也被称为 <em>根实例</em>。一种是如果模板中依赖了其他组件，Vue内部会去创建这个组件的实例，所以有的时候也会听到 <em>组件的生命周期</em> 这种说法。举个简单的例子看一下：</p>
+<a id="more"></a>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">Vue.component(<span class="string">'child'</span>, &#123;</span><br><span class="line">  <span class="comment">// 组件实例的钩子</span></span><br><span class="line">  created () &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'child component created'</span>)</span><br><span class="line">  &#125;,</span><br><span class="line">  mounted () &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'child component mounted'</span>)</span><br><span class="line">  &#125;,</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">return</span> h(<span class="string">'p'</span>, <span class="string">'Hello World'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  <span class="comment">// 根实例的钩子</span></span><br><span class="line">  created () &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'vm created'</span>)</span><br><span class="line">  &#125;,</span><br><span class="line">  mounted () &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'vm mounted'</span>)</span><br><span class="line">  &#125;,</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">return</span> h(<span class="string">'child'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>输出的结果如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vm created</span><br><span class="line">child component created</span><br><span class="line">child component mounted</span><br><span class="line">vm mounted</span><br></pre></td></tr></table></figure>
+<p>可以看到，都会被执行到，所以咱们统一称为 <em>Vue实例的生命周期</em> 。</p>
+<p>再拓展一点，创建一个Vue的子类构造器，在它的选项中也提供钩子函数，看一下调用顺序：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Suber = Vue.extend(&#123;</span><br><span class="line">  created () &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'Suber created'</span>)</span><br><span class="line">  &#125;,</span><br><span class="line">  mounted () &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'Suber mounted'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> vm = <span class="keyword">new</span> Suber(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  created () &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'vm created'</span>)</span><br><span class="line">  &#125;,</span><br><span class="line">  mounted () &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'vm mounted'</span>)</span><br><span class="line">  &#125;,</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">return</span> h(<span class="string">'child'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>输出的结果如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Suber created</span><br><span class="line">vm created</span><br><span class="line">child component created</span><br><span class="line">child component mounted</span><br><span class="line">Suber mounted</span><br><span class="line">vm mounted</span><br></pre></td></tr></table></figure>
+<p>可以再加上个按钮，触发时更新页面，会看到<code>updated</code>钩子的执行顺序如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">child component updated</span><br><span class="line">Suber updated</span><br><span class="line">vm updated</span><br></pre></td></tr></table></figure>
+<p>如果在点击按钮时调用<code>this.$destroy()</code>，<code>destroyed</code>钩子的执行顺序如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">child component destroyed</span><br><span class="line">Suber destroyed</span><br><span class="line">vm destroyed</span><br></pre></td></tr></table></figure>
+<p>总结一下Vue实例的生命周期钩子的执行顺序：</p>
+<p><strong>- <code>created</code>：先调用构造器的，再调用根实例的，最后调用子组件实例的。</strong></p>
+<p><strong>- <code>mounted</code>/<code>updated</code>/<code>destroyed</code>：先调用子组件实例的，再调用构造器的，最后调用根实例的。</strong></p>
+<h2 id="componentVNodeHooks"><a href="#componentVNodeHooks" class="headerlink" title="componentVNodeHooks"></a>componentVNodeHooks</h2><p><code>componentVNodeHooks</code>是一个哈希表，位于文件<code>vdom/create-component.js</code>中，里面放的钩子函数会在Vue内部创建组件实例时，合并到<code>vnode.data.hook</code>中（开发者在创建<code>vnode</code>时也可以在<code>vnode.data.hook</code>中提供钩子函数）。<code>vnode.data.hook</code>中的钩子函数又在<code>patch</code>的过程中被调用。<code>componentVNodeHooks</code>的内容如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// inline hooks to be invoked on component VNodes during patch</span></span><br><span class="line"><span class="keyword">const</span> componentVNodeHooks = &#123;</span><br><span class="line">  init (vnode: VNodeWithData, <span class="attr">hydrating</span>: boolean): ?boolean &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;,</span><br><span class="line">  prepatch (oldVnode: MountedComponentVNode, <span class="attr">vnode</span>: MountedComponentVNode) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;,</span><br><span class="line">  insert (vnode: MountedComponentVNode) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;,</span><br><span class="line">  destroy (vnode: MountedComponentVNode) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在<a href="http://shinancao.cn/2020/01/15/Vue-Source-Code-04/" target="_blank" rel="noopener">Vue.js源码学习 —— createComponent</a>中的最后一小节有说过<code>componentVNodeHooks</code>，然后详细分析了<code>init</code>的实现。今天我们再来看一下<code>insert</code>和<code>destroy</code>的实现过程。</p>
+<blockquote>
+<p><code>prepatch</code>是用于更新组件的钩子，组件的更新涉及的东西比较多，等看<code>observer</code>部分的代码时，我会单独用一篇总结组件的更新流程。</p>
+</blockquote>
+<h3 id="insert"><a href="#insert" class="headerlink" title="insert"></a>insert</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">insert (vnode: MountedComponentVNode) &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; context, componentInstance &#125; = vnode</span><br><span class="line">  <span class="keyword">if</span> (!componentInstance._isMounted) &#123;</span><br><span class="line">    <span class="comment">// 还没有被挂载的话，直接调用 mounted 钩子</span></span><br><span class="line">    componentInstance._isMounted = <span class="literal">true</span></span><br><span class="line">    callHook(componentInstance, <span class="string">'mounted'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (vnode.data.keepAlive) &#123;</span><br><span class="line">    <span class="keyword">if</span> (context._isMounted) &#123;</span><br><span class="line">      <span class="comment">// 等看`observer`部分的代码时再详细看下面这个函数</span></span><br><span class="line">      queueActivatedComponent(componentInstance)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// &lt;keep-alive&gt;组件再次激活组件</span></span><br><span class="line">      activateChildComponent(componentInstance, <span class="literal">true</span> <span class="comment">/* direct */</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，对于内部创建的组件实例，<code>mounted</code>钩子是在<code>init</code>被调用时触发的。而<code>init</code>是在<code>patch</code>的过程中，在元素已经插入DOM中后被调用的：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">patch</span> (<span class="params">oldVnode, vnode, hydrating, removeOnly</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  invokeInsertHook(vnode, insertedVnodeQueue, isInitialPatch)</span><br><span class="line">  <span class="keyword">return</span> vnode.elm</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="destroy"><a href="#destroy" class="headerlink" title="destroy"></a>destroy</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">destroy (vnode: MountedComponentVNode) &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; componentInstance &#125; = vnode</span><br><span class="line">  <span class="keyword">if</span> (!componentInstance._isDestroyed) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!vnode.data.keepAlive) &#123;</span><br><span class="line">      <span class="comment">// 不是&lt;keep-alive&gt;组件，直接调用$destroy销毁实例</span></span><br><span class="line">      componentInstance.$destroy()</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// 如果是&lt;keep-alive&gt;组件，让组件处于非活跃状态</span></span><br><span class="line">      deactivateChildComponent(componentInstance, <span class="literal">true</span> <span class="comment">/* direct */</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，内部创建的组件实例会在<code>destroy</code>中使用Vue实例原型上的<code>$destroy</code>方法去销毁。而<code>destroy</code>是在<code>patch</code>过程中元素被从DOM中移除后调用的：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">removeVnodes</span> (<span class="params">vnodes, startIdx, endIdx</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  removeAndInvokeRemoveHook(ch)</span><br><span class="line">  invokeDestroyHook(ch)</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="initLifecycle"><a href="#initLifecycle" class="headerlink" title="initLifecycle"></a>initLifecycle</h2><p>在看其他方法之前，我们先来看一下Vue实例的属性中与生命周期相关的有哪些。</p>
+<p><code>initLifecycle</code>函数的部分代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">initLifecycle</span> (<span class="params">vm: Component</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...省略找到第一次非抽象parent的过程</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 父实例，根 Vue 实例没有，子组件实例有</span></span><br><span class="line">  vm.$parent = parent</span><br><span class="line">  <span class="comment">// 当前组件树的根 Vue 实例。如果当前实例没有父实例，此实例将会是其自己。</span></span><br><span class="line">  vm.$root = parent ? parent.$root : vm</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 当前实例的直接子组件。</span></span><br><span class="line">  vm.$children = []</span><br><span class="line">  <span class="comment">// 一个对象，持有注册过 ref attribute 的所有 DOM 元素和组件实例。</span></span><br><span class="line">  vm.$refs = &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 在内部使用的一些变量</span></span><br><span class="line">  vm._watcher = <span class="literal">null</span></span><br><span class="line">  vm._inactive = <span class="literal">null</span></span><br><span class="line">  vm._directInactive = <span class="literal">false</span></span><br><span class="line">  vm._isMounted = <span class="literal">false</span></span><br><span class="line">  vm._isDestroyed = <span class="literal">false</span></span><br><span class="line">  vm._isBeingDestroyed = <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="activateChildComponent-deactivateChildComponent"><a href="#activateChildComponent-deactivateChildComponent" class="headerlink" title="activateChildComponent/deactivateChildComponent"></a>activateChildComponent/deactivateChildComponent</h2><p>如果是<code>&lt;keep-alive&gt;</code>组件，会调用这两个<code>lifecycle.js</code>的函数使组件处于活跃状态或非活跃状态，而不会销毁组件实例。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">activateChildComponent</span> (<span class="params">vm: Component, direct?: boolean</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">if</span> (vm._inactive || vm._inactive === <span class="literal">null</span>) &#123;</span><br><span class="line">    vm._inactive = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; vm.$children.length; i++) &#123;</span><br><span class="line">      activateChildComponent(vm.$children[i])</span><br><span class="line">    &#125;</span><br><span class="line">    callHook(vm, <span class="string">'activated'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">deactivateChildComponent</span> (<span class="params">vm: Component, direct?: boolean</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">if</span> (!vm._inactive) &#123;</span><br><span class="line">    vm._inactive = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; vm.$children.length; i++) &#123;</span><br><span class="line">      deactivateChildComponent(vm.$children[i])</span><br><span class="line">    &#125;</span><br><span class="line">    callHook(vm, <span class="string">'deactivated'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>两个函数处理的过程非常像，先将当前实例标识为活跃或非活跃，然后再递归调用自身，设置子组件的活跃状态，最后调用<code>activated</code>或<code>deactivated</code>钩子。由此可知，一定是子组件的钩子先被执行，然后父组件的钩子再调用。</p>
+<p>再看一下<code>direct</code>参数的作用，在<code>insert</code>中和<code>destroy</code>中调用的时候传了该标识为<code>true</code>，但是在递归调用时没有传。是因为一开始需要判断<code>vm</code>是否已经在非活跃状态的树中，如果是的话直接返回了。</p>
+<blockquote>
+<p>为什么要这样判断我暂时还没有找到答案，后面找到答案了再回来补上-.-</p>
+</blockquote>
+<h2 id="Vue-prototype-destroy"><a href="#Vue-prototype-destroy" class="headerlink" title="Vue.prototype.$destroy"></a>Vue.prototype.$destroy</h2><p><code>Vue.prototype.$destroy</code>是公开给开发者使用的实例方法，从它的实现上可以看到在销毁一个实例时都做了哪些事情，主要如下：</p>
+<ul>
+<li><p>触发<code>beforeDestroy</code>钩子，通知开发者实例即将要被销毁。</p>
+</li>
+<li><p>将当前实例从其父实例的<code>children</code>中移除掉。</p>
+</li>
+<li><p>移除实例的所有观察者。</p>
+</li>
+<li><p>标识实例已销毁，并调用<code>__patch__</code>触发在渲染树中的<code>destroy</code>钩子函数，同时也销毁当前实例的子实例。</p>
+<p>给<code>__patch__</code>的传参中<code>vnode</code>传的是<code>null</code>，在进入<code>patch</code>函数中会执行下面这句：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">patch</span> (<span class="params">oldVnode, vnode, hydrating, removeOnly</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (isUndef(vnode)) &#123;</span><br><span class="line">    <span class="keyword">if</span> (isDef(oldVnode)) invokeDestroyHook(oldVnode)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在<code>invokeDestroyHook</code>中就会触发<code>directives</code>模块和<code>ref</code>模块的<code>destroy</code>了，进而将所有指定解绑，也将实例从<code>$refs</code>中移除掉。</p>
+<p>因为在<code>invokeDestroyHook</code>也会子节点递归调用该方法，所以子实例也会一起被销毁。</p>
+</li>
+<li><p>触发<code>destroyed</code>钩子，通知开发者实例已经被销毁。</p>
+</li>
+<li><p>移除所有实例的事件监听器。</p>
+</li>
+<li><p>移除其他关联的引用。</p>
+</li>
+</ul>
+<h2 id="生命周期图示"><a href="#生命周期图示" class="headerlink" title="生命周期图示"></a>生命周期图示</h2><p>将所有已经看过的内容画了一张图，图片有点大，耐心等待一下啦~</p>
+<image src="/images/vue-lifecycle.jpg">
+
+<p>下一篇文章将开始看新的模块啦，Vue中数据响应系统的设计。</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2020/01/27/Vue-Source-Code-09/" target="_blank" rel="noopener">http://shinancao.cn/2020/01/27/Vue-Source-Code-09/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="noopener">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div></image>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/25/Vue-Source-Code-08/" rel="next" title="Vue.js源码学习 —— Vue实例挂载的实现">
+                <i class="fa fa-chevron-left"></i> Vue.js源码学习 —— Vue实例挂载的实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">67</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#预备知识"><span class="nav-number">1.</span> <span class="nav-text">预备知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#componentVNodeHooks"><span class="nav-number">2.</span> <span class="nav-text">componentVNodeHooks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#insert"><span class="nav-number">2.1.</span> <span class="nav-text">insert</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#destroy"><span class="nav-number">2.2.</span> <span class="nav-text">destroy</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#initLifecycle"><span class="nav-number">3.</span> <span class="nav-text">initLifecycle</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#activateChildComponent-deactivateChildComponent"><span class="nav-number">4.</span> <span class="nav-text">activateChildComponent/deactivateChildComponent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-prototype-destroy"><span class="nav-number">5.</span> <span class="nav-text">Vue.prototype.$destroy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生命周期图示"><span class="nav-number">6.</span> <span class="nav-text">生命周期图示</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
