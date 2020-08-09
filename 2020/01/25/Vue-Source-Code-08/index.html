@@ -120,7 +120,7 @@
 <meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 到目前为止我们已经知道虚拟节点是如何创建的，组件是如何创建的，patch的过程是如何实现的，那从Vue实例的初始化到最终patch被执行又经过了哪些过程呢？今天我们就来看一下Vue实例对象的挂载过程。 今天这篇文章要看的代码主要位于文件core/instance/lif">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://shinancao.github.io/images/vue-mount-1.jpg">
-<meta property="og:updated_time" content="2020-08-05T13:58:53.174Z">
+<meta property="og:updated_time" content="2020-08-07T03:32:40.783Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue.js源码学习 —— Vue实例挂载的实现">
 <meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 到目前为止我们已经知道虚拟节点是如何创建的，组件是如何创建的，patch的过程是如何实现的，那从Vue实例的初始化到最终patch被执行又经过了哪些过程呢？今天我们就来看一下Vue实例对象的挂载过程。 今天这篇文章要看的代码主要位于文件core/instance/lif">
@@ -462,7 +462,7 @@
 </li>
 <li><p>用<code>currentRenderingInstance</code>记录当前正在渲染的实例对象，这个变量在<a href="http://shinancao.cn/2020/01/17/Vue-Source-Code-05/" target="_blank" rel="noopener">异步组件的实现</a>时会用到。</p>
 </li>
-<li><p>执行<code>render</code>函数，在这里将<code>vm.$createElement</code>传了过去。<code>vm._renderProxy</code>是<code>vm</code>的代理对象，做一些校验等。在函数执行后，将<code>currentRenderingInstance</code>置为空。</p>
+<li><p>执行<code>render</code>函数，在这里将<code>vm.$createElement</code>传了过去。<code>vm._renderProxy</code>是<code>vm</code>的代理对象，使得我们可以直接用<code>vm.xxx</code>就能访问到<code>vm.$data.xxx</code>，后面我会专门用一篇文章来讲数据代理的实现。在函数执行后，将<code>currentRenderingInstance</code>置为空。</p>
 </li>
 <li><p>如果<code>render</code>函数的返回值是一个数组，并且只有一个元素，就取出这个元素再赋值给<code>vnode</code>。最后判断<code>vnode</code>的类型必须是<code>VNode</code>，否则将<code>vnode</code>重置为一个空节点。</p>
 </li>
@@ -609,7 +609,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">67</span>
+                <span class="site-state-item-count">68</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>

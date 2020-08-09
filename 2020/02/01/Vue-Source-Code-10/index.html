@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="JavaScript,Vue,源码分析,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 前面一系列的文章主要讲了 Vue 是怎样实现数据渲染和组件化的，也就是如何把原始数据最终映射到DOM中的。但是当数据发生变化时，Vue 是如何自动更新DOM的我们还没看，这也是 Vue 相当重要的一部分，这个特性使得开发者几乎不需要直接操作DOM，只专注在业务逻辑的实现">
+<meta name="keywords" content="JavaScript,Vue,源码分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue.js源码学习 —— 响应系统的设计">
+<meta property="og:url" content="http://shinancao.github.io/2020/02/01/Vue-Source-Code-10/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 前面一系列的文章主要讲了 Vue 是怎样实现数据渲染和组件化的，也就是如何把原始数据最终映射到DOM中的。但是当数据发生变化时，Vue 是如何自动更新DOM的我们还没看，这也是 Vue 相当重要的一部分，这个特性使得开发者几乎不需要直接操作DOM，只专注在业务逻辑的实现">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-observer-1.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-observer-2.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-observer-3.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-observer-4.jpg">
+<meta property="og:updated_time" content="2020-08-09T03:59:04.768Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue.js源码学习 —— 响应系统的设计">
+<meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 前面一系列的文章主要讲了 Vue 是怎样实现数据渲染和组件化的，也就是如何把原始数据最终映射到DOM中的。但是当数据发生变化时，Vue 是如何自动更新DOM的我们还没看，这也是 Vue 相当重要的一部分，这个特性使得开发者几乎不需要直接操作DOM，只专注在业务逻辑的实现">
+<meta name="twitter:image" content="http://shinancao.github.io/images/vue-observer-1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2020/02/01/Vue-Source-Code-10/">
+
+
+
+
+
+  <title>Vue.js源码学习 —— 响应系统的设计 | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-portfolio">
+          <a href="/portfolio/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
+            
+            项目
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/02/01/Vue-Source-Code-10/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Vue.js源码学习 —— 响应系统的设计</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-01T16:40:32+08:00">
+                2020-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
+<p>前面一系列的文章主要讲了 Vue 是怎样实现数据渲染和组件化的，也就是如何把原始数据最终映射到DOM中的。但是当数据发生变化时，Vue 是如何自动更新DOM的我们还没看，这也是 Vue 相当重要的一部分，这个特性使得开发者几乎不需要直接操作DOM，只专注在业务逻辑的实现上就可以了。</p>
+<p>Vue 实现响应系统的代码位于文件夹<code>core/observer</code>中，这部分的代码完全是独立的，你可以让任何一个普通的 JavaScript 对象变成是响应式的。这一点从项目中对这一模块的测试用例也可以看出来，对应的测试用例位于文件夹<code>test/unit/modules/observer</code>中，在阅读代码遇到困难时，可以看一下测试用例说不定能得到提示。</p>
+<p>今天要看的代码位于文件夹<code>core/observer</code>中，主要是<code>Observer</code>、<code>Dep</code>、<code>Watcher</code>这几个类的实现极其之前的关系。</p>
+<blockquote>
+<p>我没有在文章中大量的粘贴代码，一定要将代码clone下来看哦。</p>
+</blockquote>
+<p>我这一部分还不打算分析<code>props</code>、<code>data</code>等等数据选项的初始化，好在 Vue 提供了<code>Vue.observable(object)</code>这个全局方法，可以很容易将一个普通对象变成可响应的，所以可以使用这个API举例子来调试，比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> data = &#123;</span><br><span class="line">  message: <span class="string">'Hello World'</span></span><br><span class="line">&#125;</span><br><span class="line">Vue.observable(data)</span><br><span class="line"><span class="built_in">console</span>.log(data)</span><br></pre></td></tr></table></figure>
+<p><code>Vue.observable</code>是在文件<code>core/global-api/index.js</code>中加上的，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">initGlobalAPI</span> (<span class="params">Vue: GlobalAPI</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 2.6 explicit observable API</span></span><br><span class="line">  Vue.observable = &lt;T&gt;(obj: T): T =&gt; &#123;</span><br><span class="line">    observe(obj)</span><br><span class="line">    return obj</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>observe</code>函数的实现我们下面会讲到的。</p>
+<a id="more"></a>
+<h2 id="Observer"><a href="#Observer" class="headerlink" title="Observer"></a>Observer</h2><p><code>Observer</code>类中的最上面有这样一段注释：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Observer class that is attached to each observed</span></span><br><span class="line"><span class="comment"> * object. Once attached, the observer converts the target</span></span><br><span class="line"><span class="comment"> * object's property keys into getter/setters that</span></span><br><span class="line"><span class="comment"> * collect dependencies and dispatch updates.</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+<p>通过这段注释可知<code>Observer</code>类主要干了两件事：</p>
+<ul>
+<li><p>添加<code>Observer</code>类对象到要被观察的对象中。</p>
+</li>
+<li><p>将目标对象的属性转换成<code>getter</code>/<code>setter</code>，用来进行依赖收集和派发更新。</p>
+</li>
+</ul>
+<p>先看第1点的实现，在<code>Observer</code>类的构造器函数中会为目标对象添加<code>__ob__</code>属性。我们在之前的代码中也看到过判断<code>__ob__</code>属性是否存在来判断对象是否正在被观察中。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">Observer</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">constructor</span> (value: any) &#123;</span><br><span class="line">    <span class="comment">// 目标对象</span></span><br><span class="line">    <span class="keyword">this</span>.value = value</span><br><span class="line">    <span class="keyword">this</span>.dep = <span class="keyword">new</span> Dep()</span><br><span class="line">    <span class="comment">// number of vms that have this object as root $data</span></span><br><span class="line">    <span class="keyword">this</span>.vmCount = <span class="number">0</span></span><br><span class="line">    <span class="comment">// 为目标对象添加 __ob__ 属性，属性值为当前的 Observer 对象</span></span><br><span class="line">    <span class="comment">// __ob__ 是不可以枚举的</span></span><br><span class="line">    def(value, <span class="string">'__ob__'</span>, <span class="keyword">this</span>)</span><br><span class="line">    <span class="comment">// ...省略</span></span><br><span class="line">  &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>比如现在有如下对象：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> data = &#123;</span><br><span class="line">  message: <span class="string">'Hello World'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在变为可观察的对象后如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> data = &#123;</span><br><span class="line">  message: <span class="string">'Hello World'</span>,</span><br><span class="line">  <span class="string">'__ob__'</span>: &#123;</span><br><span class="line">    dep: Dep的实例对象, <span class="comment">// new Dep()</span></span><br><span class="line">    value: data, <span class="comment">// value 会再指向 data</span></span><br><span class="line">    vmCount: <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来看第2点的实现，在构造器函数中对应下面这段：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(value)) &#123;</span><br><span class="line">  <span class="keyword">if</span> (hasProto) &#123; <span class="comment">// can we use __proto__?</span></span><br><span class="line">    protoAugment(value, arrayMethods)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    copyAugment(value, arrayMethods, arrayKeys)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">this</span>.observeArray(value)</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="keyword">this</span>.walk(value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>传入<code>Observer</code>构造器的值必须是对象类型，不能是原始值类型的值。是对象类型时还需要判断是数组对象还是纯对象：</p>
+<ul>
+<li><p>是数组对象时，如果<code>__proto__</code>可用，就将<code>arrayMethods</code>直接赋值给目标对象的<code>__proto__</code>。否则将<code>arrayMethods</code>中的每一项添加到目标对象本身。然后调用<code>observeArray</code>方法将数组中的每一项都转换成可观察的对象。</p>
+<p>举个例子来看一下添加<code>arrayMethods</code>后对象的样子，比如现在有如下对象：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> data = &#123;</span><br><span class="line">  items: [</span><br><span class="line">    &#123; <span class="attr">name</span>: <span class="string">'alma'</span>, <span class="attr">type</span>: <span class="string">'cat'</span>, <span class="attr">id</span>: <span class="string">'A'</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">name</span>: <span class="string">'ring'</span>, <span class="attr">type</span>: <span class="string">'cat'</span>, <span class="attr">id</span>: <span class="string">'B'</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">name</span>: <span class="string">'winston'</span>, <span class="attr">type</span>: <span class="string">'dog'</span>, <span class="attr">id</span>: <span class="string">'C'</span> &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用<code>protoAugment</code>函数添加<code>arrayMethods</code>后如下：</p>
+<p><img src="/images/vue-observer-1.jpg"></p>
+<p>使用<code>copyAugment</code>函数添加<code>arrayMethods</code>后如下：</p>
+<p><img src="/images/vue-observer-2.jpg"></p>
+<p>可以看到这些数组的方法都是会改变数组自身的内容，每个方法重新被写成了<code>mutator()</code>方法。这样在数组的内容改变时就会被拦截到，然后发出通知。实现的过程在文件<code>observer/array.js</code>中：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Intercept mutating methods and emit events</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">methodsToPatch.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">method</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// cache original method</span></span><br><span class="line">  <span class="keyword">const</span> original = arrayProto[method]</span><br><span class="line">  def(arrayMethods, method, <span class="function"><span class="keyword">function</span> <span class="title">mutator</span> (<span class="params">...args</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> result = original.apply(<span class="keyword">this</span>, args)</span><br><span class="line">    <span class="keyword">const</span> ob = <span class="keyword">this</span>.__ob__</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// notify change</span></span><br><span class="line">    ob.dep.notify()</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>是纯对象时，调用<code>walk</code>方法将所有对象的属性转换成<code>getter</code>/<code>setter</code>。</p>
+</li>
+</ul>
+<h3 id="observer工厂函数"><a href="#observer工厂函数" class="headerlink" title="observer工厂函数"></a>observer工厂函数</h3><p>在<code>observeArray</code>方法中可以看到没有用<code>new Observer(items[i])</code>来直接创建可观察的对象，而是使用了<code>observer</code>工厂函数来创建。在<code>observer</code>中会先判断<code>value</code>是否需要被观察，从下面这段代码可知不是对象类型的值，或者是<code>VNode</code>的实例，是不需要观察的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!isObject(value) || value <span class="keyword">instanceof</span> VNode) &#123;</span><br><span class="line">  <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果是需要观察的值，并且已经在观察中了，则直接将<code>value.__ob__</code>赋值给最后要返回的<code>ob</code>变量。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> ob: Observer | <span class="keyword">void</span></span><br><span class="line"><span class="comment">// value 需要有 __ob__ 属性，并且 value.__ob__ 的值是 Observer 的实例</span></span><br><span class="line"><span class="keyword">if</span> (hasOwn(value, <span class="string">'__ob__'</span>) &amp;&amp; value.__ob__ <span class="keyword">instanceof</span> Observer) &#123;</span><br><span class="line">  ob = value.__ob__</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果值还没有在观察中，需要满足下面这些条件才可以创建<code>Observer</code>的实例：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (</span><br><span class="line">  shouldObserve &amp;&amp;</span><br><span class="line">  !isServerRendering() &amp;&amp;</span><br><span class="line">  (<span class="built_in">Array</span>.isArray(value) || isPlainObject(value)) &amp;&amp;</span><br><span class="line">  <span class="built_in">Object</span>.isExtensible(value) &amp;&amp;</span><br><span class="line">  !value._isVue</span><br><span class="line">) &#123;</span><br><span class="line">  ob = <span class="keyword">new</span> Observer(value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>shouldObserve</code> 为 <code>true</code>时，<code>shouldObserve</code>的定义如下。这使得在不需要观察对象的变化时可以将该功能关掉。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * In some cases we may want to disable observation inside a component's</span></span><br><span class="line"><span class="comment">* update computation.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">let</span> shouldObserve: boolean = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">toggleObserving</span> (<span class="params">value: boolean</span>) </span>&#123;</span><br><span class="line">  shouldObserve = value</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>正在进行的不是服务器端渲染。</p>
+</li>
+<li><p>值的类型是数组或者是纯对象。</p>
+</li>
+<li><p>对象是可扩展的。在 MDN 中对对象的可扩展性解释如下：</p>
+<p>默认情况下，对象是可扩展的：即可以为他们添加新的属性。以及它们的 <code>__proto__</code> 属性可以被更改。<code>Object.preventExtensions</code>，<code>Object.seal</code> 或 <code>Object.freeze</code> 方法都可以标记一个对象为不可扩展（non-extensible）。</p>
+</li>
+<li><p>当前的值不是<code>Vue</code>实例对象。</p>
+</li>
+</ul>
+<p>最后判断如果<code>asRootData</code>是<code>true</code>，将<code>ob.vmCount</code>的值加1。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (asRootData &amp;&amp; ob) &#123;</span><br><span class="line">  ob.vmCount++</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>搜索整个工程可以发现，只在将创建<code>Vue</code>实例时传的<code>data</code>选项转换成可观察的对象时，才会将<code>asRootData</code>设置为<code>true</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">initData</span> (<span class="params">vm: Component</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// observe data</span></span><br><span class="line">  observe(data, <span class="literal">true</span> <span class="comment">/* asRootData */</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>vmCount</code>主要会在 Vue 公开给开发者使用的<code>Vue.set</code>和<code>Vue.delete</code>中会使用到，我们看到那部分代码时再说。</p>
+<p>整个<code>observer</code>函数中做的事情就这些了，可以说整个项目中都是使用<code>observer</code>这个工厂函数来获得<code>Observer</code>的实例对象的，这样就将创建<code>Observer</code>的实例对象之前需要做的一些判断集中在了一处。</p>
+<h3 id="defineReactive"><a href="#defineReactive" class="headerlink" title="defineReactive"></a>defineReactive</h3><p><code>walk</code>方法中主要是使用<code>defineReactive</code>函数来将对象的每一个属性转换成<code>getter</code>和<code>setter</code>的，在<code>getter</code>中收集依赖，在<code>setter</code>中派发更新。这里涉及到了<code>Dep</code>这个类，我们稍后再看它的代码，所以先将涉及到<code>Dep</code>的地方忽略掉，主要看它的转化过程。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Define a reactive property on an Object.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">defineReactive</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  obj: Object, <span class="regexp">//</span> 属性所在的对象</span></span></span><br><span class="line"><span class="function"><span class="params">  key: string, <span class="regexp">//</span> 属性名</span></span></span><br><span class="line"><span class="function"><span class="params">  val: any,    <span class="regexp">//</span> 属性值，也可以不传</span></span></span><br><span class="line"><span class="function"><span class="params">  customSetter?: ?Function, <span class="regexp">//</span> 给调用方在setter被触发后执行某些任务的机会</span></span></span><br><span class="line"><span class="function"><span class="params">  shallow?: boolean <span class="regexp">//</span> 是否深度观察</span></span></span><br><span class="line"><span class="function"><span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 如果属性是不可配置的，不需要观察，直接返回</span></span><br><span class="line">  <span class="keyword">const</span> property = <span class="built_in">Object</span>.getOwnPropertyDescriptor(obj, key)</span><br><span class="line">  <span class="keyword">if</span> (property &amp;&amp; property.configurable === <span class="literal">false</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// cater for pre-defined getter/setters</span></span><br><span class="line">  <span class="keyword">const</span> getter = property &amp;&amp; property.get</span><br><span class="line">  <span class="keyword">const</span> setter = property &amp;&amp; property.set</span><br><span class="line">  <span class="keyword">if</span> ((!getter || setter) &amp;&amp; <span class="built_in">arguments</span>.length === <span class="number">2</span>) &#123;</span><br><span class="line">    <span class="comment">// 之前没有 getter 或者 有 setter时，并且只传了两个参数，obj &amp; key</span></span><br><span class="line">    <span class="comment">// 取 key 对应的值</span></span><br><span class="line">    val = obj[key]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 需要深度观察时，对 val 再进行转换</span></span><br><span class="line">  <span class="comment">// 如果 newVal 不是对象类型的 或者不能被观察，observe的返回会是 undefined</span></span><br><span class="line">  <span class="keyword">let</span> childOb = !shallow &amp;&amp; observe(val)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 定义属性的 getter &amp; setter</span></span><br><span class="line">  <span class="built_in">Object</span>.defineProperty(obj, key, &#123;</span><br><span class="line">    enumerable: <span class="literal">true</span>,</span><br><span class="line">    configurable: <span class="literal">true</span>,</span><br><span class="line">    <span class="keyword">get</span>: function reactiveGetter() &#123;</span><br><span class="line">      <span class="comment">// 如果之前有 getter，调用之前的 getter获取值，</span></span><br><span class="line">      <span class="comment">// 否则使用刚刚获得的 val 作为 getter 返回值</span></span><br><span class="line">      <span class="keyword">const</span> value = getter ? getter.call(obj) : val</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">      <span class="keyword">return</span> value</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="keyword">set</span>: function reactiveSetter(newVal) &#123;</span><br><span class="line">      <span class="keyword">const</span> value = getter ? getter.call(obj) : val</span><br><span class="line">      <span class="comment">/* eslint-disable no-self-compare */</span></span><br><span class="line">      <span class="comment">// 1. 新旧值完全一样直接返回</span></span><br><span class="line">      <span class="comment">// 2. 自身不等于自身的值，其实是 NaN，这时也直接返回</span></span><br><span class="line">      <span class="keyword">if</span> (newVal === value || (newVal !== newVal &amp;&amp; value !== value)) &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">/* eslint-enable no-self-compare */</span></span><br><span class="line">      <span class="comment">// 如果调用方传了 customSetter，就执行它</span></span><br><span class="line">      <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; customSetter) &#123;</span><br><span class="line">        customSetter()</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// #7981: for accessor properties without setter</span></span><br><span class="line">      <span class="comment">// 只读的属性，直接返回</span></span><br><span class="line">      <span class="keyword">if</span> (getter &amp;&amp; !setter) <span class="keyword">return</span></span><br><span class="line">      <span class="comment">// 如果之前在属性描述符中定义了 setter，则用之前的setter设置新值</span></span><br><span class="line">      <span class="comment">// 否则直接设置新值</span></span><br><span class="line">      <span class="keyword">if</span> (setter) &#123;</span><br><span class="line">        setter.call(obj, newVal)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        val = newVal</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// 需要深度观察时，对新值再进行转换</span></span><br><span class="line">      <span class="comment">// 如果 newVal 不是对象类型的 或者不能被观察，observe的返回会是 undefined</span></span><br><span class="line">      childOb = !shallow &amp;&amp; observe(newVal)</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>说一下<code>shallow</code>这个参数，大多数情况下都是没有传的，那么<code>!shallow</code>的值就会是<code>true</code>，是需要深度观察的。搜索整个工程会发现这个参数主要用于将<code>Vue</code>实例属性<code>$attrs</code>和<code>$listeners</code>转换成可观察的对象时，显示地调用了<code>defineReactive</code>函数。</p>
+<p>来看一下一个对象经过转换后的样子：</p>
+<p><img src="/images/vue-observer-3.jpg"></p>
+<h3 id="Vue-set-Vue-delete"><a href="#Vue-set-Vue-delete" class="headerlink" title="Vue.set/Vue.delete"></a>Vue.set/Vue.delete</h3><p>在文件<code>core/global-api/index.js</code>中添加了Vue的全局方法<code>set</code>和<code>delete</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="keyword">set</span>, del &#125; from '../observer/index'</span><br><span class="line">export function initGlobalAPI (Vue: GlobalAPI) &#123;</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">  Vue.set = <span class="keyword">set</span></span><br><span class="line">  Vue.delete = del</span><br><span class="line">  //...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到用到的就是下面两个函数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">set</span>(<span class="params">target: Array&lt;any&gt; | Object, key: any, val: any</span>): <span class="title">any</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">del</span>(<span class="params">target: Array&lt;any&gt; | Object, key: any</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>两个函数的处理流程几乎是一样的：</p>
+<ul>
+<li><p>如果目标对象是<code>undefined</code>、<code>null</code>或原始值类型是不能添加或删除响应式属性的。</p>
+</li>
+<li><p>如果目标对象是数组，我们上面有说到改变数组自身内容的方法被调用时，都会被拦截到，然后发出通知。这些方法就包括了<code>splice</code>，所以这里调用了<code>splice</code>来像数组中添加或移除项。</p>
+</li>
+<li><p>在<code>set</code>时，如果<code>key</code>已经是目标对象的属性，那么该属性已经是响应式的了，可以直接赋值，这是属性描述符中的<code>setter</code>会被触发。</p>
+</li>
+<li><p>在<code>del</code>时，如果<code>key</code>不在目标对象中，直接返回。</p>
+</li>
+<li><p>如果目标对象是 <code>Vue</code> 实例对象，或 <code>Vue</code> 实例的根数据对象时，不能添加也不能删除响应式属性。</p>
+</li>
+<li><p>获取目标对象的<code>__ob__</code>属性值，并赋值给变量<code>ob</code>。</p>
+</li>
+<li><p>在<code>set</code>时，如果<code>ob</code>为空，则直接给属性赋值后返回。否则调用<code>defineReactive</code>函数将属性转换为响应式的，并发出通知。</p>
+</li>
+<li><p>在<code>del</code>时，从目标对象中删除指定的属性。如果<code>ob</code>为空直接返回，否则发出通知。</p>
+</li>
+</ul>
+<p>看过这<code>set</code>和<code>del</code>的实现后，可以再回头来理解一遍官方文档中<a href="https://cn.vuejs.org/v2/guide/reactivity.html#%E6%A3%80%E6%B5%8B%E5%8F%98%E5%8C%96%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9" target="_blank" rel="noopener">检测变化的注意事项</a>一节的说明了。</p>
+<h2 id="Dep"><a href="#Dep" class="headerlink" title="Dep"></a>Dep</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> uid = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * A dep is an observable that can have multiple</span></span><br><span class="line"><span class="comment"> * directives subscribing to it.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Dep</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> target: ?Watcher;</span><br><span class="line">  id: number;</span><br><span class="line">  subs: <span class="built_in">Array</span>&lt;Watcher&gt;;   <span class="comment">// Dep 所有的订阅者</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">constructor</span> () &#123;</span><br><span class="line">    <span class="keyword">this</span>.id = uid++  <span class="comment">// 每创建一个Dep实例，uid就会加1</span></span><br><span class="line">    <span class="keyword">this</span>.subs = []</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从这里可以看到一个<code>Dep</code>实例可以有多个订阅者，从类型注解上可以看出订阅者就是<code>Watcher</code>，并且有一个唯一<code>id</code>。此外<code>Dep</code>类还有一个静态属性<code>target</code>，这个<code>target</code>就是当前的观察者，一个时间段只会有一个观察者，我们可以看下面这段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The current target watcher being evaluated.</span></span><br><span class="line"><span class="comment">// This is globally unique because only one watcher</span></span><br><span class="line"><span class="comment">// can be evaluated at a time.</span></span><br><span class="line">Dep.target = <span class="literal">null</span></span><br><span class="line"><span class="keyword">const</span> targetStack = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">pushTarget</span> (<span class="params">target: ?Watcher</span>) </span>&#123;</span><br><span class="line">  targetStack.push(target)</span><br><span class="line">  Dep.target = target</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">popTarget</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  targetStack.pop()</span><br><span class="line">  Dep.target = targetStack[targetStack.length - <span class="number">1</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在<code>pushTarget(target)</code>到<code>popTarget()</code>这段时间内的观察者就是<code>target</code>，如果在某个时间段内不想被观察者观察就可以不传<code>target</code>了，比如在调用Vue实例的生命周期钩子时：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">callHook</span> (<span class="params">vm: Component, hook: string</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// #7573 disable dep collection when invoking lifecycle hooks</span></span><br><span class="line">  pushTarget()</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  popTarget()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>栈这种数据结构在这被应用的真是极好了。</p>
+<p>我们现在再回头来看一下属性的<code>getter</code>和<code>setter</code>中与<code>Dep</code>有关的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">defineReactive</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  obj: Object,</span></span></span><br><span class="line"><span class="function"><span class="params">  key: string,</span></span></span><br><span class="line"><span class="function"><span class="params">  val: any,</span></span></span><br><span class="line"><span class="function"><span class="params">  customSetter?: ?Function,</span></span></span><br><span class="line"><span class="function"><span class="params">  shallow?: boolean</span></span></span><br><span class="line"><span class="function"><span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> dep = <span class="keyword">new</span> Dep()</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="built_in">Object</span>.defineProperty(obj, key, &#123;</span><br><span class="line">    enumerable: <span class="literal">true</span>,</span><br><span class="line">    configurable: <span class="literal">true</span>,</span><br><span class="line">    <span class="keyword">get</span>: function reactiveGetter() &#123;</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">      <span class="keyword">if</span> (Dep.target) &#123;</span><br><span class="line">        dep.depend()</span><br><span class="line">        <span class="keyword">if</span> (childOb) &#123;</span><br><span class="line">          childOb.dep.depend()</span><br><span class="line">          <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(value)) &#123;</span><br><span class="line">            dependArray(value)</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> value</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="keyword">set</span>: function reactiveSetter(newVal) &#123;</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">      dep.notify()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Collect dependencies on array elements when the array is touched, since</span></span><br><span class="line"><span class="comment"> * we cannot intercept array element access like property getters.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">dependArray</span>(<span class="params">value: Array&lt;any&gt;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> e, i = <span class="number">0</span>, l = value.length; i &lt; l; i++) &#123;</span><br><span class="line">    e = value[i]</span><br><span class="line">    e &amp;&amp; e.__ob__ &amp;&amp; e.__ob__.dep.depend()</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(e)) &#123;</span><br><span class="line">      dependArray(e)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到一个属性对应的一个<code>Dep</code>实例。我们说 <em>依赖收集</em> 指的就是给当前的观察者（<code>Watcher</code>实例）收集要被观察的对象（<code>Dep</code>实例），在<code>getter</code>中主要使用的是<code>dep.depend()</code>进行依赖收集，如果<code>getter</code>要返回的值是数组，会在深度观察时<code>dependArray</code>递归对数组中的每一项元素的<code>dep</code>进行收集。在<code>setter</code>中主要使用的是<code>dep.notify()</code>来派发更新。下面我们就来看一下依赖收集和派发更新的过程。</p>
+<h3 id="依赖收集的过程"><a href="#依赖收集的过程" class="headerlink" title="依赖收集的过程"></a>依赖收集的过程</h3><p><code>depend</code>方法的代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Dep</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  depend () &#123;</span><br><span class="line">    <span class="keyword">if</span> (Dep.target) &#123;</span><br><span class="line">      Dep.target.addDep(<span class="keyword">this</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到<code>depend</code>只是对<code>target.addDep</code>的包装，从前面可知<code>target</code>就是<code>Watcher</code>的实例对象，所以到<code>watcher.js</code>中看一下这个方法的实现：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Add a dependency to this directive.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">addDep (dep: Dep) &#123;</span><br><span class="line">  <span class="keyword">const</span> id = dep.id</span><br><span class="line">  <span class="keyword">if</span> (!<span class="keyword">this</span>.newDepIds.has(id)) &#123;</span><br><span class="line">    <span class="keyword">this</span>.newDepIds.add(id)</span><br><span class="line">    <span class="keyword">this</span>.newDeps.push(dep)</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.depIds.has(id)) &#123;</span><br><span class="line">      dep.addSub(<span class="keyword">this</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>addSub</code>的实现如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Dep</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  addSub (sub: Watcher) &#123;</span><br><span class="line">    <span class="keyword">this</span>.subs.push(sub)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以<code>addDep</code>方法进行了一个双向的添加：给当前的观察者添加一个依赖，并且给该依赖添加一个观察者。<br><code>newDepIds</code>中放的是本次在观察期间收集的依赖<code>id</code>，<code>depIds</code>中放的是上一次观察期间收集的依赖。在一次的观察期间，一个属性的<code>getter</code>方法可能会被调用很多次，也就是与这个属性对应的依赖可能被多次收集，所以需要使用<code>!this.newDepIds.has(id)</code>来判断避免重复收集。在本次观察期间的观察者也有可能在上一次观察期间已经添加到依赖的订阅者中了，所以需要使用<code>(!this.depIds.has(id)</code>来判断避免给依赖添加重复的观察者。</p>
+<p>为什么说<code>newDepIds</code>中放的是本次在观察期间收集的依赖<code>id</code>呢？看<code>Watcher</code>类中的<code>get</code>方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Watcher</span> </span>&#123;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Evaluate the getter, and re-collect dependencies.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="keyword">get</span> () &#123;</span><br><span class="line">    pushTarget(<span class="keyword">this</span>)</span><br><span class="line">    <span class="keyword">let</span> value</span><br><span class="line">    <span class="keyword">const</span> vm = <span class="keyword">this</span>.vm</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      value = <span class="keyword">this</span>.getter.call(vm, vm)</span><br><span class="line">    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      popTarget()</span><br><span class="line">      <span class="keyword">this</span>.cleanupDeps()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> value</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>前面说了在<code>pushTarget</code>和<code>popTarget</code>之间是一次观察期，这里的观察者就是当前的<code>watcher</code>实例对象。在<code>this.getter</code>执行的过程中，因为这里会发生组件的渲染，所以数据对象的属性的<code>getter</code>就会被调用了，进而<code>dep.depend()</code>会被调用，那么不在<code>newDeps</code>中的依赖就会被放入进去。</p>
+<blockquote>
+<p>我会但开一篇文章来总结组件的更新过程，到时就会看到为什么在<code>this.getter</code>执行的过程中会发生组件的渲染。</p>
+</blockquote>
+<p>在观察期结束后，调用<code>cleanupDeps</code>移除所有当前观察者的所有依赖。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Watcher</span> </span>&#123;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Clean up for dependency collection.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  cleanupDeps () &#123;</span><br><span class="line">    <span class="keyword">let</span> i = <span class="keyword">this</span>.deps.length</span><br><span class="line">    <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">      <span class="keyword">const</span> dep = <span class="keyword">this</span>.deps[i]</span><br><span class="line">      <span class="keyword">if</span> (!<span class="keyword">this</span>.newDepIds.has(dep.id)) &#123;</span><br><span class="line">        dep.removeSub(<span class="keyword">this</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> tmp = <span class="keyword">this</span>.depIds</span><br><span class="line">    <span class="keyword">this</span>.depIds = <span class="keyword">this</span>.newDepIds</span><br><span class="line">    <span class="keyword">this</span>.newDepIds = tmp</span><br><span class="line">    <span class="keyword">this</span>.newDepIds.clear()</span><br><span class="line">    tmp = <span class="keyword">this</span>.deps</span><br><span class="line">    <span class="keyword">this</span>.deps = <span class="keyword">this</span>.newDeps</span><br><span class="line">    <span class="keyword">this</span>.newDeps = tmp</span><br><span class="line">    <span class="keyword">this</span>.newDeps.length = <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>cleanupDeps</code>方法中先将遍历当前观察者的所有依赖，如果依赖没有在本次观察期被收集，就将当前观察者从依赖的所有订阅者中移除。然后把本次收集的依赖赋值给<code>deps</code>，最后清空<code>newDeps</code>。</p>
+<h3 id="派发更新的过程"><a href="#派发更新的过程" class="headerlink" title="派发更新的过程"></a>派发更新的过程</h3><p><code>notify</code>方法的实现如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Dep</span> </span>&#123;</span><br><span class="line">  notify () &#123;</span><br><span class="line">    <span class="comment">// stabilize the subscriber list first</span></span><br><span class="line">    <span class="keyword">const</span> subs = <span class="keyword">this</span>.subs.slice()</span><br><span class="line">    <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; !config.async) &#123;</span><br><span class="line">      <span class="comment">// subs aren't sorted in scheduler if not running async</span></span><br><span class="line">      <span class="comment">// we need to sort them now to make sure they fire in correct</span></span><br><span class="line">      <span class="comment">// order</span></span><br><span class="line">      subs.sort(<span class="function">(<span class="params">a, b</span>) =&gt;</span> a.id - b.id)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>, l = subs.length; i &lt; l; i++) &#123;</span><br><span class="line">      subs[i].update()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于订阅者<code>Watcher</code>的实例也有唯一<code>id</code>，先创建的实例<code>id</code>较小，在同步执行更新时会按<code>id</code>先给订阅者排个序，确保先添加的订阅者先被通知更新。接着调用了订阅者的<code>update</code>方法。<code>update</code>方法在接下来的<code>Watcher</code>部分再细说。</p>
+<h2 id="Watcher"><a href="#Watcher" class="headerlink" title="Watcher"></a>Watcher</h2><p>下面是对<code>Watcher</code>类的注释：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * A watcher parses an expression, collects dependencies,</span></span><br><span class="line"><span class="comment"> * and fires callback when the expression value changes.</span></span><br><span class="line"><span class="comment"> * This is used for both the $watch() api and directives.</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+<p><code>Watcher</code>类主要负责解析表达式，收集依赖，当表达式的值改变时触发回调。可以看到这个类也会被用于实现<code>$watch</code>API。搜索整个工程可以发现3处有<code>new Watcher()</code>这个动作：</p>
+<ul>
+<li><p>在<code>mountComponent</code>函数中，这个在讲<a href="http://shinancao.cn/2020/01/25/Vue-Source-Code-08/" target="_blank" rel="noopener">Vue.js源码学习 —— Vue实例挂载的实现</a>时有遇到过。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">updateComponent = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  vm._update(vm._render(), hydrating)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">new</span> Watcher(vm, updateComponent, noop, &#123;</span><br><span class="line">  before () &#123;</span><br><span class="line">    <span class="keyword">if</span> (vm._isMounted &amp;&amp; !vm._isDestroyed) &#123;</span><br><span class="line">      callHook(vm, <span class="string">'beforeUpdate'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, <span class="literal">true</span> <span class="comment">/* isRenderWatcher */</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在<code>initComputed</code>函数中，位于文件<code>core/instance/state.js</code>中。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> computedWatcherOptions = &#123; <span class="attr">lazy</span>: <span class="literal">true</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">initComputed</span> (<span class="params">vm: Component, computed: Object</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">if</span> (!isSSR) &#123;</span><br><span class="line">    <span class="comment">// create internal watcher for the computed property.</span></span><br><span class="line">    watchers[key] = <span class="keyword">new</span> Watcher(</span><br><span class="line">      vm,</span><br><span class="line">      getter || noop,</span><br><span class="line">      noop,</span><br><span class="line">      computedWatcherOptions</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在<code>Vue.prototype.$watch</code>方法中。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Vue.prototype.$watch = <span class="function"><span class="keyword">function</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  expOrFn: string | Function,</span></span></span><br><span class="line"><span class="function"><span class="params">  cb: any,</span></span></span><br><span class="line"><span class="function"><span class="params">  options?: Object</span></span></span><br><span class="line"><span class="function"><span class="params"></span>): <span class="title">Function</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  options = options || &#123;&#125;</span><br><span class="line">  options.user = <span class="literal">true</span></span><br><span class="line">  <span class="keyword">const</span> watcher = <span class="keyword">new</span> Watcher(vm, expOrFn, cb, options)</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>将各种使用场景列出来，会更加便于我们理解<code>Watcher</code>的构造器函数的参数。</p>
+<h3 id="Watcher的构造器函数"><a href="#Watcher的构造器函数" class="headerlink" title="Watcher的构造器函数"></a>Watcher的构造器函数</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Watcher</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span> (</span><br><span class="line">    vm: Component,</span><br><span class="line">    expOrFn: string | Function,</span><br><span class="line">    cb: Function,</span><br><span class="line">    options?: ?Object,</span><br><span class="line">    isRenderWatcher?: boolean</span><br><span class="line">  ) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>vm</code>：<code>Vue</code>的实例对象，会像该<code>vm</code>的观察者列表中添加当前这个观察者。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vm._watchers.push(<span class="keyword">this</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>expOrFn</code>：表达式，在一个<code>watcher</code>收到通知后，会执行该表达式获得新的值。表达式可以是字符串，也可以是一个函数。我们看到在<code>mountComponent</code>函数中创建<code>Watcher</code>实例时传的就是函数，而传字符串的情况比如使用<code>vm.$watch</code>时：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 'message' 即是表达式</span></span><br><span class="line">vm.$watch(<span class="string">'message'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">newVal, oldVal</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;)</span><br><span class="line">vm.message = <span class="string">'Hi Vue'</span></span><br></pre></td></tr></table></figure>
+<p>在构造器函数的下面有这样一段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// parse expression for getter</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">typeof</span> expOrFn === <span class="string">'function'</span>) &#123;</span><br><span class="line">  <span class="keyword">this</span>.getter = expOrFn</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="keyword">this</span>.getter = parsePath(expOrFn)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>expOrFn</code>是字符串时会调用<code>parsePath</code>函数进行解析。表达式只支持用 <em>点</em> 符号取值。经过<code>parsePath</code>函数解析后会返回下面这个函数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ƒ (obj) &#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; segments.length; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!obj) &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">    obj = obj[segments[i]];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> obj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>表达式最终会赋值给<code>this.getter</code>，调用<code>this.getter</code>时就是在计算表达式的值。</p>
+</li>
+<li><p><code>cb</code>：表达式执行完，调用<code>cb</code>将结果告知使用方，比如上面<code>vm.$watch</code>中的第2个参数。</p>
+</li>
+<li><p><code>options</code>：<code>Watcher</code>实例的选项，可以用来对该实例进行一些配置。从构造函数下面这段代码可知有哪些选项可配置：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// options</span></span><br><span class="line"><span class="keyword">if</span> (options) &#123;</span><br><span class="line">  <span class="comment">// 监听对象内部值的变化</span></span><br><span class="line">  <span class="keyword">this</span>.deep = !!options.deep</span><br><span class="line">  <span class="comment">// 是内部创建的还是外部创建的，上面看到在 Vue.prototype.$watch 的实现中，设置了该选项为true</span></span><br><span class="line">  <span class="keyword">this</span>.user = !!options.user</span><br><span class="line">  <span class="comment">// 上面看到在 initComputed 函数中设置了该选项为true</span></span><br><span class="line">  <span class="keyword">this</span>.lazy = !!options.lazy</span><br><span class="line">  <span class="comment">// 是否同步执行更新，默认情况是false</span></span><br><span class="line">  <span class="keyword">this</span>.sync = !!options.sync</span><br><span class="line">  <span class="comment">// 可以看成是 Watcher 的钩子，在执行更新之前让调用方做一些事情</span></span><br><span class="line">  <span class="comment">// 从上面看到在 mountComponent 函数中，在 before 中触发了 Vue 实例生命周期中的 beforeUpdate 钩子</span></span><br><span class="line">  <span class="keyword">this</span>.before = options.before</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="comment">// 没有传 options，各项默认都是 false</span></span><br><span class="line">  <span class="keyword">this</span>.deep = <span class="keyword">this</span>.user = <span class="keyword">this</span>.lazy = <span class="keyword">this</span>.sync = <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>isRenderWatcher</code>：用于标识当前的<code>Watcher</code>实例是否是渲染函数的观察者。一个组件实例会有一个渲染函数观察者，所以当<code>isRenderWatcher</code>为<code>true</code>时，将当前<code>Watcher</code>实例赋值给了<code>vm._watcher</code>。在上面<code>mountComponent</code>函数中，我们也看到了这个参数传了<code>true</code>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isRenderWatcher) &#123;</span><br><span class="line">  vm._watcher = <span class="keyword">this</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>最后构造器函数中是下面这段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.value = <span class="keyword">this</span>.lazy</span><br><span class="line">  ? <span class="literal">undefined</span></span><br><span class="line">  : <span class="keyword">this</span>.get()</span><br></pre></td></tr></table></figure>
+<p>如果当前实例不是计算属性的观察者，会立马计算表达式当前的值，并赋值给<code>this.value</code>。</p>
+<p>这就是<code>Watcher</code>构造器函数中做的事情了，接下来我们再看一下<code>Watcher</code>类中的其他方法的实现。</p>
+<h3 id="get"><a href="#get" class="headerlink" title="get"></a>get</h3><p>先看<code>get</code>方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">get</span> () &#123;</span><br><span class="line">  <span class="comment">// 以当前实例为观察者开始进行观察</span></span><br><span class="line">  pushTarget(<span class="keyword">this</span>)</span><br><span class="line">  <span class="keyword">let</span> value</span><br><span class="line">  <span class="keyword">const</span> vm = <span class="keyword">this</span>.vm</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 计算表达式的值，给表达式绑定了 vm，同时传的参数也是 vm</span></span><br><span class="line">    value = <span class="keyword">this</span>.getter.call(vm, vm)</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="comment">// "touch" every property so they are all tracked as</span></span><br><span class="line">    <span class="comment">// dependencies for deep watching</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.deep) &#123;</span><br><span class="line">      traverse(value)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 以当前实例为观察者的观察结束</span></span><br><span class="line">    popTarget()</span><br><span class="line">    <span class="keyword">this</span>.cleanupDeps()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> value</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果<code>deep</code>的值是<code>true</code>，说明需要深度观察，然后将<code>value</code>传给<code>traverse</code>函数。在<code>traverse</code>函数内部会递归获取嵌套对象的属性值，这样就会触发属性描述符中的<code>getter</code>被执行，从而进行依赖收集。</p>
+<p>在观察结束后，调用<code>cleanupDeps</code>方法移除当前观察者的所有依赖，<code>cleanupDeps</code>方法已经在前面分析过了。</p>
+<h3 id="run"><a href="#run" class="headerlink" title="run"></a>run</h3><p>再来看看<code>run</code>方法，真正执行更新的地方，我抽出了主流程如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">run () &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.active) &#123;</span><br><span class="line">    <span class="keyword">const</span> value = <span class="keyword">this</span>.get()</span><br><span class="line">    <span class="keyword">if</span> (</span><br><span class="line">      value !== <span class="keyword">this</span>.value ||</span><br><span class="line">      isObject(value) ||</span><br><span class="line">      <span class="keyword">this</span>.deep</span><br><span class="line">    ) &#123;</span><br><span class="line">      <span class="comment">// set new value</span></span><br><span class="line">      <span class="keyword">const</span> oldValue = <span class="keyword">this</span>.value</span><br><span class="line">      <span class="keyword">this</span>.value = value</span><br><span class="line">      <span class="keyword">this</span>.cb.call(<span class="keyword">this</span>.vm, value, oldValue)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先判断当前观察者是否处于活跃状态，只有活跃状态时才需要计算表达式的值。然后调用<code>get</code>方法拿到了表达式最新的值，在以下条件满足其一时会更新之前的值，再将新旧值作为参数传给回调函数。</p>
+<ul>
+<li>新值和旧值完全不等。</li>
+<li>新值是对象类型，因为对象的引用虽然没变，但是嵌套的属性值可能已经变了。</li>
+<li>需要什么观察时。</li>
+</ul>
+<h3 id="update"><a href="#update" class="headerlink" title="update"></a>update</h3><p>再来看之前提到的<code>update</code>方法，这个方法是提供给别人来触发更新的接口。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">update () &#123;</span><br><span class="line">  <span class="comment">/* istanbul ignore else */</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.lazy) &#123;</span><br><span class="line">    <span class="comment">// 计算属性使用</span></span><br><span class="line">    <span class="keyword">this</span>.dirty = <span class="literal">true</span></span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.sync) &#123;</span><br><span class="line">    <span class="keyword">this</span>.run()</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    queueWatcher(<span class="keyword">this</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里分了3中情况处理：</p>
+<ul>
+<li><p>如果当前观察者的<code>lazy</code>选项是<code>true</code>，说明是计算属性的观察者。此时只是设置了<code>dirty</code>为<code>true</code>。为什么这样做，我们说到计算属性的初始化时再看。</p>
+</li>
+<li><p>如果是同步更新的话，会立马执行<code>run</code>来计算表达式的值。这个只有在<code>options</code>参数中明确给出<code>sync</code>是<code>true</code>才会走到这里，默认情况都是用的异步更新。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">vm.$watch(<span class="string">'message'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">newVal, oldVal</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(newVal)</span><br><span class="line">  <span class="built_in">console</span>.log(oldVal)</span><br><span class="line">&#125;, &#123;</span><br><span class="line">  sync: <span class="literal">true</span> <span class="comment">// 手动指定 sync 为 true</span></span><br><span class="line">&#125;)</span><br><span class="line">vm.message = <span class="string">'Hi Vue'</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>其他情况都会先将当前观察者先放入异步更新队列中，等待执行。<code>queueWatcher</code>函数的实现，以及异步更新队列相关的内容会在下一篇文章中讲。</p>
+</li>
+</ul>
+<h3 id="teardown"><a href="#teardown" class="headerlink" title="teardown"></a>teardown</h3><p>我们在讲<code>Vue.prototype.$destroy</code>的实现时，有这样一段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Vue.prototype.$destroy = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// teardown watchers</span></span><br><span class="line">  <span class="keyword">if</span> (vm._watcher) &#123;</span><br><span class="line">    vm._watcher.teardown()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">let</span> i = vm._watchers.length</span><br><span class="line">  <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">    vm._watchers[i].teardown()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也就是在销毁<code>Vue</code>实例对象过程中，其中一部就是拆除所有对<code>Vue</code>实例对象的观察者。<code>teardown</code>方法的实现如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Remove self from all dependencies' subscriber list.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">teardown () &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.active) &#123;</span><br><span class="line">    <span class="comment">// remove self from vm's watcher list</span></span><br><span class="line">    <span class="comment">// this is a somewhat expensive operation so we skip it</span></span><br><span class="line">    <span class="comment">// if the vm is being destroyed.</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.vm._isBeingDestroyed) &#123;</span><br><span class="line">      remove(<span class="keyword">this</span>.vm._watchers, <span class="keyword">this</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> i = <span class="keyword">this</span>.deps.length</span><br><span class="line">    <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">      <span class="keyword">this</span>.deps[i].removeSub(<span class="keyword">this</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.active = <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先还是确保在当前观察者是活跃的状态时进行移除操作，最后将其设置为非活跃状态。移除分两步：</p>
+<ul>
+<li><p>如果<code>Vue</code>实例对象没有正在进行销毁，将当前观察者从<code>Vue</code>实例对象的观察者列表中移除掉。因为这里涉及到在数组中进行查找，所以会有额外性能消耗。那如果<code>Vue</code>实例已经准备要销毁了，不移除当前观察者也不会有什么影响。</p>
+</li>
+<li><p>我们知道当前的观察者会有多个依赖（<code>Dep</code>实例），这里每个依赖的订阅列表中也会有当前的观察者，所以它们之间的关系也要解除。</p>
+</li>
+</ul>
+<p><code>Watcher</code>类中还剩下<code>evaluate</code>和<code>depend</code>方法没说，这两个方法都是用于计算属性的观察者时，等我们将计算属性的相关内容时再来看。</p>
+<p>到此<code>Observer</code>、<code>Dep</code>、<code>Watcher</code>这几个Vue响应系统中很重要的类的代码差不多就全看完了，我们不仅了解了它们之间的关系，更是了解了Vue的响应系统是如何做到在数据改变时能够自动做出反应的，而不需开发者的参与。我把上面讲的内容画了一张图来总结，如下：</p>
+<p><img src="/images/vue-observer-4.jpg"></p>
+<p>下一篇文章会讲组件的更新过程，这其中就包括了异步更新队列的实现，<code>nextTick</code>的实现等。</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2020/02/01/Vue-Source-Code-08/" target="_blank" rel="noopener">http://shinancao.cn/2020/02/01/Vue-Source-Code-08/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="noopener">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/27/Vue-Source-Code-09/" rel="next" title="Vue.js源码学习 —— Vue实例的生命周期">
+                <i class="fa fa-chevron-left"></i> Vue.js源码学习 —— Vue实例的生命周期
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">68</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Observer"><span class="nav-number">1.</span> <span class="nav-text">Observer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#observer工厂函数"><span class="nav-number">1.1.</span> <span class="nav-text">observer工厂函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#defineReactive"><span class="nav-number">1.2.</span> <span class="nav-text">defineReactive</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vue-set-Vue-delete"><span class="nav-number">1.3.</span> <span class="nav-text">Vue.set/Vue.delete</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dep"><span class="nav-number">2.</span> <span class="nav-text">Dep</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖收集的过程"><span class="nav-number">2.1.</span> <span class="nav-text">依赖收集的过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#派发更新的过程"><span class="nav-number">2.2.</span> <span class="nav-text">派发更新的过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Watcher"><span class="nav-number">3.</span> <span class="nav-text">Watcher</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Watcher的构造器函数"><span class="nav-number">3.1.</span> <span class="nav-text">Watcher的构造器函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get"><span class="nav-number">3.2.</span> <span class="nav-text">get</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#run"><span class="nav-number">3.3.</span> <span class="nav-text">run</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#update"><span class="nav-number">3.4.</span> <span class="nav-text">update</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#teardown"><span class="nav-number">3.5.</span> <span class="nav-text">teardown</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
