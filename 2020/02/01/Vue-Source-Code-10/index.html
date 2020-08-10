@@ -417,7 +417,7 @@
 <p>我这一部分还不打算分析<code>props</code>、<code>data</code>等等数据选项的初始化，好在 Vue 提供了<code>Vue.observable(object)</code>这个全局方法，可以很容易将一个普通对象变成可响应的，所以可以使用这个API举例子来调试，比如：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> data = &#123;</span><br><span class="line">  message: <span class="string">'Hello World'</span></span><br><span class="line">&#125;</span><br><span class="line">Vue.observable(data)</span><br><span class="line"><span class="built_in">console</span>.log(data)</span><br></pre></td></tr></table></figure>
 <p><code>Vue.observable</code>是在文件<code>core/global-api/index.js</code>中加上的，代码如下：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">initGlobalAPI</span> (<span class="params">Vue: GlobalAPI</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 2.6 explicit observable API</span></span><br><span class="line">  Vue.observable = &lt;T&gt;(obj: T): T =&gt; &#123;</span><br><span class="line">    observe(obj)</span><br><span class="line">    return obj</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">initGlobalAPI</span> (<span class="params">Vue: GlobalAPI</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 2.6 explicit observable API</span></span><br><span class="line">  Vue.observable = <span class="xml"><span class="tag">&lt;<span class="name">T</span>&gt;</span>(obj: T): T =&gt; &#123;</span></span><br><span class="line"><span class="xml">    observe(obj)</span></span><br><span class="line"><span class="xml">    return obj</span></span><br><span class="line"><span class="xml">  &#125;</span></span><br><span class="line"><span class="xml">&#125;</span></span><br></pre></td></tr></table></figure>
 <p><code>observe</code>函数的实现我们下面会讲到的。</p>
 <a id="more"></a>
 <h2 id="Observer"><a href="#Observer" class="headerlink" title="Observer"></a>Observer</h2><p><code>Observer</code>类中的最上面有这样一段注释：</p>
@@ -672,6 +672,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2020/02/04/Vue-Source-Code-11/" rel="prev" title="Vue.js源码学习 —— 组件的更新">
+                Vue.js源码学习 —— 组件的更新 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -743,7 +747,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">68</span>
+                <span class="site-state-item-count">69</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>

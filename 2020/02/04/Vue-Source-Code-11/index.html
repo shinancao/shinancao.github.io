@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="JavaScript,Vue,源码分析,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 这篇文章是承接上一篇Vue.js源码学习 —— 响应系统的设计的，如果没有看过也建议您看一下，有了前面的这些铺垫理解起来今天的内容很轻松很多。 之前在说组件的渲染和生命周期时我们都把组件的更新跳过去了，现在了解了Vue的响应系统是如何设计的了，我们可以来看一下在数据改变">
+<meta name="keywords" content="JavaScript,Vue,源码分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue.js源码学习 —— 组件的更新">
+<meta property="og:url" content="http://shinancao.github.io/2020/02/04/Vue-Source-Code-11/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 这篇文章是承接上一篇Vue.js源码学习 —— 响应系统的设计的，如果没有看过也建议您看一下，有了前面的这些铺垫理解起来今天的内容很轻松很多。 之前在说组件的渲染和生命周期时我们都把组件的更新跳过去了，现在了解了Vue的响应系统是如何设计的了，我们可以来看一下在数据改变">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-observer-5.jpg">
+<meta property="og:updated_time" content="2020-08-10T01:54:18.229Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue.js源码学习 —— 组件的更新">
+<meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 这篇文章是承接上一篇Vue.js源码学习 —— 响应系统的设计的，如果没有看过也建议您看一下，有了前面的这些铺垫理解起来今天的内容很轻松很多。 之前在说组件的渲染和生命周期时我们都把组件的更新跳过去了，现在了解了Vue的响应系统是如何设计的了，我们可以来看一下在数据改变">
+<meta name="twitter:image" content="http://shinancao.github.io/images/vue-observer-5.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2020/02/04/Vue-Source-Code-11/">
+
+
+
+
+
+  <title>Vue.js源码学习 —— 组件的更新 | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-portfolio">
+          <a href="/portfolio/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
+            
+            项目
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/02/04/Vue-Source-Code-11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Vue.js源码学习 —— 组件的更新</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-04T16:40:32+08:00">
+                2020-02-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
+<p>这篇文章是承接上一篇<a href="http://shinancao.cn/2020/02/01/Vue-Source-Code-10/" target="_blank" rel="noopener">Vue.js源码学习 —— 响应系统的设计</a>的，如果没有看过也建议您看一下，有了前面的这些铺垫理解起来今天的内容很轻松很多。</p>
+<p>之前在说组件的渲染和生命周期时我们都把组件的更新跳过去了，现在了解了Vue的响应系统是如何设计的了，我们可以来看一下在数据改变时，Vue是如何去触发组件重新渲染的。这里涉及到异步更新队列和<code>nextTick</code>的实现。</p>
+<p>我们之前在讲<code>Watcher</code>实例的<code>update</code>方法时，看到有3种情况：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">update () &#123;</span><br><span class="line">  <span class="comment">/* istanbul ignore else */</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.lazy) &#123;</span><br><span class="line">    <span class="comment">// 计算属性使用</span></span><br><span class="line">    <span class="keyword">this</span>.dirty = <span class="literal">true</span></span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.sync) &#123;</span><br><span class="line">    <span class="keyword">this</span>.run()</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    queueWatcher(<span class="keyword">this</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其实呢，大部分情况都会走到最后的<code>else</code>分支，也就是异步地计算表达式的值。所以今天咱们就从<code>queueWatcher</code>函数开始看去。</p>
+<blockquote>
+<p>我不会在文章中大量地粘贴源代码，您还是一定要将Vue工程clone到本地哦。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="观察者的调度队列"><a href="#观察者的调度队列" class="headerlink" title="观察者的调度队列"></a>观察者的调度队列</h2><p>这一部分的代码主要位于文件<code>core/observer/scheduler.js</code>中。在文件的顶部我们看到定义了一系列的全局变量，先来看一下都有什么作用：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 循环更新的最大次数，超过了在开发环境下会给出告警，某个表达式可能导致了死循环更新</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> MAX_UPDATE_COUNT = <span class="number">100</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Watcher 实例的队列，如果将每个 Watcher 实例看成是任务的话，那这就是一个任务队列</span></span><br><span class="line"><span class="keyword">const</span> queue: <span class="built_in">Array</span>&lt;Watcher&gt; = []</span><br><span class="line"><span class="comment">// 处于活跃状态的子组件，主要用于&lt;keep-alive&gt;组件</span></span><br><span class="line"><span class="keyword">const</span> activatedChildren: <span class="built_in">Array</span>&lt;Component&gt; = []</span><br><span class="line"><span class="comment">// 用来保存队列中 Watcher 实例的 id</span></span><br><span class="line"><span class="keyword">let</span> has: &#123; [key: number]: ?<span class="literal">true</span> &#125; = &#123;&#125;</span><br><span class="line"><span class="comment">// 记录循环更新的次数</span></span><br><span class="line"><span class="keyword">let</span> circular: &#123; [key: number]: number &#125; = &#123;&#125;</span><br><span class="line"><span class="comment">// 是否正在等待队列中的任务执行完</span></span><br><span class="line"><span class="keyword">let</span> waiting = <span class="literal">false</span></span><br><span class="line"><span class="comment">// 是否正在执行队列中的任务</span></span><br><span class="line"><span class="keyword">let</span> flushing = <span class="literal">false</span></span><br><span class="line"><span class="comment">// 正在执行的 Watcher 实例的 index</span></span><br><span class="line"><span class="keyword">let</span> index = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>我们还看到<code>resetSchedulerState</code>函数，用于将以上的全局变量都恢复到初始状态，下面我们会看到对这些变量的使用。</p>
+<h3 id="queueWatcher"><a href="#queueWatcher" class="headerlink" title="queueWatcher"></a>queueWatcher</h3><p><code>queueWatcher</code>函数主要用来将<code>Watcher</code>实例放入观察者队列中，重复的<code>Watcher</code>实例会被跳过。所以我们看到<code>queueWatcher</code>函数中有如下判断：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">queueWatcher</span> (<span class="params">watcher: Watcher</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> id = watcher.id</span><br><span class="line">  <span class="keyword">if</span> (has[id] == <span class="literal">null</span>) &#123;</span><br><span class="line">    has[id] = <span class="literal">true</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在确定传入的<code>Watcher</code>实例可以放入队列后，接着做了两件事：</p>
+<ul>
+<li><p>决定如何放这个<code>Watcher</code>实例，我下面还是把<code>Watcher</code>实例称为一个任务，对应下面这段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!flushing) &#123;</span><br><span class="line">  queue.push(watcher)</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="comment">// if already flushing, splice the watcher based on its id</span></span><br><span class="line">  <span class="comment">// if already past its id, it will be run next immediately.</span></span><br><span class="line">  <span class="keyword">let</span> i = queue.length - <span class="number">1</span></span><br><span class="line">  <span class="keyword">while</span> (i &gt; index &amp;&amp; queue[i].id &gt; watcher.id) &#123;</span><br><span class="line">    i--</span><br><span class="line">  &#125;</span><br><span class="line">  queue.splice(i + <span class="number">1</span>, <span class="number">0</span>, watcher)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分了两种情况，如果没有在执行队列中的任务，则将传入的新任务直接放入队列尾端。如果正在执行队列中的任务，则确保传入的新任务能尽快被执行。可以把<code>watcher.id</code>看作是任务的优先级，值越小优先级越高，因为<code>id</code>越小说明<code>watcher</code>被创建的越早。所以此时插入的策略是将新任务放入马上要执行的任务后面，但是在比它优先级低的任务前面。</p>
+</li>
+<li><p>是否要现在就执行队列中的任务，对应下面这段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// queue the flush</span></span><br><span class="line"><span class="keyword">if</span> (!waiting) &#123;</span><br><span class="line">  waiting = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; !config.async) &#123;</span><br><span class="line">    flushSchedulerQueue()</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line">  nextTick(flushSchedulerQueue)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果当前正在等待上一次队列中的任务完成，也就是<code>waiting</code>是<code>true</code>时，那就算了。否则就触发队列中的任务执行，在同步时会直接调用<code>flushSchedulerQueue</code>函数，异步时会使用<code>nextTick</code>去触发。对<code>config.async</code>有下面一段测试：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Perform updates asynchronously. Intended to be used by Vue Test Utils</span></span><br><span class="line"><span class="comment"> * This will significantly reduce performance if set to false.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">async</span>: <span class="literal">true</span>,</span><br></pre></td></tr></table></figure>
+<p>说明<code>config.async</code>是<code>false</code>，也就是同步时，只是为了做单元测试用的。开启了同步更新会大大降低性能。</p>
+</li>
+</ul>
+<h3 id="flushSchedulerQueue"><a href="#flushSchedulerQueue" class="headerlink" title="flushSchedulerQueue"></a>flushSchedulerQueue</h3><p><code>flushSchedulerQueue</code>函数就是用来真正地执行队列的每个任务的。它的主要处理流程如下：</p>
+<ul>
+<li><p>设置<code>flushing</code>为<code>true</code>，所以当<code>flushing</code>为<code>true</code>时说明队列中的任务正在执行。</p>
+</li>
+<li><p>在开始执行之前先将队列中的任务按照<code>id</code>从小到大排序，我们前面也说了<code>id</code>越小说明创建的越早。从注释中可知这样做是为了确保：</p>
+<ol>
+<li>组件的更新先父组件再子组件（因为父组件总是比子组件先创建）。</li>
+<li><code>vm.$watch</code>内部创建的观察者会在渲染观察者之前执行，因为前者会先被创建。</li>
+<li>如果一个组件在其父组件的观察者执行时被销毁了，那这个组件的观察者可以被跳过去。</li>
+</ol>
+</li>
+<li><p>依次拿出队列中的观察者来执行，等循环结束后队列中的所有任务就都执行完了。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// do not cache length because more watchers might be pushed</span></span><br><span class="line"><span class="comment">// as we run existing watchers</span></span><br><span class="line"><span class="keyword">for</span> (index = <span class="number">0</span>; index &lt; queue.length; index++) &#123;</span><br><span class="line">  watcher = queue[index]</span><br><span class="line">  <span class="comment">// 我们在上一篇文章中有说过 before 选项，这里看到在调用 run 之前会先调用 before</span></span><br><span class="line">  <span class="keyword">if</span> (watcher.before) &#123;</span><br><span class="line">    watcher.before()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// id 从 has 移除</span></span><br><span class="line">  id = watcher.id</span><br><span class="line">  has[id] = <span class="literal">null</span></span><br><span class="line">  <span class="comment">// 正式执行观察者，run 的实现过程在上一篇文章里有讲</span></span><br><span class="line">  watcher.run()</span><br><span class="line">  <span class="comment">// 如果执行完观察者发现它又被添加到队列里了，这就导致了循环更新</span></span><br><span class="line">  <span class="comment">// 当循环更新执行的次数达到了最大限制，开发环境下就会给出告警信息了</span></span><br><span class="line">  <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; has[id] != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取<code>activatedChildren</code>和<code>queue</code>的一个副本后，然后调用前面说到的<code>resetSchedulerState</code>函数重置状态。</p>
+</li>
+<li><p>调用组件生命周期中的<code>updated</code>和<code>activated</code>的钩子。</p>
+</li>
+</ul>
+<h3 id="queueActivatedComponent"><a href="#queueActivatedComponent" class="headerlink" title="queueActivatedComponent"></a>queueActivatedComponent</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Queue a kept-alive component that was activated during patch.</span></span><br><span class="line"><span class="comment"> * The queue will be processed after the entire tree has been patched.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">queueActivatedComponent</span> (<span class="params">vm: Component</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// setting _inactive to false here so that a render function can</span></span><br><span class="line">  <span class="comment">// rely on checking whether it's in an inactive tree (e.g. router-view)</span></span><br><span class="line">  vm._inactive = <span class="literal">false</span></span><br><span class="line">  activatedChildren.push(vm)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是一个我们之前遇到了但是没有分析的函数，现在给补上。在Vue内部创建组件时的<code>insert</code>钩子中：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// inline hooks to be invoked on component VNodes during patch</span></span><br><span class="line"><span class="keyword">const</span> componentVNodeHooks = &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  insert (vnode: MountedComponentVNode) &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; context, componentInstance &#125; = vnode</span><br><span class="line">    <span class="keyword">if</span> (!componentInstance._isMounted) &#123;</span><br><span class="line">      componentInstance._isMounted = <span class="literal">true</span></span><br><span class="line">      callHook(componentInstance, <span class="string">'mounted'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (vnode.data.keepAlive) &#123;</span><br><span class="line">      <span class="keyword">if</span> (context._isMounted) &#123;</span><br><span class="line">        queueActivatedComponent(componentInstance)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      activateChildComponent(componentInstance, <span class="literal">true</span> <span class="comment">/* direct */</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到<code>queueActivatedComponent</code>是在<code>&lt;keep-alive&gt;</code>组件在<code>patch</code>过程中重新被插入到DOM中时调用的。因为对于<code>&lt;keep-alive&gt;</code>组件来说，它的子组件触发有可能在更新的过程中发生改变，所以这里没有直接触发它的<code>activated</code>钩子，而是先放到了队列中，等一次更新结束后我们上面看到了就会来触发<code>activated</code>钩子了。对于普通的组件来说不会存在这样的问题了，因为它的子组件都是新创建的。</p>
+<h2 id="nextTick的实现"><a href="#nextTick的实现" class="headerlink" title="nextTick的实现"></a>nextTick的实现</h2><p>这一部分的代码位于文件<code>core/util/next-tick.js</code>中，我们还是先来看在它中定义的全局变量：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可以看到这个变量被导出了，可以在其他文件中使用</span></span><br><span class="line"><span class="comment">// 下面在定义 timerFunc 的过程中会来设置这个值，这样也省了其他再来验证 microtask 是否可用</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">let</span> isUsingMicroTask = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// nextTick 中收集到的要执行的任务</span></span><br><span class="line"><span class="keyword">const</span> callbacks = []</span><br><span class="line"><span class="comment">// 标识是否需要等待上一次任务的完成</span></span><br><span class="line"><span class="keyword">let</span> pending = <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<p>再来看一下<code>flushCallbacks</code>函数，在这个函数中我们看到设置了<code>pending</code>为<code>false</code>，标识这个函数一旦被调用任务就会执行了，后面再进来的任务可以再次触发列表中的任务执行。</p>
+<h3 id="nextTick"><a href="#nextTick" class="headerlink" title="nextTick"></a>nextTick</h3><p>我们知道Vue提供给了开发者一个API：<code>vm.$nextTick</code>，可用于将回调延迟到DOM更新循环之后执行。<code>vm.$nextTick</code>的内部就是使用的我们马上要分析的<code>nextTick</code>函数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">renderMixin</span> (<span class="params">Vue: Class&lt;Component&gt;</span>) </span>&#123;</span><br><span class="line">  Vue.prototype.$nextTick = <span class="function"><span class="keyword">function</span> (<span class="params">fn: Function</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> nextTick(fn, <span class="keyword">this</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>好了，我们现在看一下<code>nextTick</code>函数内部的处理流程：</p>
+<ul>
+<li><p>将传入的回调放入回调列表中。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">callbacks.push(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (cb) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      cb.call(ctx)</span><br><span class="line">    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">      handleError(e, ctx, <span class="string">'nextTick'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (_resolve) &#123;</span><br><span class="line">    _resolve(ctx)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>可以看到，给回调函数内绑定的<code>this</code>是传入的<code>ctx</code>参数，如果在<code>vm.$nextTick</code>中回调的上下文就是当前的<code>Vue</code>实例对象。</p>
+<p>此外我们注意到，对于外部传入的回调函数，都会使用<code>try</code>/<code>catch</code>，这也是保证代码健壮性的一种手段。</p>
+</li>
+<li><p>如果<code>pending</code>的值是<code>false</code>，也就是此时不需要等待，那就将状态设置为需要等待，然后调用<code>timerFunc</code>来触发回调列表中回调函数的执行。</p>
+</li>
+<li><p>最后如果没有传回调函数，并且运行环境中支持<code>Promise</code>，会返回一个<code>Promise</code>对象。</p>
+</li>
+</ul>
+<p>所以这里关键就是<code>timerFunc</code>内部是如何触发任务的。</p>
+<h3 id="timerFunc"><a href="#timerFunc" class="headerlink" title="timerFunc"></a>timerFunc</h3><p>代码中对于<code>timerFunc</code>的实现给了很详细的注释，我大概总结一下如下：</p>
+<ul>
+<li><p>如果当前运行环境环境是支持<code>Promise</code>的，那就利用<code>Promise.then</code>将回调函数放入微任务队列（<code>microtask queue</code>）中等待执行。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回一个 fulfilled 状态的 Promise对象，这样 flushCallbacks 就一定会被执行到了</span></span><br><span class="line"><span class="keyword">const</span> p = <span class="built_in">Promise</span>.resolve()</span><br><span class="line">timeFunc = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  p.then(flushCallbacks)</span><br><span class="line">  <span class="comment">// 兼容 iOS</span></span><br><span class="line">  <span class="keyword">if</span> (isIOS) setTimeout(noop)</span><br><span class="line">&#125;</span><br><span class="line">isUsingMicroTask = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果当前不支持<code>Promise</code>对象，那就看是否支持<code>MutationObserver</code>，<code>MutationObserver</code>的回调也是放到<code>microtask queue</code>中执行的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> counter = <span class="number">1</span></span><br><span class="line"><span class="keyword">const</span> observer = <span class="keyword">new</span> MutationObserver(flushCallbacks)</span><br><span class="line"><span class="keyword">const</span> textNode = <span class="built_in">document</span>.createTextNode(<span class="built_in">String</span>(counter))</span><br><span class="line">observer.observe(textNode, &#123;</span><br><span class="line">  characterData: <span class="literal">true</span></span><br><span class="line">&#125;)</span><br><span class="line">timerFunc = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  counter = (counter + <span class="number">1</span>) % <span class="number">2</span></span><br><span class="line">  textNode.data = <span class="built_in">String</span>(counter)</span><br><span class="line">&#125;</span><br><span class="line">isUsingMicroTask = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<p>因为 MutationObserver 观察的是DOM的变化，所以这里创建了一个 textNode 元素，并且每次调用的时候都改变 counter 的值，一次触发 textNode的改变。</p>
+</li>
+<li><p>如果<code>Promise</code>和<code>MutationObserver</code>都不支持，那看<code>setImmediate</code>是否支持，如果支持就使用<code>setImmediate</code>。<code>setImmediate</code>中的回调函数是放在宏任务队列（<code>macrotask queue</code>）中执行的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">timerFunc = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  setImmediate(flushCallbacks)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果以上都不支持，就使用<code>setTimeout</code>了，<code>setTimeout</code>中的回调函数也是放在宏任务队列中执行的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">timerFunc = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  setTimeout(flushCallbacks, <span class="number">0</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这样就实现了<code>nextTick</code>的功能。<strong>有一需要注意</strong>，在平时的开发中我们使用<code>vm.$nextTick</code>通常是希望在数据更新后做一些事情，所以要注意<code>vm.$nextTick</code>调用的位置。因为从上面的实现过程中看到<code>callbacks</code>中的回调函数就是按照调用<code>nextTick</code>的顺序放的，在<code>timerFunc</code>函数中也并没有做什么特殊的处理。所以我们要自己确保数据改变在前，<code>nextTick</code>的调用在后。举个来自<a href="https://cn.vuejs.org/v2/api/#vm-nextTick" target="_blank" rel="noopener">Vue官方文档</a>中的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  methods: &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    example: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="comment">// 修改数据</span></span><br><span class="line">      <span class="keyword">this</span>.message = <span class="string">'changed'</span></span><br><span class="line">      <span class="comment">// DOM 还没有更新</span></span><br><span class="line">      <span class="keyword">this</span>.$nextTick(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">// DOM 现在更新了</span></span><br><span class="line">        <span class="comment">// `this` 绑定到当前实例</span></span><br><span class="line">        <span class="keyword">this</span>.doSomethingElse()</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="组件的更新"><a href="#组件的更新" class="headerlink" title="组件的更新"></a>组件的更新</h2><p>我们再来看一下组件是如何被触发更新的，在<code>mountComponent</code>函数中我们曾看见创建一个<code>Watcher</code>实例：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">mountComponent</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  vm: Component,</span></span></span><br><span class="line"><span class="function"><span class="params">  el: ?Element,</span></span></span><br><span class="line"><span class="function"><span class="params">  hydrating?: boolean</span></span></span><br><span class="line"><span class="function"><span class="params"></span>): <span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  callHook(vm, <span class="string">'beforeMount'</span>)</span><br><span class="line">  updateComponent = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    vm._update(vm._render(), hydrating)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// we set this to vm._watcher inside the watcher's constructor</span></span><br><span class="line">  <span class="comment">// since the watcher's initial patch may call $forceUpdate (e.g. inside child</span></span><br><span class="line">  <span class="comment">// component's mounted hook), which relies on vm._watcher being already defined</span></span><br><span class="line">  <span class="keyword">new</span> Watcher(vm, updateComponent, noop, &#123;</span><br><span class="line">    before () &#123;</span><br><span class="line">      <span class="keyword">if</span> (vm._isMounted &amp;&amp; !vm._isDestroyed) &#123;</span><br><span class="line">        callHook(vm, <span class="string">'beforeUpdate'</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, <span class="literal">true</span> <span class="comment">/* isRenderWatcher */</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里创建的<code>Watcher</code>实例专门是用来更新组件使用的，每一个组件在挂载时都会创建一个，并且一个组件实例只对应一个<code>render watcher</code>。在<code>Watcher</code>的构造器函数中，当<code>isRenderWatcher</code>是<code>true</code>时，会设置<code>vm._watcher = this</code>。</p>
+<p><code>updateComponent</code>函数中的一系列执行过程在<a href="http://shinancao.cn/2020/01/25/Vue-Source-Code-08/" target="_blank" rel="noopener">Vue.js源码学习 —— Vue实例挂载的实现</a>中已经分析过了。一旦<code>updateComponent</code>函数被调用，最终会触发选项中的<code>render</code>函数执行创建<code>vnode</code>。这个<code>vnode</code>又会经过<code>patch</code>创建对应的DOM元素。</p>
+<p>那在<code>render</code>函数执行的过程中因为要使用<code>data</code>选项中的数据对象，因此就会触发它们的<code>getter</code>执行，<code>render watcher</code>就会收集到数据对象对应的依赖。</p>
+<blockquote>
+<p><code>data</code>选项中的数据对象在初始化时都会转换为响应式的，</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  data: &#123;</span><br><span class="line">    message: <span class="string">'Hello World'</span></span><br><span class="line">  &#125;,</span><br><span class="line">  render (h) &#123;</span><br><span class="line">    <span class="keyword">let</span> children = [</span><br><span class="line">      <span class="comment">// message 的 getter 会被触发</span></span><br><span class="line">      h(<span class="string">'div'</span>, <span class="keyword">this</span>.message),</span><br><span class="line">      h(<span class="string">'button'</span>, &#123;</span><br><span class="line">        on: &#123;</span><br><span class="line">          click: <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">this</span>.message = <span class="string">'Hi Vue!'</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, <span class="string">'Click Me'</span>)</span><br><span class="line">    ]</span><br><span class="line">    <span class="keyword">return</span> h(<span class="string">'div'</span>, children)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>我们还是画图来总结一下这些操作流程：</p>
+<p><img src="/images/vue-observer-5.jpg"></p>
+<p>到目前为止响应系统的工作流程就说完了，其实这个模块完全可以拿到别的项目中去用。下一步我们将看一下Vue的业务中是如何使用响应系统的，这一部分在数据选项的初始化过程中。</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2020/02/04/Vue-Source-Code-11/" target="_blank" rel="noopener">http://shinancao.cn/2020/02/04/Vue-Source-Code-11/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="noopener">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/01/Vue-Source-Code-10/" rel="next" title="Vue.js源码学习 —— 响应系统的设计">
+                <i class="fa fa-chevron-left"></i> Vue.js源码学习 —— 响应系统的设计
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#观察者的调度队列"><span class="nav-number">1.</span> <span class="nav-text">观察者的调度队列</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#queueWatcher"><span class="nav-number">1.1.</span> <span class="nav-text">queueWatcher</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#flushSchedulerQueue"><span class="nav-number">1.2.</span> <span class="nav-text">flushSchedulerQueue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#queueActivatedComponent"><span class="nav-number">1.3.</span> <span class="nav-text">queueActivatedComponent</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nextTick的实现"><span class="nav-number">2.</span> <span class="nav-text">nextTick的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nextTick"><span class="nav-number">2.1.</span> <span class="nav-text">nextTick</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#timerFunc"><span class="nav-number">2.2.</span> <span class="nav-text">timerFunc</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组件的更新"><span class="nav-number">3.</span> <span class="nav-text">组件的更新</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
