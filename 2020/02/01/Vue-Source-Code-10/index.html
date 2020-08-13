@@ -123,7 +123,7 @@
 <meta property="og:image" content="http://shinancao.github.io/images/vue-observer-2.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/vue-observer-3.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/vue-observer-4.jpg">
-<meta property="og:updated_time" content="2020-08-09T03:59:04.768Z">
+<meta property="og:updated_time" content="2020-08-12T03:16:54.260Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue.js源码学习 —— 响应系统的设计">
 <meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 前面一系列的文章主要讲了 Vue 是怎样实现数据渲染和组件化的，也就是如何把原始数据最终映射到DOM中的。但是当数据发生变化时，Vue 是如何自动更新DOM的我们还没看，这也是 Vue 相当重要的一部分，这个特性使得开发者几乎不需要直接操作DOM，只专注在业务逻辑的实现">
@@ -574,7 +574,7 @@
 </ul>
 <p>最后构造器函数中是下面这段代码：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.value = <span class="keyword">this</span>.lazy</span><br><span class="line">  ? <span class="literal">undefined</span></span><br><span class="line">  : <span class="keyword">this</span>.get()</span><br></pre></td></tr></table></figure>
-<p>如果当前实例不是计算属性的观察者，会立马计算表达式当前的值，并赋值给<code>this.value</code>。</p>
+<p>如果当前实例不是计算属性的观察者，会立即计算表达式当前的值，并赋值给<code>this.value</code>。在这里调用<code>get</code>方法还会起到一个作用，就是去收集相关属性的依赖，因为在执行表达式期间会触发属性的<code>getter</code>执行。</p>
 <p>这就是<code>Watcher</code>构造器函数中做的事情了，接下来我们再看一下<code>Watcher</code>类中的其他方法的实现。</p>
 <h3 id="get"><a href="#get" class="headerlink" title="get"></a>get</h3><p>先看<code>get</code>方法：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">get</span> () &#123;</span><br><span class="line">  <span class="comment">// 以当前实例为观察者开始进行观察</span></span><br><span class="line">  pushTarget(<span class="keyword">this</span>)</span><br><span class="line">  <span class="keyword">let</span> value</span><br><span class="line">  <span class="keyword">const</span> vm = <span class="keyword">this</span>.vm</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 计算表达式的值，给表达式绑定了 vm，同时传的参数也是 vm</span></span><br><span class="line">    value = <span class="keyword">this</span>.getter.call(vm, vm)</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="comment">// "touch" every property so they are all tracked as</span></span><br><span class="line">    <span class="comment">// dependencies for deep watching</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.deep) &#123;</span><br><span class="line">      traverse(value)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 以当前实例为观察者的观察结束</span></span><br><span class="line">    popTarget()</span><br><span class="line">    <span class="keyword">this</span>.cleanupDeps()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> value</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -747,7 +747,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">70</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
