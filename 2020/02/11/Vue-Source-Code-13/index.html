@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="JavaScript,Vue,源码分析,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 这篇文章我们主要分析一下v-model的背后都做了什么事情，然后我们再结合之前讲的响应系统总结一下，Vue 是如何来实现 MVVM 架构模式的。 关于指令到目前为止我们看到项目中有两处是与 指令 有关的，我在文章Vue.js源码学习 —— patch中对此进行了介绍，推">
+<meta name="keywords" content="JavaScript,Vue,源码分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue.js源码学习 —— v-model">
+<meta property="og:url" content="http://shinancao.github.io/2020/02/11/Vue-Source-Code-13/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 这篇文章我们主要分析一下v-model的背后都做了什么事情，然后我们再结合之前讲的响应系统总结一下，Vue 是如何来实现 MVVM 架构模式的。 关于指令到目前为止我们看到项目中有两处是与 指令 有关的，我在文章Vue.js源码学习 —— patch中对此进行了介绍，推">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-v-model-1.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-v-model-2.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/vue-v-model-3.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/MVC.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/MVP.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/MVVM.jpg">
+<meta property="og:image" content="http://shinancao.github.io/images/MVVM-Vue.jpg">
+<meta property="og:updated_time" content="2020-08-14T02:23:55.482Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue.js源码学习 —— v-model">
+<meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 这篇文章我们主要分析一下v-model的背后都做了什么事情，然后我们再结合之前讲的响应系统总结一下，Vue 是如何来实现 MVVM 架构模式的。 关于指令到目前为止我们看到项目中有两处是与 指令 有关的，我在文章Vue.js源码学习 —— patch中对此进行了介绍，推">
+<meta name="twitter:image" content="http://shinancao.github.io/images/vue-v-model-1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2020/02/11/Vue-Source-Code-13/">
+
+
+
+
+
+  <title>Vue.js源码学习 —— v-model | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-portfolio">
+          <a href="/portfolio/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
+            
+            项目
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/02/11/Vue-Source-Code-13/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Vue.js源码学习 —— v-model</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-11T16:40:32+08:00">
+                2020-02-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
+<p>这篇文章我们主要分析一下<code>v-model</code>的背后都做了什么事情，然后我们再结合之前讲的响应系统总结一下，Vue 是如何来实现 MVVM 架构模式的。</p>
+<h2 id="关于指令"><a href="#关于指令" class="headerlink" title="关于指令"></a>关于指令</h2><p>到目前为止我们看到项目中有两处是与 <em>指令</em> 有关的，我在文章<a href="http://shinancao.cn/2020/01/20/Vue-Source-Code-06/" target="_blank" rel="noopener">Vue.js源码学习 —— patch</a>中对此进行了介绍，推荐过去看一下，顺便也可以了解一下指令的这几个钩子函数是如何被触发的。</p>
+<h3 id="自定义指令"><a href="#自定义指令" class="headerlink" title="自定义指令"></a>自定义指令</h3><p>我们知道 Vue 是允许开发者自定义指令的，通过这种方式提供了一个可以让开发者直接操作真实DOM元素的途径。使用全局 API <code>Vue.directive</code> 注册全局指令，使用<code>directives</code>选项注册局部指令。实现一个指令的关键点就是提供如下几个钩子函数（均为可选的）：</p>
+<ul>
+<li><p><code>bind</code>：只调用一次，指令第一次绑定到元素时调用。在这里可以进行一次性的初始化设置。</p>
+</li>
+<li><p><code>inserted</code>：被绑定元素插入到父节点时调用（仅保证父节点存在，但不一定已被插入文档）。</p>
+</li>
+<li><p><code>update</code>：所在组件的 VNode 更新时调用，但是可能发生在其子 VNode 更新之前。</p>
+</li>
+<li><p><code>componentUpdated</code>：指令所在组件的 VNode 及其子 VNode 全部更新后调用。</p>
+</li>
+<li><p><code>unbind</code>：只调用一次，指令与元素解绑时调用。</p>
+</li>
+</ul>
+<p>关于指令更多的介绍，以及对这些钩子函数的参数说明，可以查阅<a href="https://cn.vuejs.org/v2/guide/custom-directive.html" target="_blank" rel="noopener">Vue官方文档</a>。</p>
+<a id="more"></a>
+<p>举个例子来看一下如何自定义一个指令：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 注册全局指令 focus</span></span><br><span class="line">Vue.directive(<span class="string">'focus'</span>, &#123;</span><br><span class="line">  <span class="comment">// 当 el 被插入到父节点中时，就会获得焦点</span></span><br><span class="line">  inserted: <span class="function"><span class="keyword">function</span>(<span class="params">el</span>) </span>&#123;</span><br><span class="line">    el.focus()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">v-focus</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>现在可以在任何支持<code>focus()</code>的元素上使用<code>v-focus</code>指令，使得它在打开页面时就获得焦点。</p>
+<h3 id="Vue-directive-的实现"><a href="#Vue-directive-的实现" class="headerlink" title="Vue.directive 的实现"></a>Vue.directive 的实现</h3><p>在讲选项合并时我们看到过，Vue 有3个资源选项，定义在<code>shared/constants.js</code>中：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> ASSET_TYPES = [</span><br><span class="line">  <span class="string">'component'</span>,</span><br><span class="line">  <span class="string">'directive'</span>,</span><br><span class="line">  <span class="string">'filter'</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>这其中就包括了<code>directive</code>，在实现上这3个资源选项也是放在一起实现的，对于全局API来说它们的实现位于文件<code>core/global-api/assets.js</code>中。我把与<code>directive</code>有关的部分拿出如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">initAssetRegisters</span> (<span class="params">Vue: GlobalAPI</span>) </span>&#123;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Create asset registration methods.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  ASSET_TYPES.forEach(<span class="function"><span class="params">type</span> =&gt;</span> &#123;</span><br><span class="line">    Vue[type] = <span class="function"><span class="keyword">function</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">      id: string,</span></span></span><br><span class="line"><span class="function"><span class="params">      definition: Function | Object</span></span></span><br><span class="line"><span class="function"><span class="params">    </span>): <span class="title">Function</span> | <span class="title">Object</span> | <span class="title">void</span> </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (!definition) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.options[type + <span class="string">'s'</span>][id]</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        <span class="keyword">if</span> (type === <span class="string">'directive'</span> &amp;&amp; <span class="keyword">typeof</span> definition === <span class="string">'function'</span>) &#123;</span><br><span class="line">          <span class="comment">// 如果 Vue.directive 的第2个参数传的是一个函数，则会将该函数作为 bind 和 update 的钩子函数</span></span><br><span class="line">          definition = &#123; <span class="attr">bind</span>: definition, <span class="attr">update</span>: definition &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.options[type + <span class="string">'s'</span>][id] = definition</span><br><span class="line">        <span class="keyword">return</span> definition</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>所以我们上面的例子实际上是通过<code>Vue.directive</code>给<code>Vue.options[&#39;directives&#39;]</code>中添了一项，如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Vue.options.directives[<span class="string">'focus'</span>] = &#123;</span><br><span class="line">  inserted: <span class="function"><span class="keyword">function</span>(<span class="params">el</span>) </span>&#123;</span><br><span class="line">    el.focus()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而构造器的资源选项最终会被合并到 <code>Vue</code> 实例的原型上，所以所有的 <code>Vue</code> 实例都可以使用构造器的资源选项。</p>
+<h2 id="v-model的实现"><a href="#v-model的实现" class="headerlink" title="v-model的实现"></a>v-model的实现</h2><p>在<a href="https://cn.vuejs.org/v2/guide/forms.html" target="_blank" rel="noopener">Vue官方文档</a>中对<code>v-model</code>指令的作用描述如下：</p>
+<blockquote>
+<p>你可以用 v-model 指令在表单 <code>&lt;input&gt;</code>、<code>&lt;textarea&gt;</code> 及 <code>&lt;select&gt;</code> 元素上创建双向数据绑定。它会根据控件类型自动选取正确的方法来更新元素。尽管有些神奇，但 v-model 本质上不过是语法糖。它负责监听用户的输入事件以更新数据，并对一些极端场景进行一些特殊处理。</p>
+</blockquote>
+<p>所以咱们重点来看一下<code>v-model</code>是如何实现双向数据绑定的。</p>
+<h3 id="注册v-model为全局指令"><a href="#注册v-model为全局指令" class="headerlink" title="注册v-model为全局指令"></a>注册v-model为全局指令</h3><p>在文件<code>platforms/web/runtime/index.js</code>中我们注意到有下面一行代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extend(Vue.options.directives, platformDirectives)</span><br></pre></td></tr></table></figure>
+<p><code>platformDirectives</code>的值如下：</p>
+<p><img src="/images/vue-v-model-1.jpg"></p>
+<p>所以上面这行代码的作用就是给<code>Vue.options.directives</code>拓展了两个属性：<code>model</code>和<code>show</code>，这其实和我们之前分析的<code>Vue.directive</code>中做的事情一样，所以在这里就注册了全局指令<code>v-model</code>和<code>v-show</code>。同时还看到<code>v-model</code>指令提供了<code>inserted</code>和<code>componentUpdated</code>两个钩子函数。<code>v-show</code>指令提供了<code>bind</code>、<code>update</code>和<code>unbind</code>钩子函数。</p>
+<p>我们先来了解一下当在一个元素加上<code>v-model</code>时，Vue在背后做了什么。</p>
+<h3 id="v-model编译后的代码"><a href="#v-model编译后的代码" class="headerlink" title="v-model编译后的代码"></a>v-model编译后的代码</h3><p>尽管我们还没有看编译器那部分的代码，但是我们可以将编译后的<code>render</code>函数在控制台中打印出来，一样可以看到<code>v-model</code>实际上会转换成什么。</p>
+<p>经过之前的分析我们知道在对组件的 VNode 打补丁之前，一定会先调用组件的<code>render</code>函数来返回组件的 VNode，这部分代码位于文件<code>core/instance/render.js</code>中的<code>Vue.prototype._render</code>方法内：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Vue.prototype._render = <span class="function"><span class="keyword">function</span> (<span class="params"></span>): <span class="title">VNode</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">const</span> &#123; render, _parentVnode &#125; = vm.$options</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以在这句之后打个断点，然后在控制台输入<code>render</code>敲回车，就可以看到<code>render</code>函数的内容了。</p>
+<p>举一个使用<code>v-model</code>的例子看一下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">v-model</span>=<span class="string">"message"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  data: &#123;</span><br><span class="line">    message: <span class="string">'Learn Vue'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>最后在控制台中看的<code>render</code>函数经过格式化后如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> <span class="title">anonymous</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params"></span>) </span>&#123;</span><br><span class="line"><span class="keyword">with</span>(<span class="keyword">this</span>)&#123;</span><br><span class="line">  <span class="keyword">return</span> _c(<span class="string">'div'</span>,</span><br><span class="line">    &#123;<span class="attr">attrs</span>:&#123;<span class="string">"id"</span>:<span class="string">"app"</span>&#125;&#125;,</span><br><span class="line">    [</span><br><span class="line">      _c(<span class="string">'input'</span>,</span><br><span class="line">        &#123;</span><br><span class="line">          directives:[</span><br><span class="line">            &#123;</span><br><span class="line">              name:<span class="string">"model"</span>,</span><br><span class="line">              rawName:<span class="string">"v-model"</span>,</span><br><span class="line">              value:(message),</span><br><span class="line">              expression:<span class="string">"message"</span></span><br><span class="line">            &#125;</span><br><span class="line">          ],</span><br><span class="line">          domProps:&#123;</span><br><span class="line">            <span class="string">"value"</span>:(message)</span><br><span class="line">          &#125;,</span><br><span class="line">          on:&#123;</span><br><span class="line">            <span class="string">"input"</span>:<span class="function"><span class="keyword">function</span>(<span class="params">$event</span>)</span>&#123;</span><br><span class="line">              <span class="keyword">if</span>($event.target.composing) <span class="comment">// 只有输入完成后才更新 message，比如像中文这样</span></span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">              message = $event.target.value</span><br><span class="line">            &#125;</span><br><span class="line">          &#125; <span class="comment">// on</span></span><br><span class="line">        &#125; <span class="comment">// vnodedata</span></span><br><span class="line">      ) <span class="comment">// input vnode</span></span><br><span class="line">    ] <span class="comment">// children</span></span><br><span class="line">  )&#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><code>_c</code>是一个在 Vue 内部使用的<code>vm.$createElement</code>函数，定义在文件<code>core/instance/render.js</code>中的<code>initRender</code>方法内：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">initRender</span> (<span class="params">vm: Component</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// args order: tag, data, children, normalizationType, alwaysNormalize</span></span><br><span class="line">  <span class="comment">// internal version is used by render functions compiled from templates</span></span><br><span class="line">  vm._c = <span class="function">(<span class="params">a, b, c, d</span>) =&gt;</span> createElement(vm, a, b, c, d, <span class="literal">false</span>)</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>它的第2个参数是<code>data</code>，它是<code>VNodeData</code>类型的。关于<code>VNodeData</code>的说明可以看这篇<a href="http://shinancao.cn/2020/01/12/Vue-Source-Code-03/" target="_blank" rel="noopener">Vue.js源码学习 —— VNode/createElement</a>。可以看到，<code>v-model</code>经过编译后转换成了<code>input</code>节点的<code>data</code>，这几个字段的含义如下：</p>
+<ul>
+<li><p><code>directives</code>：自定义的指令，这里看到描述的就是<code>v-model</code>指令的信息。</p>
+</li>
+<li><p><code>domProps</code>：原生DOM的属性，这里是<code>value</code>属性，它的值为<code>this.message</code>。</p>
+</li>
+<li><p><code>on</code>：事件监听器在 on 内，这里需要监听的是<code>input</code>事件，收到<code>input</code>通知后，会将<code>this.message</code>的值设置为<code>$event.target.value</code>。</p>
+</li>
+</ul>
+<p>在讲<code>patch</code>的实现过程时我们已经知道，注入给<code>patch</code>的那些模块最终会用到上面这个<code>data</code>中的各项，分别设置给原生的DOM元素。这些模块位于文件夹<code>platforms/web/runtime/modules</code>中，可以看到都是与原生DOM元素相关的内容。了解到这我们可以接着往下看<code>v-model</code>指令是如何做到双向数据绑定的了。</p>
+<h3 id="双向数据绑定"><a href="#双向数据绑定" class="headerlink" title="双向数据绑定"></a>双向数据绑定</h3><p><em>双向数据绑定</em> 指的是当<code>Vue</code>实例的<code>data</code>数据改变时，输入控件的值也会跟着改变。当我们操作输入控件改变它的值时，<code>Vue</code>实例的<code>data</code>数据也会跟着一起改变。</p>
+<p>在<code>domProps</code>中指定输入控件的<code>value</code>属性值等与<code>this.message</code>，就达到了将<code>Vue</code>实例的<code>data</code>数据向输入控件同步的效果。因为<code>domProps</code>中的属性的值最终都会同步给原生DOM元素对应的属性。为了验证这一点，我们可以在文件<code>platforms/web/runtime/modules/dom-props.js</code>中的<code>updateDOMProps</code>函数中打断点看一下，执行过程如下图所示：</p>
+<p><img src="/images/vue-v-model-2.jpg"></p>
+<p>而<code>on</code>中指定要监听的<code>input</code>事件，最终也会同步给原生DOM元素，实际上是让<code>input</code>控件监听<code>input</code>事件。在<code>input</code>事件的回调中又将控件当前的值赋值给了<code>this.message</code>，这就达到了输入控件向<code>data</code>数据同步的效果。同样为了验证，我们在文件<code>platforms/web/runtime/modules/events.js</code>中的<code>add</code>函数中打断点看一下，执行过程如下图所示：</p>
+<p><img src="/images/vue-v-model-3.jpg"></p>
+<p>现在就已经实现了双向数据绑定。那<code>directives</code>的作用是什么呢？</p>
+<p><code>directives</code>在<code>patch</code>的过程中会被文件<code>core/vdom/modules/directives.js</code>处理。首先会将我们在上面看到的<code>v-model</code>指令的两个钩子函数通过<code>normalizeDirectives</code>函数与<code>directives</code>合并，合并后的结果如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  def: &#123;<span class="attr">inserted</span>: ƒ, <span class="attr">componentUpdated</span>: ƒ&#125;</span><br><span class="line">  expression: <span class="string">"message"</span>,</span><br><span class="line">  modifiers: &#123;&#125;,</span><br><span class="line">  name: <span class="string">"model"</span>,</span><br><span class="line">  rawName: <span class="string">"v-model"</span>,</span><br><span class="line">  value: <span class="string">"Hello Vue"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着就判断当前是处于组件的 VNode 的哪个阶段，然后去调用对应的钩子函数，这样如果<code>def</code>有这个钩子，那它就会被触发了。所以上面的<code>inserted</code>和<code>componentUpdated</code>就是这样调用的。这两个钩子函数中做的事情就是对一些极端场景做一些特殊处理，正像官方文档对<code>v-model</code>指令描述的那样。我们主要来看一下例子中的<code>input</code>时会做什么：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> directive = &#123;</span><br><span class="line">  inserted (el, binding, vnode, oldVnode) &#123;</span><br><span class="line">    <span class="keyword">if</span> (vnode.tag === <span class="string">'select'</span>) &#123;</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (vnode.tag === <span class="string">'textarea'</span> || isTextInputType(el.type)) &#123;</span><br><span class="line">      el._vModifiers = binding.modifiers</span><br><span class="line">      <span class="keyword">if</span> (!binding.modifiers.lazy) &#123;</span><br><span class="line">        el.addEventListener(<span class="string">'compositionstart'</span>, onCompositionStart)</span><br><span class="line">        el.addEventListener(<span class="string">'compositionend'</span>, onCompositionEnd)</span><br><span class="line">        <span class="comment">// Safari &lt; 10.2 &amp; UIWebView doesn't fire compositionend when</span></span><br><span class="line">        <span class="comment">// switching focus before confirming composition choice</span></span><br><span class="line">        <span class="comment">// this also fixes the issue where some browsers e.g. iOS Chrome</span></span><br><span class="line">        <span class="comment">// fires "change" instead of "input" on autocomplete.</span></span><br><span class="line">        el.addEventListener(<span class="string">'change'</span>, onCompositionEnd)</span><br><span class="line">        <span class="comment">/* istanbul ignore if */</span></span><br><span class="line">        <span class="keyword">if</span> (isIE9) &#123;</span><br><span class="line">          el.vmodel = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>比如我们在输入汉字的时候，文本框中先出现的是打出来的拼音，等按空格键等才算输入完成。<code>compositionstart</code>事件监听的就是这个输入过程开始的时候，<code>compositionend</code>监听的就是输入完成的时候。监听这两个事件的目的是<code>v-model</code>不想在输入的过程中得到更新，而是等输入结束后一次更新值。可以对比一下纯<code>input</code>事件，你会发现输入的过程中控件的<code>value</code>一直在变。MDN 上有一个<a href="https://developer.mozilla.org/zh-CN/docs/Web/Events/input" target="_blank" rel="noopener">很好input事件的例子</a>，可以放到浏览器中看一下。</p>
+<p>我们看到上面有一行判断，开发者是否指定了<code>.lazy</code>修饰符，如果指定了<code>.lazy</code>修复符就不用下面的处理了，在官方文档中也说了，此时会用<code>change</code>事件，而非<code>input</code>事件。我们接下来就看一下<code>v-model</code>的这几个修饰符是怎样被处理的。</p>
+<h3 id="v-model修饰符"><a href="#v-model修饰符" class="headerlink" title="v-model修饰符"></a>v-model修饰符</h3><h4 id="lazy"><a href="#lazy" class="headerlink" title=".lazy"></a>.lazy</h4><p>我们将上面的例子中的<code>v-model</code>加上<code>.lazy</code>修饰符后，再运行你会发现只有在输入完成时（输入框失去焦点或按回车键等）<code>message</code>的值才会得到更新。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">v-model.lazy</span>=<span class="string">"message"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>此时经过编译后得到的<code>render</code>函数如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> <span class="title">anonymous</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">with</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> _c(<span class="string">'div'</span>, &#123;</span><br><span class="line">            attrs: &#123; <span class="string">"id"</span>: <span class="string">"app"</span> &#125;</span><br><span class="line">        &#125;, [_c(<span class="string">'input'</span>, &#123;</span><br><span class="line">            directives: [&#123;</span><br><span class="line">                name: <span class="string">"model"</span>,</span><br><span class="line">                rawName: <span class="string">"v-model.lazy"</span>,</span><br><span class="line">                value: (message),</span><br><span class="line">                expression: <span class="string">"message"</span>,</span><br><span class="line">                modifiers: &#123; <span class="comment">// 多了该字段</span></span><br><span class="line">                    <span class="string">"lazy"</span>: <span class="literal">true</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;],</span><br><span class="line">            domProps: &#123;</span><br><span class="line">                <span class="string">"value"</span>: (message)</span><br><span class="line">            &#125;,</span><br><span class="line">            on: &#123;</span><br><span class="line">                <span class="string">"change"</span>: <span class="function"><span class="keyword">function</span>(<span class="params">$event</span>) </span>&#123; <span class="comment">// 变成 change 事件</span></span><br><span class="line">                    message = $event.target.value</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)])</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>可以看到在<code>directives</code>中多了<code>modifiers</code>字段，这样我们在<code>inserted</code>中才能用到它。然后<code>on</code>中的事件监听器变成了<code>change</code>，所以在<code>inserted</code>中判断了<code>lazy</code>是<code>true</code>时就不必处理了。</p>
+<h4 id="number"><a href="#number" class="headerlink" title=".number"></a>.number</h4><p><code>.number</code>修饰符会将用户输入的值自动转换为数值。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">v-model.number</span>=<span class="string">"message"</span> <span class="attr">type</span>=<span class="string">"number"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>经过编译后得到的<code>render</code>函数如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> <span class="title">anonymous</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">with</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> _c(<span class="string">'div'</span>, &#123;</span><br><span class="line">            attrs: &#123;</span><br><span class="line">                <span class="string">"id"</span>: <span class="string">"app"</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, [_c(<span class="string">'input'</span>, &#123;</span><br><span class="line">            directives: [&#123;</span><br><span class="line">                name: <span class="string">"model"</span>,</span><br><span class="line">                rawName: <span class="string">"v-model.number"</span>,</span><br><span class="line">                value: (message),</span><br><span class="line">                expression: <span class="string">"message"</span>,</span><br><span class="line">                modifiers: &#123;</span><br><span class="line">                    <span class="string">"number"</span>: <span class="literal">true</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;],</span><br><span class="line">            attrs: &#123;</span><br><span class="line">                <span class="string">"type"</span>: <span class="string">"number"</span></span><br><span class="line">            &#125;,</span><br><span class="line">            domProps: &#123;</span><br><span class="line">                <span class="string">"value"</span>: (message)</span><br><span class="line">            &#125;,</span><br><span class="line">            on: &#123;</span><br><span class="line">                <span class="string">"input"</span>: <span class="function"><span class="keyword">function</span>(<span class="params">$event</span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span> ($event.target.composing)</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    message = _n($event.target.value)</span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">"blur"</span>: <span class="function"><span class="keyword">function</span>(<span class="params">$event</span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> $forceUpdate()</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)])</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>这里用了<code>_n</code>这个函数，这个函数是在<code>renderMixin</code>中加上的：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">renderMixin</span> (<span class="params">Vue: Class&lt;Component&gt;</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// install runtime convenience helpers</span></span><br><span class="line">  installRenderHelpers(Vue.prototype)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这里给 Vue 的原型上加了一些帮助方法，而且都是用下划线加一个字母的形式命名的。因为这些方法主要在模板被编译后的<code>render</code>函数中使用，所以可以减少编译后文件的大小。那么<code>_n</code>表示如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">installRenderHelpers</span> (<span class="params">target: any</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  target._n = toNumber</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>toNumber</code>函数的实现如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">toNumber</span> (<span class="params">val: string</span>): <span class="title">number</span> | <span class="title">string</span> </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> n = <span class="built_in">parseFloat</span>(val)</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">isNaN</span>(n) ? val : n</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以<code>.number</code>修饰符最终使用的是<code>parseFloat</code>这个JavaScript内置的方法来转换的，在转换失败后还会将原字符串返回。</p>
+<h4 id="trim"><a href="#trim" class="headerlink" title=".trim"></a>.trim</h4><p><code>.trim</code>修饰符会自动过滤用户输入的收尾空白字符。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">v-model.trim</span>=<span class="string">"message"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>经过编译后得到的<code>render</code>函数如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> <span class="title">anonymous</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">with</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> _c(<span class="string">'div'</span>, &#123;</span><br><span class="line">            attrs: &#123; <span class="string">"id"</span>: <span class="string">"app"</span> &#125;</span><br><span class="line">        &#125;, [_c(<span class="string">'input'</span>, &#123;</span><br><span class="line">            directives: [&#123;</span><br><span class="line">                name: <span class="string">"model"</span>,</span><br><span class="line">                rawName: <span class="string">"v-model.trim"</span>,</span><br><span class="line">                value: (message),</span><br><span class="line">                expression: <span class="string">"message"</span>,</span><br><span class="line">                modifiers: &#123;</span><br><span class="line">                    <span class="string">"trim"</span>: <span class="literal">true</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;],</span><br><span class="line">            domProps: &#123;</span><br><span class="line">                <span class="string">"value"</span>: (message)</span><br><span class="line">            &#125;,</span><br><span class="line">            on: &#123;</span><br><span class="line">                <span class="string">"input"</span>: <span class="function"><span class="keyword">function</span>(<span class="params">$event</span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span> ($event.target.composing)</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    message = $event.target.value.trim()</span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">"blur"</span>: <span class="function"><span class="keyword">function</span>(<span class="params">$event</span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> $forceUpdate()</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)])</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>可以看到这里其实是调用了<code>trim()</code>这个JavaScript内置的方法去掉字符串的首尾空格的。</p>
+<p>关于<code>v-model</code>我们就先了解这些，接下来我们分析一下 MVVM 框架。</p>
+<h2 id="Vue对MVVM架构模式的实现"><a href="#Vue对MVVM架构模式的实现" class="headerlink" title="Vue对MVVM架构模式的实现"></a>Vue对MVVM架构模式的实现</h2><h3 id="MVC、MVP、MVVM"><a href="#MVC、MVP、MVVM" class="headerlink" title="MVC、MVP、MVVM"></a>MVC、MVP、MVVM</h3><p>最早被提出来用于项目架构的是 MVC 模式，一个在客户端很经典的代码层级划分方式。但随着系统业务变得越来越复杂，MVC模式暴露出了一个问题：Controller层的代码会越来越臃肿，负责的事情越来越多，逐渐变得难以维护。iOS 使用的就是 MVC 分层，做过的同学都知道当项目越来越成熟时，Controller 会变得有多重。曾经怎样写出轻 Controller 一度被讨论的很火热。</p>
+<p><img src="/images/MVC.jpg"></p>
+<p>MVC 模式的一个变种是 MVP 模式，即 Model-View-Presenter，在 Android 中被广泛应用。在这种模式中 View 向 Presenter 要展示时需要用到的数据，当有动作发生时，也把动作产生的行为逻辑交给 Presenter 去处理。一个 View 可以有多个 Presenter，每个 Presenter 负责处理不同的业务。一个 Presenter 也可以被多个 View 使用。这样达到了 View 和 Presenter 都可以复用的效果。Presenter 会去操作和更新 Model，当 Model有变化时会告知 Presenter。这样 View 和 Model 完全是互相看不见的。在实现上为了达到更好的解耦效果，通常将 View 的行为抽象出一个接口，同时也会将 Presenter 能够提供的功能也抽象出一个接口。</p>
+<p><img src="/images/MVP.jpg"></p>
+<p>MVVM 模式，即 Model-View-ViewModel，在2005年微软提出的，一开始被用在 <a href="https://docs.microsoft.com/zh-cn/visualstudio/designers/getting-started-with-wpf?view=vs-2019" target="_blank" rel="noopener">WPF 框架</a>中。ViewModel 会负责将 Model 转换成 View 可以直接拿来用的数据，如果 View 需要更多的行为，比如请求接口，也会由 ViewModel 来完成。ViewModel 也会通知 Model 去更新，Model 有变化时也会告知 ViewModel。View 和 Model 之前也是看不见的。</p>
+<p>ViewModel 和 Presenter做的事情很像，但是 MVVM 与 MVP 不同的是，ViewModel 和 View 之间有一个隐形的 Binder，能够实现 ViewModel 和 View 之间的自动同步，而不需要手动去调用互相的方法更新对方。ViewModel 中不会持有对 View 的引用，而是 View 直接与 ViewModel 中的属性绑定来接收和发送更新。ViewModel 中的属性是可观察的，当属性发生变化时它的观察者们能够收到通知。</p>
+<p><img src="/images/MVVM.jpg"></p>
+<h3 id="Vue对MVVM模式的实现"><a href="#Vue对MVVM模式的实现" class="headerlink" title="Vue对MVVM模式的实现"></a>Vue对MVVM模式的实现</h3><p>MVVM模式在 Vue 中的表现如下：</p>
+<p><img src="/images/MVVM-Vue.jpg"></p>
+<p>MVVM模式中的每一部分：</p>
+<ul>
+<li><p>Model：简单的普通 JavaScript 对象。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> data = &#123;</span><br><span class="line">  message: <span class="string">'Hello Vue'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>View：我们编写的视图布局。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">v-model</span>=<span class="string">"message"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Message is: &#123;&#123; message &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>ViewModel：在 Vue 中每一个 Vue 实例就是一个 ViewModel。Vue 内部实现了一套响应系统，就是我们在<a href="http://shinancao.cn/2020/02/01/Vue-Source-Code-10/" target="_blank" rel="noopener">Vue.js源码学习 —— 响应系统的设计</a>中分析的。使用这套响应系统，Vue 实例会将传给它的数据对象转换成响应式的，当数据对象改变时，Vue 实例就会收到通知，然后去更新视图。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  data: data</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Binder：在 Vue 中我们可以使用<code>v-model</code>在模板中完成双向绑定，当输入框中的文字更新时，Vue实例中对应的属性<code>message</code>也会得到更新，<code>message</code>改变时输入框中的内容也会跟着变。可见在 Vue 中视图与视图模型之间的同步放在了视图层，通过隐式的方法实现了状态的同步。这其实和最早提出并使用 MVVM 模式的 MPF 框架的设计很像，MPF 框架也是使用一种叫作<a href="https://en.wikipedia.org/wiki/XAML" target="_blank" rel="noopener">XAML</a>的标记语言充当了 Binder。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;input v-model=<span class="string">"message"</span>&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>所以理解好响应系统的设计和模板被编译后的样子，对我们更好地使用 Vue 有极大地帮助。</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2020/02/11/Vue-Source-Code-13/" target="_blank" rel="noopener">http://shinancao.cn/2020/02/11/Vue-Source-Code-13/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="noopener">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/08/Vue-Source-Code-12/" rel="next" title="Vue.js源码学习 —— 数据选项的初始化">
+                <i class="fa fa-chevron-left"></i> Vue.js源码学习 —— 数据选项的初始化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">71</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于指令"><span class="nav-number">1.</span> <span class="nav-text">关于指令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义指令"><span class="nav-number">1.1.</span> <span class="nav-text">自定义指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vue-directive-的实现"><span class="nav-number">1.2.</span> <span class="nav-text">Vue.directive 的实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v-model的实现"><span class="nav-number">2.</span> <span class="nav-text">v-model的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#注册v-model为全局指令"><span class="nav-number">2.1.</span> <span class="nav-text">注册v-model为全局指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#v-model编译后的代码"><span class="nav-number">2.2.</span> <span class="nav-text">v-model编译后的代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#双向数据绑定"><span class="nav-number">2.3.</span> <span class="nav-text">双向数据绑定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#v-model修饰符"><span class="nav-number">2.4.</span> <span class="nav-text">v-model修饰符</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#lazy"><span class="nav-number">2.4.1.</span> <span class="nav-text">.lazy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#number"><span class="nav-number">2.4.2.</span> <span class="nav-text">.number</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#trim"><span class="nav-number">2.4.3.</span> <span class="nav-text">.trim</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue对MVVM架构模式的实现"><span class="nav-number">3.</span> <span class="nav-text">Vue对MVVM架构模式的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MVC、MVP、MVVM"><span class="nav-number">3.1.</span> <span class="nav-text">MVC、MVP、MVVM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vue对MVVM模式的实现"><span class="nav-number">3.2.</span> <span class="nav-text">Vue对MVVM模式的实现</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
