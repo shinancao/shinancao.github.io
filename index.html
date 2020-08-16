@@ -305,6 +305,175 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/02/18/Vue-Source-Code-15/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/18/Vue-Source-Code-15/" itemprop="url">Vue.js源码学习 —— 初识编译器</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-18T16:40:32+08:00">
+                2020-02-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
+<p>从今天这篇文章开始我们将分析 Vue 编译器部分的代码，这也是一个相对比较独立的模块。我们今天先通过编译器的入口函数一步一步找到它所以实现的地方，每到一步会说一下在这一步做的事情，这样对编译器的实现先建立一个整体印象。</p>
+<blockquote>
+<p>我不会在文章中大量地粘贴源代码，您还是一定要将Vue工程clone到本地哦。</p>
+</blockquote>
+<h2 id="编译器的目录"><a href="#编译器的目录" class="headerlink" title="编译器的目录"></a>编译器的目录</h2><p>项目中与编译器相关的有两部分，一部分是编译器的核心实现，代码位于文件夹<code>compiler</code>中。其中子文件夹中放置的内容如下：</p>
+<ul>
+<li><p><code>codegen</code>：生成<code>render</code>函数的代码。</p>
+</li>
+<li><p><code>directives</code>：生成跨平台的指令的代码，包括：<code>v-model</code>、<code>v-bind</code>、<code>v-on</code>。</p>
+</li>
+<li><p><code>parser</code>：解析模板字符串，生成 AST。</p>
+</li>
+</ul>
+<p>还有一部分是与平台特性相关的，每个平台的文件夹下也都有一个<code>compiler</code>文件夹，后面的分析我们都以<code>web</code>平台为主。文件夹<code>platforms/web/compiler</code>中的子文件夹的内容如下，下一节我们会看到这些功能是如何提供给编译器的核心实现部分的。</p>
+<ul>
+<li><p><code>directives</code>：生成与平台相关的指令的代码，包括：<code>v-html</code>、<code>v-model</code>、<code>v-text</code>。</p>
+</li>
+<li><p><code>modules</code>：与平台相关的几个模块的特殊处理和代码生成，包括：<code>v-bind:class</code>、<code>v-bind:style</code>和对<code>input[v-model]</code>动态类型绑定的转换。</p>
+</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/02/18/Vue-Source-Code-15/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/02/15/Vue-Source-Code-14/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1719,161 +1888,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/01/17/Vue-Source-Code-05/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="意林">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="意林的小站">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/01/17/Vue-Source-Code-05/" itemprop="url">Vue.js源码学习 —— 异步组件的实现</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-17T16:40:32+08:00">
-                2020-01-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Web/" itemprop="url" rel="index">
-                    <span itemprop="name">Web</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
-                    <span itemprop="name">Vue</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
-<p>如果您才开始准备看Vue.js中虚拟DOM相关的内容，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/12/Vue-Source-Code-03/" target="_blank" rel="noopener">Vue.js源码学习 —— VNode/createElement</a>，再来看今天这篇会轻松很多。</p>
-<p>今天这篇文章是接着上一篇<a href="http://shinancao.cn/2020/01/15/Vue-Source-Code-04/" target="_blank" rel="noopener">Vue.js源码学习 —— createComponent</a>的，代码主要位于文件<code>core/vdom/resolve-async-component.js</code>中。</p>
-<blockquote>
-<p>我没有在文章中大量的贴源码，一定要将源码clone到本地哦。</p>
-</blockquote>
-<p>关于异步组件的介绍可以翻阅<a href="https://cn.vuejs.org/v2/guide/components-dynamic-async.html#%E5%BC%82%E6%AD%A5%E7%BB%84%E4%BB%B6" target="_blank" rel="noopener">官方文档#异步组件</a>一节。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/01/17/Vue-Source-Code-05/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1922,7 +1936,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-count">73</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
