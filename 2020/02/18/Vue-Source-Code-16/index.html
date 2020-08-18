@@ -122,7 +122,7 @@
 <meta property="og:image" content="http://shinancao.github.io/images/vue-global-api-1.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/vue-global-api-2.jpg">
 <meta property="og:image" content="http://shinancao.github.io/images/vue-global-api-3.jpg">
-<meta property="og:updated_time" content="2020-08-16T14:31:27.782Z">
+<meta property="og:updated_time" content="2020-08-17T07:55:05.653Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue.js源码学习 —— 各全局API的实现">
 <meta name="twitter:description" content="如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的Vue.js源码学习 —— 起步，相信会对您后面的阅读有很大帮助。 今天我们来看一下 Vue 为开发者提供的各全局API的实现，大部分其实我们都已经遇到了，有的也分析过了实现过程，这篇文章我将其放在一起，这样可以从总体上有一个感观印象。 为开发者提供的全局API都可以在文件夹core/global-api中找到，我们打开文件core/g">
@@ -415,6 +415,9 @@
 <p>通过<code>Object.defineProperty</code>定义了<code>config</code>的<code>get</code>和<code>set</code>方法，主要是为了在开发环境下当开发者试图给<code>Vue.config</code>重新赋值时给出告警信息。我们打个断点看一下在开发环境下默认的<code>Vue.config</code>有哪些，如下图所示：</p>
 <p><img src="/images/vue-global-api-1.jpg"></p>
 <p>关于<code>Vue.config</code>中有哪些可以由开发者配置的字段，可查阅<a href="https://cn.vuejs.org/v2/api/#%E5%85%A8%E5%B1%80%E9%85%8D%E7%BD%AE" target="_blank" rel="noopener">官方API文档#全局配置</a>。</p>
+<h2 id="Vue-util"><a href="#Vue-util" class="headerlink" title="Vue.util"></a>Vue.util</h2><p>在<code>initGlobalAPI</code>函数中也添加了一些工具方法，方便在需要的时候使用，但这些方法的本意并不打算给开发者使用，所以我们如果在自己的项目使用时要谨慎。这些方法如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// exposed util methods.</span></span><br><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> these are not considered part of the public API - avoid relying on</span></span><br><span class="line"><span class="comment">// them unless you are aware of the risk.</span></span><br><span class="line">Vue.util = &#123;</span><br><span class="line">  warn,</span><br><span class="line">  extend,</span><br><span class="line">  mergeOptions,</span><br><span class="line">  defineReactive</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这几个放在前面的文章都说过了，这里就不展开讲了。</p>
 <h2 id="Vue-set-Vue-delete"><a href="#Vue-set-Vue-delete" class="headerlink" title="Vue.set/Vue.delete"></a>Vue.set/Vue.delete</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Vue.set = <span class="keyword">set</span></span><br><span class="line">Vue.delete = del</span><br></pre></td></tr></table></figure>
 <p>这里的<code>set</code>和<code>del</code>方法就是响应系统模块提供的，来自文件<code>core/observer/index.js</code>，在<a href="http://shinancao.cn/2020/02/01/Vue-Source-Code-10/" target="_blank" rel="noopener">Vue.js源码学习 —— 响应系统的设计</a>中有详细地介绍它们的实现过程。</p>
 <p>官方文档中对<code>Vue.set</code>的说明如下：</p>
@@ -433,7 +436,7 @@
 <p>在下次 DOM 更新循环结束之后执行延迟回调。在修改数据之后立即使用这个方法，获取更新后的 DOM。</p>
 </blockquote>
 <p>这个API也有对应的实例方法：<code>vm.$nextTick</code>。</p>
-<h2 id="Vue-observable"><a href="#Vue-observable" class="headerlink" title="Vue.observable"></a>Vue.observable</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 2.6 explicit observable API</span></span><br><span class="line">Vue.observable = &lt;T&gt;(obj: T): T =&gt; &#123;</span><br><span class="line">  observe(obj)</span><br><span class="line">  return obj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Vue-observable"><a href="#Vue-observable" class="headerlink" title="Vue.observable"></a>Vue.observable</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 2.6 explicit observable API</span></span><br><span class="line">Vue.observable = <span class="xml"><span class="tag">&lt;<span class="name">T</span>&gt;</span>(obj: T): T =&gt; &#123;</span></span><br><span class="line"><span class="xml">  observe(obj)</span></span><br><span class="line"><span class="xml">  return obj</span></span><br><span class="line"><span class="xml">&#125;</span></span><br></pre></td></tr></table></figure>
 <p><code>observe</code>函数也来自于文件<code>core/observer/index.js</code>，它的实现过程也可以看<a href="http://shinancao.cn/2020/02/01/Vue-Source-Code-10/" target="_blank" rel="noopener">Vue.js源码学习 —— 响应系统的设计</a>。</p>
 <p>官方文档中对<code>Vue.observable</code>的说明如下：</p>
 <blockquote>
@@ -551,8 +554,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/03/10/Vue-Source-Code-15/" rel="prev" title="Vue.js源码学习 —— 初识编译器">
-                Vue.js源码学习 —— 初识编译器 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/02/22/Vue-Source-Code-17/" rel="prev" title="vue-router.js源码学习 —— 初识Vue Router">
+                vue-router.js源码学习 —— 初识Vue Router <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -626,7 +629,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-count">75</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -648,7 +651,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-count">90</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -706,7 +709,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-config"><span class="nav-number">1.</span> <span class="nav-text">Vue.config</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-set-Vue-delete"><span class="nav-number">2.</span> <span class="nav-text">Vue.set/Vue.delete</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-nextTick"><span class="nav-number">3.</span> <span class="nav-text">Vue.nextTick</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-observable"><span class="nav-number">4.</span> <span class="nav-text">Vue.observable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-Mixin"><span class="nav-number">5.</span> <span class="nav-text">Vue.Mixin</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-component-Vue-directive-Vue-filter"><span class="nav-number">6.</span> <span class="nav-text">Vue.component/Vue.directive/Vue.filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-Use"><span class="nav-number">7.</span> <span class="nav-text">Vue.Use</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-extend"><span class="nav-number">8.</span> <span class="nav-text">Vue.extend</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实现子类构造器"><span class="nav-number">8.1.</span> <span class="nav-text">实现子类构造器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#处理name选项"><span class="nav-number">8.2.</span> <span class="nav-text">处理name选项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存子类构造器"><span class="nav-number">8.3.</span> <span class="nav-text">缓存子类构造器</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-config"><span class="nav-number">1.</span> <span class="nav-text">Vue.config</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-util"><span class="nav-number">2.</span> <span class="nav-text">Vue.util</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-set-Vue-delete"><span class="nav-number">3.</span> <span class="nav-text">Vue.set/Vue.delete</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-nextTick"><span class="nav-number">4.</span> <span class="nav-text">Vue.nextTick</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-observable"><span class="nav-number">5.</span> <span class="nav-text">Vue.observable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-Mixin"><span class="nav-number">6.</span> <span class="nav-text">Vue.Mixin</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-component-Vue-directive-Vue-filter"><span class="nav-number">7.</span> <span class="nav-text">Vue.component/Vue.directive/Vue.filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-Use"><span class="nav-number">8.</span> <span class="nav-text">Vue.Use</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue-extend"><span class="nav-number">9.</span> <span class="nav-text">Vue.extend</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实现子类构造器"><span class="nav-number">9.1.</span> <span class="nav-text">实现子类构造器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#处理name选项"><span class="nav-number">9.2.</span> <span class="nav-text">处理name选项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存子类构造器"><span class="nav-number">9.3.</span> <span class="nav-text">缓存子类构造器</span></a></li></ol></li></ol></div>
             
 
           </div>
