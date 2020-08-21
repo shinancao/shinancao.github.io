@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="JavaScript,源码分析,Vue Router,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="这篇文章接着上一篇vue-router.js源码学习 —— 路由匹配，也是 Vue Router 的核心部分，我们会重点来看一下导航解析的整个过程的实现，最后来过一下hash和history模式下是如何实现路由跳转的。 Vue Router 提供了 3 种路由跳转模式：hash、history和abstract。实现的代码位于文件夹history中，每种模式单独用一个类来实现，但都继承于Histo">
+<meta name="keywords" content="JavaScript,源码分析,Vue Router">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue-router.js源码学习 —— 导航守卫">
+<meta property="og:url" content="http://shinancao.github.io/2020/03/13/Vue-Source-Code-19/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="这篇文章接着上一篇vue-router.js源码学习 —— 路由匹配，也是 Vue Router 的核心部分，我们会重点来看一下导航解析的整个过程的实现，最后来过一下hash和history模式下是如何实现路由跳转的。 Vue Router 提供了 3 种路由跳转模式：hash、history和abstract。实现的代码位于文件夹history中，每种模式单独用一个类来实现，但都继承于Histo">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-08-21T03:15:49.477Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vue-router.js源码学习 —— 导航守卫">
+<meta name="twitter:description" content="这篇文章接着上一篇vue-router.js源码学习 —— 路由匹配，也是 Vue Router 的核心部分，我们会重点来看一下导航解析的整个过程的实现，最后来过一下hash和history模式下是如何实现路由跳转的。 Vue Router 提供了 3 种路由跳转模式：hash、history和abstract。实现的代码位于文件夹history中，每种模式单独用一个类来实现，但都继承于Histo">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2020/03/13/Vue-Source-Code-19/">
+
+
+
+
+
+  <title>vue-router.js源码学习 —— 导航守卫 | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-portfolio">
+          <a href="/portfolio/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
+            
+            项目
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/03/13/Vue-Source-Code-19/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">vue-router.js源码学习 —— 导航守卫</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-13T16:40:32+08:00">
+                2020-03-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这篇文章接着上一篇<a href="http://shinancao.cn/2020/03/10/Vue-Source-Code-18/" target="_blank" rel="noopener">vue-router.js源码学习 —— 路由匹配</a>，也是 Vue Router 的核心部分，我们会重点来看一下导航解析的整个过程的实现，最后来过一下<code>hash</code>和<code>history</code>模式下是如何实现路由跳转的。</p>
+<p>Vue Router 提供了 3 种路由跳转模式：<code>hash</code>、<code>history</code>和<code>abstract</code>。实现的代码位于文件夹<code>history</code>中，每种模式单独用一个类来实现，但都继承于<code>History</code>基类。<code>abstract</code>是给服务端渲染时使用的，从<code>history/abstract.js</code>文件中可以看到，<code>AbstractHistory</code>类内部自己维护了一个路由对象的栈，来模拟导航。我们今天主要看<code>hash</code>和<code>history</code>两种路由模式的实现。</p>
+<a id="more"></a>
+<h2 id="History类"><a href="#History类" class="headerlink" title="History类"></a>History类</h2><p>打开<code>history/base.js</code>可以看到，<code>History</code>类的上方给出了子类需要实现的方法，有这些：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// implemented by sub-classes</span></span><br><span class="line">+go: <span class="function">(<span class="params">n: number</span>) =&gt;</span> <span class="keyword">void</span></span><br><span class="line">+push: <span class="function">(<span class="params">loc: RawLocation, onComplete?: <span class="built_in">Function</span>, onAbort?: <span class="built_in">Function</span></span>) =&gt;</span> <span class="keyword">void</span></span><br><span class="line">+replace: (</span><br><span class="line">  loc: RawLocation,</span><br><span class="line">  onComplete?: <span class="built_in">Function</span>,</span><br><span class="line">  onAbort?: <span class="built_in">Function</span></span><br><span class="line">) =&gt; <span class="keyword">void</span></span><br><span class="line">+ensureURL: <span class="function">(<span class="params">push?: boolean</span>) =&gt;</span> <span class="keyword">void</span></span><br><span class="line">+getCurrentLocation: <span class="function"><span class="params">()</span> =&gt;</span> string</span><br><span class="line">+setupListeners: <span class="built_in">Function</span></span><br></pre></td></tr></table></figure>
+<p>都是跟真正跳转相关的，而<code>History</code>类中主要处理的是各种导航守卫钩子的触发时机。</p>
+<p>所谓导航守卫，就是Vue Router给了开发者在导航前后处理一些事情的机会，开发者可以根据业务需要决定是否要导航到下一个页面。一共有3种地方的导航守卫：全局的、路由中的、组件内的。咱们先举个简单的例子，实现所有提供的钩子，然后看一下调用顺序。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Foo = &#123;</span><br><span class="line">  template: <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;div&gt;Foo&lt;/div&gt;</span></span><br><span class="line"><span class="string">  `</span>,</span><br><span class="line">  beforeRouteEnter (to, <span class="keyword">from</span>, next) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'foo beforeRouteEnter'</span>)</span><br><span class="line">    next()</span><br><span class="line">  &#125;,</span><br><span class="line">  beforeRouteUpdate (to, <span class="keyword">from</span>, next) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'foo beforeRouteUpdate'</span>)</span><br><span class="line">    next()</span><br><span class="line">  &#125;,</span><br><span class="line">  beforeRouteLeave (to, <span class="keyword">from</span>, next) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'foo beforeRouteLeave'</span>)</span><br><span class="line">    next()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Bar = &#123;</span><br><span class="line">  template: <span class="string">'&lt;div&gt;Bar&lt;/div&gt;'</span>,</span><br><span class="line">  beforeRouteEnter (to, <span class="keyword">from</span>, next) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'bar beforeRouteEnter'</span>)</span><br><span class="line">    next()</span><br><span class="line">  &#125;,</span><br><span class="line">  beforeRouteUpdate (to, <span class="keyword">from</span>, next) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'bar beforeRouteUpdate'</span>)</span><br><span class="line">    next()</span><br><span class="line">  &#125;,</span><br><span class="line">  beforeRouteLeave (to, <span class="keyword">from</span>, next) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'bar beforeRouteLeave'</span>)</span><br><span class="line">    next()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> router = <span class="keyword">new</span> VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123;</span><br><span class="line">      path: <span class="string">'/foo/:id'</span>,</span><br><span class="line">      component: Foo,</span><br><span class="line">      beforeEnter: <span class="function">(<span class="params">to, <span class="keyword">from</span>, next</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'foo beforeEnter'</span>)</span><br><span class="line">        next()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      path: <span class="string">'/bar'</span>,</span><br><span class="line">      component: Bar,</span><br><span class="line">      beforeEnter: <span class="function">(<span class="params">to, <span class="keyword">from</span>, next</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'bar beforeEnter'</span>)</span><br><span class="line">        next()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">router.beforeEach(<span class="function">(<span class="params">to, <span class="keyword">from</span>, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'beforeEach'</span>)</span><br><span class="line">  next()</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">router.beforeResolve(<span class="function">(<span class="params">to, <span class="keyword">from</span>, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'beforeResolve'</span>)</span><br><span class="line">  next()</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">router.afterEach(<span class="function">(<span class="params">to, <span class="keyword">from</span></span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'afterEach'</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  router,</span><br><span class="line">  template: <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;div id="app"&gt;</span></span><br><span class="line"><span class="string">      &lt;ul&gt;</span></span><br><span class="line"><span class="string">        &lt;li&gt;&lt;router-link to="/foo/123"&gt;/foo (id = 123)&lt;/router-link&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">        &lt;li&gt;&lt;router-link to="/foo/456"&gt;/foo (id = 456)&lt;/router-link&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">        &lt;li&gt;&lt;router-link to="/bar"&gt;/bar&lt;/router-link&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">      &lt;/ul&gt;</span></span><br><span class="line"><span class="string">      &lt;router-view&gt;&lt;/router-view&gt;</span></span><br><span class="line"><span class="string">    &lt;/div&gt;</span></span><br><span class="line"><span class="string">  `</span></span><br><span class="line">&#125;).$mount(<span class="string">'#app'</span>)</span><br></pre></td></tr></table></figure>
+<p>当点击<code>/foo (id = 123)</code>时，输出结果如下：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">beforeEach</span></span><br><span class="line"><span class="keyword">foo </span><span class="keyword">beforeEnter</span></span><br><span class="line"><span class="keyword">foo </span><span class="keyword">beforeRouteEnter</span></span><br><span class="line"><span class="keyword">beforeResolve</span></span><br><span class="line"><span class="keyword">afterEach</span></span><br></pre></td></tr></table></figure>
+<p>当点击<code>/foo (id = 456)</code>时，输出的结果如下：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">beforeEach</span></span><br><span class="line"><span class="keyword">foo </span><span class="keyword">beforeRouteUpdate</span></span><br><span class="line"><span class="keyword">beforeResolve</span></span><br><span class="line"><span class="keyword">afterEach</span></span><br></pre></td></tr></table></figure>
+<p>当点击<code>/bar</code>时，输出的结果如下：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">foo</span> <span class="keyword">beforeRouteLeave</span></span><br><span class="line"><span class="keyword">beforeEach</span></span><br><span class="line"><span class="keyword">bar </span><span class="keyword">beforeEnter</span></span><br><span class="line"><span class="keyword">bar </span><span class="keyword">beforeRouteEnter</span></span><br><span class="line"><span class="keyword">beforeResolve</span></span><br><span class="line"><span class="keyword">afterEach</span></span><br></pre></td></tr></table></figure>
+<p>通过直观的观察已经大概能了解到导航解析的处理过程，下面我们看一下<code>History</code>类中是怎么处理的。</p>
+<h3 id="导航解析的流程"><a href="#导航解析的流程" class="headerlink" title="导航解析的流程"></a>导航解析的流程</h3><p><code>History</code>类对外提供了<code>transitionTo</code>方法来触发一次导航，<code>transitionTo</code>的方法签名如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// location 要导航过去的目标位置</span></span><br><span class="line"><span class="comment">// onComplete 导航完成时的回调</span></span><br><span class="line"><span class="comment">// onAbort 导航被终止时的回调</span></span><br><span class="line">transitionTo (location: RawLocation, onComplete?: <span class="built_in">Function</span>, onAbort?: <span class="built_in">Function</span>) &#123;</span><br><span class="line">  <span class="comment">// 1. 导航被触发</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>它先调用<code>router.match</code>获取目标位置的路由对象。然后调用了<code>confirmTransition</code>方法进行接下来的工作，同时会给它传刚才获得的<code>route</code>，和完成时的回调，还有导航终止时的回调。</p>
+<p>在<code>confirmTransition</code>方法中会先判断是否要导航去与当前相同的路由，如果是的话就中断导航，并触发错误回调。如果不是相同的路由，我们看下面这段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">confirmTransition (route: Route, <span class="attr">onComplete</span>: <span class="built_in">Function</span>, onAbort?: <span class="built_in">Function</span>) &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 首先解析出被更新的路由记录，被失活的路由记录，和被激活的路由记录</span></span><br><span class="line">  <span class="keyword">const</span> &#123; updated, deactivated, activated &#125; = resolveQueue(</span><br><span class="line">    <span class="keyword">this</span>.current.matched,</span><br><span class="line">    route.matched</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 准备执行队列中的任务，从这里也可以看出在进入目标路由位置之前，钩子被调用的顺序</span></span><br><span class="line">  <span class="keyword">const</span> queue: <span class="built_in">Array</span>&lt;?NavigationGuard&gt; = [].concat(</span><br><span class="line">    <span class="comment">// 2. 在失活的组件里调用 beforeRouteLeave 守卫</span></span><br><span class="line">    extractLeaveGuards(deactivated),</span><br><span class="line">    <span class="comment">// 3. 调用全局的 beforeEach 守卫</span></span><br><span class="line">    <span class="keyword">this</span>.router.beforeHooks,</span><br><span class="line">    <span class="comment">// 4. 在重用的组件里调用 beforeRouteUpdate 守卫</span></span><br><span class="line">    extractUpdateHooks(updated),</span><br><span class="line">    <span class="comment">// 5. 在路由配置里调用 beforeEnter</span></span><br><span class="line">    activated.map(<span class="function"><span class="params">m</span> =&gt;</span> m.beforeEnter),</span><br><span class="line">    <span class="comment">// 6. 解析异步路由组件</span></span><br><span class="line">    resolveAsyncComponents(activated)</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后将上面的队列传给<code>runQueue</code>函数去执行，<code>runQueue</code>函数的签名如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// queue 是要执行的任务队列</span></span><br><span class="line"><span class="comment">// queue 中的每个任务会传给 fn，由 fn 去执行，这里给 fn 传的是 iterator</span></span><br><span class="line"><span class="comment">// cb 是当队列中所有任务都执行完后的回调函数</span></span><br><span class="line">runQueue (queue: <span class="built_in">Array</span>&lt;?NavigationGuard&gt;, <span class="attr">fn</span>: <span class="built_in">Function</span>, <span class="attr">cb</span>: <span class="built_in">Function</span>)</span><br></pre></td></tr></table></figure>
+<p>一会我们再细说一下<code>iterator</code>函数中做的事情，先看一下当队列中的任务都执行完会回调函数中做的事情，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">runQueue(queue, iterator, () =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> postEnterCbs = []</span><br><span class="line">  <span class="keyword">const</span> isValid = <span class="function"><span class="params">()</span> =&gt;</span> <span class="keyword">this</span>.current === route</span><br><span class="line">  <span class="comment">// 7. 在被激活的组件里调用 beforeRouteEnter</span></span><br><span class="line">  <span class="keyword">const</span> enterGuards = extractEnterGuards(activated, postEnterCbs, isValid)</span><br><span class="line">  <span class="comment">// 8. 调用全局的 beforeResolve 守卫</span></span><br><span class="line">  <span class="keyword">const</span> queue = enterGuards.concat(<span class="keyword">this</span>.router.resolveHooks)</span><br><span class="line">  runQueue(queue, iterator, () =&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.pending !== route) &#123;</span><br><span class="line">      <span class="keyword">return</span> abort(createNavigationCancelledError(current, route))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.pending = <span class="literal">null</span></span><br><span class="line">    onComplete(route)</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>可以看到又准备了一个新的队列任务，然后又调用<code>runQueue</code>去执行这些任务。当这个新的队列中的任务都执行完后，如果正在等待的路由没有变，<code>transitionTo</code>方法传过来的<code>onComplete</code>回调就会执行。<code>onComplete</code>的代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.confirmTransition(</span><br><span class="line">  route,</span><br><span class="line">  () =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> prev = <span class="keyword">this</span>.current</span><br><span class="line">    <span class="comment">// 9. 触发DOM更新</span></span><br><span class="line">    <span class="keyword">this</span>.updateRoute(route)</span><br><span class="line">    <span class="comment">// 在外部传入的 onComplete 此时得到执行，onComplete中才真正执行跳转</span></span><br><span class="line">    onComplete &amp;&amp; onComplete(route)</span><br><span class="line">    <span class="comment">// 10. 导航被确认</span></span><br><span class="line">    <span class="keyword">this</span>.ensureURL()</span><br><span class="line">    <span class="comment">// 11. 调用全局的 afterEach 钩子</span></span><br><span class="line">    <span class="keyword">this</span>. router.afterHooks.forEach(<span class="function"><span class="params">hook</span> =&gt;</span> &#123;</span><br><span class="line">      hook &amp;&amp; hook(route, prev)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;,</span><br><span class="line">  err =&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>说一下第9步，我觉得触发DOM更新说是在第9步是比较准确的，虽然<a href="https://router.vuejs.org/zh/guide/advanced/navigation-guards.html#%E5%AE%8C%E6%95%B4%E7%9A%84%E5%AF%BC%E8%88%AA%E8%A7%A3%E6%9E%90%E6%B5%81%E7%A8%8B" target="_blank" rel="noopener">官方文档</a>中说触发DOM更新是在第11步，<code>afterEach</code>钩子执行之后。DOM真正被更新确实是发生在<code>afterEach</code>钩子执行之后的，但是触发确实在调用<code>updateRoute</code>时就已经触发了的，来看一下为什么。<code>updateRoute</code>的内容如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">updateRoute (route: Route) &#123;</span><br><span class="line">  <span class="keyword">this</span>.current = route</span><br><span class="line">  <span class="keyword">this</span>.cb &amp;&amp; <span class="keyword">this</span>.cb(route)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而此时的<code>cb</code>是什么呢？是在<code>router</code>的<code>init</code>方法传进来的：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// listen 的参数就是 cb</span></span><br><span class="line">history.listen(<span class="function"><span class="params">route</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">this</span>.apps.forEach(<span class="function"><span class="params">app</span> =&gt;</span> &#123;</span><br><span class="line">    app._route = route</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>可以看到在这里给<code>app._route</code>重新赋值了，<code>app</code>就是 Vue 实例，而<code>_route</code>是响应式的，还记得在<code>install</code>函数中我们看见过下面这行代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Vue.util.defineReactive(<span class="keyword">this</span>, <span class="string">'_route'</span>, <span class="keyword">this</span>._router.history.current)</span><br></pre></td></tr></table></figure>
+<p>既然<code>_route</code>是响应式的，那它被赋值时就会触发Vue的渲染函数观察者去执行渲染了。我们知道<code>watcher</code>都是放在<code>nextTick</code>中执行的，所以更新的过程会晚一点发生，所以<code>afterEach</code>钩子先被调用了。</p>
+<blockquote>
+<p>到这里我们已经看到了官方文档中说的前11步的执行过程了，那第12步是如何发生的呢？</p>
+</blockquote>
+<p>我们先来看一下上面给<code>runQueue</code>的队列中到底都放的什么样的函数。</p>
+<h3 id="队列中的任务"><a href="#队列中的任务" class="headerlink" title="队列中的任务"></a>队列中的任务</h3><p>可以看到<code>extractLeaveGuards</code>和<code>extractUpdateHooks</code>的执行过程是一样的：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">extractLeaveGuards</span> (<span class="params">deactivated: Array&lt;RouteRecord&gt;</span>): <span class="title">Array</span>&lt;?<span class="title">Function</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> extractGuards(deactivated, <span class="string">'beforeRouteLeave'</span>, bindGuard, <span class="literal">true</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">extractUpdateHooks</span> (<span class="params">updated: Array&lt;RouteRecord&gt;</span>): <span class="title">Array</span>&lt;?<span class="title">Function</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> extractGuards(updated, <span class="string">'beforeRouteUpdate'</span>, bindGuard)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而<code>extractGuards</code>函数中是将得到的钩子进行展平：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">extractGuards</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  records: Array&lt;RouteRecord&gt;,</span></span></span><br><span class="line"><span class="function"><span class="params">  name: string,</span></span></span><br><span class="line"><span class="function"><span class="params">  bind: Function,</span></span></span><br><span class="line"><span class="function"><span class="params">  reverse?: boolean</span></span></span><br><span class="line"><span class="function"><span class="params"></span>): <span class="title">Array</span>&lt;?<span class="title">Function</span>&gt; </span>&#123;</span><br><span class="line">  <span class="comment">// 传给 flatMapComponents 的 fn 参数会被执行，同时也会从 record 中取出 def, instance 等</span></span><br><span class="line">  <span class="keyword">const</span> guards = flatMapComponents(records, (def, instance, match, key) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> guard = extractGuard(def, name)</span><br><span class="line">    <span class="keyword">if</span> (guard) &#123;</span><br><span class="line">      <span class="comment">// 此时 bind 会被执行，而 bind 就是外面传的 bindGuard</span></span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">Array</span>.isArray(guard)</span><br><span class="line">        ? guard.map(<span class="function"><span class="params">guard</span> =&gt;</span> bind(guard, instance, match, key))</span><br><span class="line">        : bind(guard, instance, match, key)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="keyword">return</span> flatten(reverse ? guards.reverse() : guards)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以<code>extractGuards</code>函数返回的是<code>bindGuard</code>函数执行结果的数组，也就是<code>boundRouteGuard</code>函数数组。</p>
+<p>为什么要去执行<code>extractGuard</code>函数呢？</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">extractGuard</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  def: Object | Function,</span></span></span><br><span class="line"><span class="function"><span class="params">  key: string</span></span></span><br><span class="line"><span class="function"><span class="params"></span>): <span class="title">NavigationGuard</span> | <span class="title">Array</span>&lt;<span class="title">NavigationGuard</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> def !== <span class="string">'function'</span>) &#123;</span><br><span class="line">    <span class="comment">// extend now so that global mixins are applied.</span></span><br><span class="line">    def = _Vue.extend(def)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> def.options[key]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样做是为了在使用<code>Vue.mixin</code>提供了一些全局的组件内导航守卫，这样就可以与其合并了。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Vue.mixin(&#123;</span><br><span class="line">  beforeRouteUpdate (to, <span class="keyword">from</span>, next) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'mixin beforeRouteUpdate'</span>)</span><br><span class="line">    next()</span><br><span class="line">  &#125;,</span><br><span class="line">  beforeRouteLeave (to, <span class="keyword">from</span>, next) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'mixin beforeRouteLeave'</span>)</span><br><span class="line">    next()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>现在我们可以确定下来第一次传给<code>runQueue</code>的队列中可能出现的函数了：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> queue: <span class="built_in">Array</span>&lt;?NavigationGuard&gt; = [].concat(</span><br><span class="line">  <span class="comment">// in-component leave guards</span></span><br><span class="line">  extractLeaveGuards(deactivated),   <span class="comment">// f boundRouteGuard()</span></span><br><span class="line">  <span class="comment">// global before hooks</span></span><br><span class="line">  <span class="keyword">this</span>.router.beforeHooks,           <span class="comment">// ƒ (to, from, next)</span></span><br><span class="line">  <span class="comment">// in-component update hooks</span></span><br><span class="line">  extractUpdateHooks(updated),       <span class="comment">// ƒ boundRouteGuard()</span></span><br><span class="line">  <span class="comment">// in-config enter guards</span></span><br><span class="line">  activated.map(<span class="function"><span class="params">m</span> =&gt;</span> m.beforeEnter), <span class="comment">// ƒ beforeEnter(to, from, next)</span></span><br><span class="line">  <span class="comment">// async components</span></span><br><span class="line">  resolveAsyncComponents(activated)  <span class="comment">// ƒ (to, from, next)</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>同样的分析过程，可以找出第2次传给<code>runQueue</code>的队列中的函数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ƒ routeEnterGuard(to, from, next)</span></span><br><span class="line"><span class="keyword">const</span> enterGuards = extractEnterGuards(activated, postEnterCbs, isValid)</span><br><span class="line"><span class="comment">// ƒ (to, from, next)</span></span><br><span class="line"><span class="keyword">const</span> resolveHooks = <span class="keyword">this</span>.router.resolveHooks</span><br><span class="line"><span class="keyword">const</span> queue = enterGuards.concat(resolveHooks)</span><br></pre></td></tr></table></figure>
+<p>确定了队列中可能出现的函数，再来看一下这些函数是如何执行的。</p>
+<h3 id="执行队列中的任务"><a href="#执行队列中的任务" class="headerlink" title="执行队列中的任务"></a>执行队列中的任务</h3><p>传给<code>runQueue</code>函数的第2个参数是<code>iterator</code>，在它内部就会取执行队列中的任务。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> iterator = <span class="function">(<span class="params">hook: NavigationGuard, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.pending !== route) &#123;</span><br><span class="line">    <span class="keyword">return</span> abort(createNavigationCancelledError(current, route))</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    hook(route, current, (to: any) =&gt; &#123;</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">    abort(e)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>hook</code>就是队列中的函数，传入的3个参数分别是<code>to</code>、<code>from</code>、<code>next</code>。</p>
+<p>从上面分析出的函数可以看出当<code>hook</code>是<code>boundRouteGuard</code>或<code>routeEnterGuard</code>时还要再进一步执行才能执行到开发者提供的内容。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">boundRouteGuard</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> guard.apply(instance, <span class="built_in">arguments</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>boundRouteGuard</code>函数的作用是在执行钩子时绑定当前的Vue实例，<code>arguments</code>就是<code>to</code>、<code>from</code>、<code>next</code>，所以在<code>beforeRouteUpdate</code>和<code>beforeRouteLeave</code>内是可以直接用<code>this</code>访问到当前Vue实例的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">routeEnterGuard</span> (<span class="params">to, from, next</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 这里 guard 的第3个参数才是传给beforeRouteEnter钩子的next</span></span><br><span class="line">  <span class="keyword">return</span> guard(to, <span class="keyword">from</span>, cb =&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> cb === <span class="string">'function'</span>) &#123;</span><br><span class="line">      cbs.push(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// 组件的实例此时可能还没有创建，通过轮询在组件实例存在时再执行函数</span></span><br><span class="line">        poll(cb, match.instances, key, isValid)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    next(cb)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>routeEnterGuard</code>函数中在执行钩子函数时，重新包装了一次传入的<code>next</code>，是为了判断<code>cb</code>也就是开发者在<code>beforeRouteEnter</code>钩子中调用<code>next</code>时传入的值是否为函数。如果是函数会进行轮询，在组件的实例存在时再去执行这个函数，以确保函数内能正确放到组件实例对象。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">poll</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">  cb: any, <span class="regexp">//</span> somehow flow cannot infer this is a function</span></span></span><br><span class="line"><span class="function"><span class="params">  instances: Object,</span></span></span><br><span class="line"><span class="function"><span class="params">  key: string,</span></span></span><br><span class="line"><span class="function"><span class="params">  isValid: (</span>) =&gt; <span class="title">boolean</span></span></span><br><span class="line"><span class="function">) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (</span><br><span class="line">    instances[key] &amp;&amp;</span><br><span class="line">    !instances[key]._isBeingDestroyed <span class="comment">// do not reuse being destroyed instance</span></span><br><span class="line">  ) &#123;</span><br><span class="line">    <span class="comment">// 12. 用创建好的实例调用 beforeRouteEnter 守卫中传给 next 的回调函数。</span></span><br><span class="line">    cb(instances[key])</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isValid()) &#123; <span class="comment">// 判断当前的路由是否还是之前的目标路由</span></span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      poll(cb, instances, key, isValid)</span><br><span class="line">    &#125;, <span class="number">16</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在轮询到组件实例已经创建了时，就发生了第12步，将实例传给<code>next</code>函数。所以官方文档中也是建议我们在<code>beforeRouteEnter</code>中需要访问实例时像下面这样写：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">beforeRouteEnter (to, <span class="keyword">from</span>, next) &#123;</span><br><span class="line">  next(<span class="function"><span class="params">vm</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<h3 id="对next传参的处理"><a href="#对next传参的处理" class="headerlink" title="对next传参的处理"></a>对next传参的处理</h3><p>开发者在钩子函数中调用<code>next</code>函数时可以传不同类型的值，给<code>beforeRouteEnter</code>中的<code>next</code>传函数的情况我们上面已经分析过了，现在看看其他情况。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">hook(route, current, (to: any) =&gt; &#123;</span><br><span class="line">  <span class="comment">// 中断当前的导航。如果地址栏中的URL发生变化时，会重置到 from 路由对应的地址。</span></span><br><span class="line">  <span class="keyword">if</span> (to === <span class="literal">false</span>) &#123;</span><br><span class="line">    <span class="comment">// next(false) -&gt; abort navigation, ensure current URL</span></span><br><span class="line">    <span class="keyword">this</span>.ensureURL(<span class="literal">true</span>)</span><br><span class="line">    abort(createNavigationAbortedError(current, route))</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 导航被终止，该错误会被传递给 router.onError() 注册过的回调。</span></span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (isError(to)) &#123;</span><br><span class="line">    <span class="keyword">this</span>.ensureURL(<span class="literal">true</span>)</span><br><span class="line">    abort(to)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 传了位置或位置对象时，会中断当前的导航，跳转到一个新的导航。</span></span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (</span><br><span class="line">    <span class="keyword">typeof</span> to === <span class="string">'string'</span> ||</span><br><span class="line">    (<span class="keyword">typeof</span> to === <span class="string">'object'</span> &amp;&amp;</span><br><span class="line">    (<span class="keyword">typeof</span> to.path === <span class="string">'string'</span> || <span class="keyword">typeof</span> to.name === <span class="string">'string'</span>))</span><br><span class="line">  ) &#123;</span><br><span class="line">    <span class="comment">// next('/') or next(&#123; path: '/' &#125;) -&gt; redirect</span></span><br><span class="line">    abort(createNavigationRedirectedError(current, route))</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> to === <span class="string">'object'</span> &amp;&amp; to.replace) &#123;</span><br><span class="line">      <span class="keyword">this</span>.replace(to)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.push(to)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; </span><br><span class="line">  <span class="comment">// 执行队列中的下一个钩子函数。如果全部钩子执行完了，则导航的状态就是 confirmed (确认的)。</span></span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    next(to)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>以上就是<code>History</code>类主要做的事情了，接下来看<code>HashHistory</code>类的实现。</p>
+<h2 id="HashHistory类"><a href="#HashHistory类" class="headerlink" title="HashHistory类"></a>HashHistory类</h2><p><code>HashHistory</code>的构造器方法中主要是确保当前的地址栏中会有<code>#</code>。我们主要看一下<code>History</code>基类中留给子类去实现的几个方法。</p>
+<h3 id="setupListeners"><a href="#setupListeners" class="headerlink" title="setupListeners"></a>setupListeners</h3><p><code>setupListeners</code>方法中主要监听了浏览器的 前进/后退 事件，收到通知后做了两件事：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正确处理回到上一个页面，或进到一个页面</span></span><br><span class="line"><span class="keyword">const</span> eventType = supportsPushState ? <span class="string">'popstate'</span> : <span class="string">'hashchange'</span></span><br><span class="line"><span class="built_in">window</span>.addEventListener(</span><br><span class="line">  eventType,</span><br><span class="line">  handleRoutingEvent</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在用户创建 router 时设置了scrollBehavior的话</span></span><br><span class="line"><span class="comment">// 保存下当前的位置，以便在再回到这个页面时能自动滑动到用户希望停留的位置</span></span><br><span class="line"><span class="built_in">window</span>.addEventListener(<span class="string">'popstate'</span>, handlePopState)</span><br></pre></td></tr></table></figure>
+<p>同时我们也看到向<code>this.listeners</code>添加了对应的移除监听器的操作：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.listeners.push(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">window</span>.removeEventListener(eventType, handleRoutingEvent)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">setupScroll</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">window</span>.removeEventListener(<span class="string">'popstate'</span>, handlePopState)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在<code>History</code>类中的<code>teardownListeners</code>方法会去调用<code>listeners</code>中的函数，这样监听器就被移除了。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">teardownListeners () &#123;</span><br><span class="line">  <span class="keyword">this</span>.listeners.forEach(<span class="function"><span class="params">cleanupListener</span> =&gt;</span> &#123;</span><br><span class="line">      cleanupListener()</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="keyword">this</span>.listeners = []</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="push-amp-replace"><a href="#push-amp-replace" class="headerlink" title="push &amp; replace"></a>push &amp; replace</h3><p>这两个方法中都调用了我们上面讲到的<code>transitionTo</code>方法，在<code>onComplete</code>中分别调用了<code>pushHash</code>和<code>replaceHash</code>。来看一下这两个方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">pushHash</span> (<span class="params">path</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (supportsPushState) &#123;</span><br><span class="line">    pushState(getUrl(path))</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">window</span>.location.hash = path</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">replaceHash</span> (<span class="params">path</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (supportsPushState) &#123;</span><br><span class="line">    replaceState(getUrl(path))</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">window</span>.location.replace(getUrl(path))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在支持<code>history.pushState</code>的浏览器中优先使用该API，否则直接使用<code>window.location</code>来修改。在<code>getUrl</code>会将完整的url拼接好。</p>
+<h3 id="go"><a href="#go" class="headerlink" title="go"></a>go</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">go (n: number) &#123;</span><br><span class="line">  <span class="built_in">window</span>.history.go(n)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在<code>VueRouter</code>类中看到的<code>back</code>和<code>forward</code>方法都是调用的<code>go</code>方法。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">back () &#123;</span><br><span class="line">  <span class="keyword">this</span>.go(<span class="number">-1</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">forward () &#123;</span><br><span class="line">  <span class="keyword">this</span>.go(<span class="number">1</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="ensureURL-amp-getCurrentLocation"><a href="#ensureURL-amp-getCurrentLocation" class="headerlink" title="ensureURL &amp; getCurrentLocation"></a>ensureURL &amp; getCurrentLocation</h3><p><code>getHash</code>获取的是<code>#</code>号后的内容，也就是<code>hash</code>值。比如当前的 url 是<code>http://localhost:8080/debug-start/#/foo/123</code>，那<code>getHash</code>返回的就是<code>/foo/123</code>。</p>
+<p><code>ensureURL</code>方法提供给外部来设置当前地址栏中的url。</p>
+<p><code>getCurrentLocation</code>方法提供给外部用来获取当前的<code>hash</code>值，也就是当前的位置。</p>
+<h2 id="HTML5History类"><a href="#HTML5History类" class="headerlink" title="HTML5History类"></a>HTML5History类</h2><p>当我们在创建<code>VueRouter</code>实例时指定的<code>mode</code>为<code>history</code>，就会使用这个类来进行导航处理。与<code>HashHistory</code>类一个明显的差别是在地址栏中不会出现<code>#</code>了。</p>
+<p>与<code>HashHistory</code>类中对应的方法实现过程都很相似，就不具体展开看了。说一下<code>getLocation</code>方法，它的作用和<code>getHash</code>一样的，比如当前地址栏中的url是<code>http://localhost:8080/debug-start/foo/123</code>，那么<code>getLocation</code>会返回<code>/foo/123</code>。</p>
+<p>到此，Vue Router 的源码我们几乎就都分析完了，相信你会对它的使用有更深的了解。</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2020/03/13/Vue-Source-Code-19/" target="_blank" rel="noopener">http://shinancao.cn/2020/03/13/Vue-Source-Code-19/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="noopener">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+            <a href="/tags/Vue-Router/" rel="tag"># Vue Router</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/10/Vue-Source-Code-18/" rel="next" title="vue-router.js源码学习 —— 路由匹配">
+                <i class="fa fa-chevron-left"></i> vue-router.js源码学习 —— 路由匹配
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">77</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">90</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#History类"><span class="nav-number">1.</span> <span class="nav-text">History类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#导航解析的流程"><span class="nav-number">1.1.</span> <span class="nav-text">导航解析的流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#队列中的任务"><span class="nav-number">1.2.</span> <span class="nav-text">队列中的任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#执行队列中的任务"><span class="nav-number">1.3.</span> <span class="nav-text">执行队列中的任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对next传参的处理"><span class="nav-number">1.4.</span> <span class="nav-text">对next传参的处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HashHistory类"><span class="nav-number">2.</span> <span class="nav-text">HashHistory类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#setupListeners"><span class="nav-number">2.1.</span> <span class="nav-text">setupListeners</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#push-amp-replace"><span class="nav-number">2.2.</span> <span class="nav-text">push &amp; replace</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#go"><span class="nav-number">2.3.</span> <span class="nav-text">go</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ensureURL-amp-getCurrentLocation"><span class="nav-number">2.4.</span> <span class="nav-text">ensureURL &amp; getCurrentLocation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTML5History类"><span class="nav-number">3.</span> <span class="nav-text">HTML5History类</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
