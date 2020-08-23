@@ -305,6 +305,165 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/03/20/Vue-Source-Code-20/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/03/20/Vue-Source-Code-20/" itemprop="url">vuex.js源码学习 —— 初始化与实例方法</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-20T16:40:32+08:00">
+                2020-03-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><a href="https://vuex.vuejs.org/zh/" target="_blank" rel="noopener">官方文档</a>中对<a href="https://github.com/vuejs/vuex" target="_blank" rel="noopener">Vuex</a>的描述如下：</p>
+<blockquote>
+<p>Vuex 是一个专门为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件状态，并以相应的规则保证状态以一种可预测的方式发生变化。</p>
+</blockquote>
+<p>Vuex 和 <a href="https://github.com/reduxjs/redux" target="_blank" rel="noopener">Redux</a> 都是对<a href="https://facebook.github.io/flux/" target="_blank" rel="noopener">Flux</a>架构的实现，不同的是 Redux 是不需要感知视图层的，一个单纯的独立的状态管理工具，只要你愿意完全可以在 Vue 项目中使用 Redux 进行状态管理。</p>
+<p>我们知道一个<code>store</code>由<code>state</code>、<code>getters</code>、<code>mutations</code>、<code>actions</code>、<code>modules</code>几部分构成，它们之间的关系如下图所示：</p>
+<p><img src="/images/vuex-1.jpg"></p>
+<p>今天这篇文章我们主要来看一下当接收到这些选项后，Vuex 是如何来处理它们的，最后看一下常用的实例方法<code>commit</code>和<code>dispatch</code>的实现过程。</p>
+<blockquote>
+<p>我没有在文中大量的贴源代码，一定要将代码 clone 到本地对着看哦。</p>
+</blockquote>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/03/20/Vue-Source-Code-20/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/03/16/Vue-Source-Code-19/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1700,166 +1859,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/02/01/Vue-Source-Code-10/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="意林">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="意林的小站">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/02/01/Vue-Source-Code-10/" itemprop="url">Vue.js源码学习 —— 响应系统的设计</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-01T16:40:32+08:00">
-                2020-02-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Web/" itemprop="url" rel="index">
-                    <span itemprop="name">Web</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
-                    <span itemprop="name">Vue</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>如果您是刚开始准备阅读Vue.js的源码，建议先看一下本系列的<a href="http://shinancao.cn/2020/01/05/Vue-Source-Code-00/" target="_blank" rel="noopener">Vue.js源码学习 —— 起步</a>，相信会对您后面的阅读有很大帮助。</p>
-<p>前面一系列的文章主要讲了 Vue 是怎样实现数据渲染和组件化的，也就是如何把原始数据最终映射到DOM中的。但是当数据发生变化时，Vue 是如何自动更新DOM的我们还没看，这也是 Vue 相当重要的一部分，这个特性使得开发者几乎不需要直接操作DOM，只专注在业务逻辑的实现上就可以了。</p>
-<p>Vue 实现响应系统的代码位于文件夹<code>core/observer</code>中，这部分的代码完全是独立的，你可以让任何一个普通的 JavaScript 对象变成是响应式的。这一点从项目中对这一模块的测试用例也可以看出来，对应的测试用例位于文件夹<code>test/unit/modules/observer</code>中，在阅读代码遇到困难时，可以看一下测试用例说不定能得到提示。</p>
-<p>今天要看的代码位于文件夹<code>core/observer</code>中，主要是<code>Observer</code>、<code>Dep</code>、<code>Watcher</code>这几个类的实现极其之前的关系。</p>
-<blockquote>
-<p>我没有在文章中大量的粘贴代码，一定要将代码clone下来看哦。</p>
-</blockquote>
-<p>我这一部分还不打算分析<code>props</code>、<code>data</code>等等数据选项的初始化，好在 Vue 提供了<code>Vue.observable(object)</code>这个全局方法，可以很容易将一个普通对象变成可响应的，所以可以使用这个API举例子来调试，比如：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> data = &#123;</span><br><span class="line">  message: <span class="string">'Hello World'</span></span><br><span class="line">&#125;</span><br><span class="line">Vue.observable(data)</span><br><span class="line"><span class="built_in">console</span>.log(data)</span><br></pre></td></tr></table></figure>
-<p><code>Vue.observable</code>是在文件<code>core/global-api/index.js</code>中加上的，代码如下：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">initGlobalAPI</span> (<span class="params">Vue: GlobalAPI</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 2.6 explicit observable API</span></span><br><span class="line">  Vue.observable = <span class="xml"><span class="tag">&lt;<span class="name">T</span>&gt;</span>(obj: T): T =&gt; &#123;</span></span><br><span class="line"><span class="xml">    observe(obj)</span></span><br><span class="line"><span class="xml">    return obj</span></span><br><span class="line"><span class="xml">  &#125;</span></span><br><span class="line"><span class="xml">&#125;</span></span><br></pre></td></tr></table></figure>
-<p><code>observe</code>函数的实现我们下面会讲到的。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/02/01/Vue-Source-Code-10/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1908,7 +1907,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">77</span>
+                <span class="site-state-item-count">78</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1930,7 +1929,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">90</span>
+                <span class="site-state-item-count">91</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

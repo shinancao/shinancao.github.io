@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="JavaScript,源码分析,Vuex,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="官方文档中对Vuex的描述如下：  Vuex 是一个专门为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件状态，并以相应的规则保证状态以一种可预测的方式发生变化。  Vuex 和 Redux 都是对Flux架构的实现，不同的是 Redux 是不需要感知视图层的，一个单纯的独立的状态管理工具，只要你愿意完全可以在 Vue 项目中使用 Redux 进行状态管理。 我们知道">
+<meta name="keywords" content="JavaScript,源码分析,Vuex">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vuex.js源码学习 —— 初始化与实例方法">
+<meta property="og:url" content="http://shinancao.github.io/2020/03/20/Vue-Source-Code-20/index.html">
+<meta property="og:site_name" content="意林的小站">
+<meta property="og:description" content="官方文档中对Vuex的描述如下：  Vuex 是一个专门为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件状态，并以相应的规则保证状态以一种可预测的方式发生变化。  Vuex 和 Redux 都是对Flux架构的实现，不同的是 Redux 是不需要感知视图层的，一个单纯的独立的状态管理工具，只要你愿意完全可以在 Vue 项目中使用 Redux 进行状态管理。 我们知道">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://shinancao.github.io/images/vuex-1.jpg">
+<meta property="og:updated_time" content="2020-08-23T04:08:33.739Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vuex.js源码学习 —— 初始化与实例方法">
+<meta name="twitter:description" content="官方文档中对Vuex的描述如下：  Vuex 是一个专门为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件状态，并以相应的规则保证状态以一种可预测的方式发生变化。  Vuex 和 Redux 都是对Flux架构的实现，不同的是 Redux 是不需要感知视图层的，一个单纯的独立的状态管理工具，只要你愿意完全可以在 Vue 项目中使用 Redux 进行状态管理。 我们知道">
+<meta name="twitter:image" content="http://shinancao.github.io/images/vuex-1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shinancao.github.io/2020/03/20/Vue-Source-Code-20/">
+
+
+
+
+
+  <title>vuex.js源码学习 —— 初始化与实例方法 | 意林的小站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">意林的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Be a cool girl ~</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-portfolio">
+          <a href="/portfolio/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-code"></i> <br>
+            
+            项目
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://shinancao.github.io/2020/03/20/Vue-Source-Code-20/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="意林">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="意林的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">vuex.js源码学习 —— 初始化与实例方法</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-20T16:40:32+08:00">
+                2020-03-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://vuex.vuejs.org/zh/" target="_blank" rel="noopener">官方文档</a>中对<a href="https://github.com/vuejs/vuex" target="_blank" rel="noopener">Vuex</a>的描述如下：</p>
+<blockquote>
+<p>Vuex 是一个专门为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件状态，并以相应的规则保证状态以一种可预测的方式发生变化。</p>
+</blockquote>
+<p>Vuex 和 <a href="https://github.com/reduxjs/redux" target="_blank" rel="noopener">Redux</a> 都是对<a href="https://facebook.github.io/flux/" target="_blank" rel="noopener">Flux</a>架构的实现，不同的是 Redux 是不需要感知视图层的，一个单纯的独立的状态管理工具，只要你愿意完全可以在 Vue 项目中使用 Redux 进行状态管理。</p>
+<p>我们知道一个<code>store</code>由<code>state</code>、<code>getters</code>、<code>mutations</code>、<code>actions</code>、<code>modules</code>几部分构成，它们之间的关系如下图所示：</p>
+<p><img src="/images/vuex-1.jpg"></p>
+<p>今天这篇文章我们主要来看一下当接收到这些选项后，Vuex 是如何来处理它们的，最后看一下常用的实例方法<code>commit</code>和<code>dispatch</code>的实现过程。</p>
+<blockquote>
+<p>我没有在文中大量的贴源代码，一定要将代码 clone 到本地对着看哦。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="运行项目中的例子"><a href="#运行项目中的例子" class="headerlink" title="运行项目中的例子"></a>运行项目中的例子</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git@github.com:vuejs/vuex.git --depth 1</span><br><span class="line">npm install</span><br><span class="line">npm run dev</span><br></pre></td></tr></table></figure>
+<h3 id="vuex对外的导出"><a href="#vuex对外的导出" class="headerlink" title="vuex对外的导出"></a>vuex对外的导出</h3><p>Vuex 对外导出了不止<code>Store</code>一个类，打开<code>index.js</code>可以看到，它提供的功能如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  Store, <span class="comment">// 我们主要使用的类</span></span><br><span class="line">  install, <span class="comment">// 提供给 Vue.use 用于安装Vuex的</span></span><br><span class="line">  version: <span class="string">'__VERSION__'</span>, <span class="comment">// Vuex版本</span></span><br><span class="line">  mapState, <span class="comment">// 为组件创建计算属性以返回 Vuex store 中的状态。</span></span><br><span class="line">  mapGetters, <span class="comment">// 为组件创建计算属性以返回 getter 的返回值。</span></span><br><span class="line">  mapMutations, <span class="comment">// 创建组件方法提交 mutation，会映射为 this.$store.commit('xxx')</span></span><br><span class="line">  mapActions, <span class="comment">// 创建组件方法分发 action，会映射为 this.$store.dispatch('xxx)</span></span><br><span class="line">  createNamespacedHelpers, <span class="comment">// 创建基于命名空间的组件绑定辅助函数。</span></span><br><span class="line">  createLogger <span class="comment">// Vuex 自带一个日志插件用于一般的调试</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>后面我们会看到常用的辅助方法是如何实现的。</p>
+<h3 id="使用store"><a href="#使用store" class="headerlink" title="使用store"></a>使用store</h3><p>首先导入 Vuex 和 Vue：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">import</span> Vuex <span class="keyword">from</span> <span class="string">'vuex'</span> <span class="comment">// 这里的 Vuex 是一个包含了上面那些内容的对象</span></span><br><span class="line"></span><br><span class="line">Vue.use(Vuex)</span><br></pre></td></tr></table></figure>
+<p>定义 store 的构成部分，也就是用于创建 Store 实例的选项：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// define state tree</span></span><br><span class="line"><span class="keyword">const</span> state = &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// mutate state</span></span><br><span class="line"><span class="keyword">const</span> mutations = &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// commit mutations</span></span><br><span class="line"><span class="keyword">const</span> actions = &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// getters are functions</span></span><br><span class="line"><span class="keyword">const</span> getters = &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>导出 Store 实例对象：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A Vuex instance is created by combining the state, mutations, actions,</span></span><br><span class="line"><span class="comment">// and getters.</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">new</span> Vuex.Store(&#123; <span class="comment">// 注意这里使用的 Vuex.Store，前面说了 Vuex 是一个对象</span></span><br><span class="line">  state,</span><br><span class="line">  getters,</span><br><span class="line">  actions,</span><br><span class="line">  mutations</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>将 Store 实例作为 Vue 实例的选项：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  store, <span class="comment">// store 作为一个选项</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="install"><a href="#install" class="headerlink" title="install"></a>install</h2><p>安装store的过程主要在文件<code>mixin.js</code>中，我们来看一下 Vuex 是如何来扩展 Vue 的功能的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> (<span class="params">Vue</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 我们只关心给 Vue2.x 的实现就好了</span></span><br><span class="line">  Vue.mixin(&#123; <span class="attr">beforeCreate</span>: vuexInit &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Vuex init hook, injected into each instances init hooks list.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">vuexInit</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> options = <span class="keyword">this</span>.$options</span><br><span class="line">    <span class="comment">// store injection</span></span><br><span class="line">    <span class="keyword">if</span> (options.store) &#123;</span><br><span class="line">      <span class="keyword">this</span>.$store = <span class="keyword">typeof</span> options.store === <span class="string">'function'</span></span><br><span class="line">        ? options.store()</span><br><span class="line">        : options.store</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (options.parent &amp;&amp; options.parent.$store) &#123;</span><br><span class="line">      <span class="keyword">this</span>.$store = options.parent.$store</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里看到给Vue组件注入了<code>beforeCreate</code>选项，到时所有的Vue实例在初始化时都能调用到<code>vuexInit</code>函数了。</p>
+<p><code>vuexInit</code>函数中主要是为Vue实例添加<code>$store</code>属性。先判断了当前Vue实例的选项中是否有<code>store</code>，如果有的话这个Vue实例就是根实例了，那么直接使用该<code>store</code>。否则判断其父实例是否有<code>$store</code>属性了，如果有的话，使用父实例的<code>$store</code>。这样就解决了子组件实例也能正确访问到<code>$store</code>的问题。</p>
+<p>接下来我们开始看<code>Store</code>类的实现。</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>先来看<code>Store</code>的构造函数，我们主要关心下面这几个地方的处理：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">Store</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> (options = &#123;&#125;) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>._modules = <span class="keyword">new</span> ModuleCollection(options)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> state = <span class="keyword">this</span>._modules.root.state</span><br><span class="line"></span><br><span class="line">    <span class="comment">// init root module.</span></span><br><span class="line">    <span class="comment">// this also recursively registers all sub-modules</span></span><br><span class="line">    <span class="comment">// and collects all module getters inside this._wrappedGetters</span></span><br><span class="line">    installModule(<span class="keyword">this</span>, state, [], <span class="keyword">this</span>._modules.root)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// initialize the store vm, which is responsible for the reactivity</span></span><br><span class="line">    <span class="comment">// (also registers _wrappedGetters as computed properties)</span></span><br><span class="line">    resetStoreVM(<span class="keyword">this</span>, state)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Vuex 也允许我们将 store 分割成模块，以此避免在应用复杂时，store 对象会变得很臃肿。所以在 store 对象初始化时先使用传入的选项初始化了模块，然后安装模块，最后初始化<code>store._vm</code>。接下来详细看这几部分。</p>
+<h3 id="初始化模块"><a href="#初始化模块" class="headerlink" title="初始化模块"></a>初始化模块</h3><p><code>ModuleCollection</code>的构造函数如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">ModuleCollection</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> (rawRootModule) &#123;</span><br><span class="line">    <span class="comment">// register root module (Vuex.Store options)</span></span><br><span class="line">    <span class="keyword">this</span>.register([], rawRootModule, <span class="literal">false</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>很简单，就直接调用了<code>register</code>方法，再来看一下这个方法做的事情。</p>
+<p>在开发环境下会先判断下面这个几个选项的传的值是否正确：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> assertTypes = &#123;</span><br><span class="line">  getters: functionAssert, <span class="comment">// getters 中的key对应的值必须是函数</span></span><br><span class="line">  mutations: functionAssert, <span class="comment">// mutations 中的key对应的值也必须是函数</span></span><br><span class="line">  actions: objectAssert <span class="comment">// actions 中的key 对应的值可以是函数，也是一个带有handler的对象</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>actions</code>是对象的情况，主要是在带命名空间的模块中想要注册全局<code>action</code>的时候使用的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">actions: &#123;</span><br><span class="line">  someAction: &#123;</span><br><span class="line">    root: <span class="literal">true</span>,</span><br><span class="line">    handler (namespacedContext, payload) &#123; ... &#125; <span class="comment">// -&gt; 'someAction'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着<code>register</code>方法开始构造模块树，模块是可以嵌套的，一个嵌套模块的大概构成如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">modules: &#123;</span><br><span class="line">  moduleA: &#123;</span><br><span class="line">    <span class="comment">// 省略state等其他选项...</span></span><br><span class="line">    modules: &#123;</span><br><span class="line">      moduleB: &#123;</span><br><span class="line">        <span class="comment">// 省略state等其他选项...</span></span><br><span class="line">      &#125;,</span><br><span class="line">      moduleC: &#123;</span><br><span class="line">        <span class="comment">// 省略state等其他选项...</span></span><br><span class="line">        modules: &#123;</span><br><span class="line">          moduleD: &#123;</span><br><span class="line">            <span class="comment">// 省略state等其他选项...</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先是创建<code>module</code>对象，一个<code>module</code>对象的构成如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  runtime: <span class="literal">false</span>,               <span class="comment">// 标识是否是程序运行过程中动态注册的模块</span></span><br><span class="line">  state: &#123;&#125;,                    <span class="comment">// 存储开发者传入的原始模块中的state</span></span><br><span class="line">  _children: &#123;<span class="attr">moduleA</span>: Module&#125;, <span class="comment">// 存储子模块</span></span><br><span class="line">  _rawModule: &#123;<span class="attr">modules</span>:&#123;...&#125;&#125;   <span class="comment">// 该module对象对应的原始的modules</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果<code>path</code>是空数组，那此时创建的是根模块，直接将<code>module</code>对象赋值给<code>this.root</code>。如果不是的话，先找到这个模块的父模块，然后将其放入它的<code>_children</code>中。这个过程在处理上还蛮有技巧的，在递归调用<code>register</code>时传入的是<code>path.concat(key)</code>，将当前要注册的模块放在了<code>path</code>的最后面。如果拿我们上面举的例子，那每次传给<code>register</code>的<code>path</code>如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[]</span><br><span class="line">[<span class="string">'moduleA'</span>]</span><br><span class="line">[<span class="string">'moduleA'</span>, <span class="string">'moduleB'</span>],</span><br><span class="line">[<span class="string">'moduleA'</span>, <span class="string">'moduleC'</span>],</span><br><span class="line">[<span class="string">'moduleA'</span>, <span class="string">'moduleC'</span>, <span class="string">'moduleD'</span>]</span><br></pre></td></tr></table></figure>
+<p>所以你会发现一个元素的上一个元素就是它的父模块，而当前要找的是最后一个元素的父模块，所以给<code>get</code>方法传了最后一个元素之前的所有元素，然后在<code>get</code>中使用<code>reduce</code>方法最后拿到了传给它的最后一个元素的<code>module</code>对象。</p>
+<p>经过这一步建立了模块之间的关系，生成了模块树。</p>
+<h3 id="安装模块"><a href="#安装模块" class="headerlink" title="安装模块"></a>安装模块</h3><p>再接着看<code>installModule</code>方法，这里仍然是一个递归的过程，主要的处理流程如下：</p>
+<ul>
+<li><p>将模块注册到命名空间的映射表中。<code>getNamespace</code>方法返回的值是将从根模块到当前模块的模块名称用<code>/</code>分割构成的字符串。比如 moduleB 的命名空间是<code>moduleA/moduleB/</code>。</p>
+</li>
+<li><p>设置<code>state</code>能够嵌套调用，同时也设置为<code>state</code>为响应式的。这里要注意的是传给<code>getNestedState</code>方法的始终是<code>rootState</code>，也就是根模块的<code>state</code>。比如下面的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">  modules: &#123;</span><br><span class="line">    moduleA: &#123;</span><br><span class="line">      state: <span class="function"><span class="params">()</span> =&gt;</span> (&#123; <span class="attr">stateA</span>: <span class="string">'a'</span> &#125;),</span><br><span class="line">      modules: &#123;</span><br><span class="line">        moduleB: &#123;</span><br><span class="line">          state: <span class="function"><span class="params">()</span> =&gt;</span> (&#123; <span class="attr">stateB</span>: <span class="string">'b'</span> &#125;)</span><br><span class="line">        &#125;,</span><br><span class="line">        moduleC: &#123;</span><br><span class="line">          state: <span class="function"><span class="params">()</span> =&gt;</span> (&#123; <span class="attr">stateC</span>: <span class="string">'c'</span> &#125;),</span><br><span class="line">          modules: &#123;</span><br><span class="line">            moduleD: &#123;</span><br><span class="line">              state: <span class="function"><span class="params">()</span> =&gt;</span> (&#123; <span class="attr">stateD</span>: <span class="string">'d'</span> &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>最终得到<code>rootState</code>，也就是<code>store._modules.root.state</code>的内容如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  moduleA: &#123;</span><br><span class="line">    moduleB: &#123;</span><br><span class="line">      stateB: <span class="string">'b'</span>,</span><br><span class="line">      <span class="string">'__ob__'</span>: Observer</span><br><span class="line">    &#125;,</span><br><span class="line">    moduleC: &#123;</span><br><span class="line">      moduleD: &#123;</span><br><span class="line">        stateD: <span class="string">'d'</span>,</span><br><span class="line">        <span class="string">'__ob__'</span>: Observer</span><br><span class="line">      &#125;,</span><br><span class="line">      stateC: <span class="string">'c'</span>,</span><br><span class="line">      <span class="string">'__ob__'</span>: Observer</span><br><span class="line">    &#125;,</span><br><span class="line">    stateA: <span class="string">'a'</span>,</span><br><span class="line">    <span class="string">'__ob__'</span>: Observer</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这使得之后我们可以通过<code>$store.moduleA.moduleB.stateB</code>这种形式调用到每个模块中的<code>state</code>，并且因为是响应式的，当<code>state</code>改变时组件也会跟着刷新。</p>
+</li>
+<li><p>生成为模块所用的局部<code>context</code>，其中包括<code>dispatch</code>、<code>commit</code>、<code>getters</code>以及<code>state</code>。我们看一下<code>makeLocalContext</code>方法是如何来处理的。</p>
+<p>对于<code>dispatch</code>和<code>commit</code>，如果没有使用命名空间的情况下就直接是<code>store.dispatch</code>和<code>store.commit</code>。如果使用了命名空间，则会对<code>store.dispatch</code>和<code>store.commit</code>进行一层包装，将传给它们的<code>type</code>的前面拼接上命名空间。举个例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">  modules: &#123;</span><br><span class="line">    moduleA: &#123;</span><br><span class="line">      namespaced: <span class="literal">true</span>,</span><br><span class="line">      state: <span class="function"><span class="params">()</span> =&gt;</span> (&#123;</span><br><span class="line">        count: <span class="number">0</span></span><br><span class="line">      &#125;),</span><br><span class="line">      mutations: &#123;</span><br><span class="line">        increment: <span class="function"><span class="params">state</span> =&gt;</span> &#123;</span><br><span class="line">          state.count++</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      actions: &#123;</span><br><span class="line">        increment: <span class="function">(<span class="params">&#123; commit, state &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">          <span class="comment">// 实际上调用的 store.commit('moduleA/increment')</span></span><br><span class="line">          commit(<span class="string">'increment'</span>)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这样就使得在不同的模块中定义了相同名字的<code>actions</code>、<code>mutations</code>不会互相影响，并且在模块中使用<code>commit</code>、<code>dispatch</code>时也不用特意指定命名空间的路径。但是注意到下面这句判断：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!options || !options.root)</span><br></pre></td></tr></table></figure>
+<p>这使得我们也可以调用到全局的<code>actions</code>和<code>mutations</code>，比如上面的例子中如果要提交的是全局的<code>increment</code>，可以这样写：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">actions: &#123;</span><br><span class="line">  increment: <span class="function">(<span class="params">&#123; commit, state &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 这样调用到就是 store.commit('increment')</span></span><br><span class="line">    commit(<span class="string">'increment'</span>, <span class="literal">null</span>, &#123; root, <span class="literal">true</span> &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于<code>getters</code>和<code>state</code>使用<code>Object.defineProperties</code>进行了代理，在实际调用时才去获得它们的值，因为在运行期间Vue实例有可能修改它们。<code>makeLocalGetters</code>方法中创建了<code>getters</code>的代理对象<code>gettersProxy</code>，并对传入的<code>type</code>去掉了命名空间路径，这样在每一个<code>getter</code>在被调用时可以从<code>store.getters[type]</code>中取值。</p>
+</li>
+<li><p>注册<code>mutations</code> &amp; <code>actions</code> &amp; <code>getters</code>，我们先举个例子，之后会看一下每一部分注册后的结果是什么。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> moduleA = &#123;</span><br><span class="line">  namespaced: <span class="literal">true</span>,</span><br><span class="line">  state: <span class="function"><span class="params">()</span> =&gt;</span> (&#123;</span><br><span class="line">    count: <span class="number">0</span></span><br><span class="line">  &#125;),</span><br><span class="line">  getters: &#123;</span><br><span class="line">    evenOrOdd: <span class="function"><span class="params">state</span> =&gt;</span> state.count % <span class="number">2</span> === <span class="number">0</span> ? <span class="string">'even'</span> : <span class="string">'odd'</span></span><br><span class="line">  &#125;,</span><br><span class="line">  mutations: &#123;</span><br><span class="line">    increment: <span class="function"><span class="params">state</span> =&gt;</span> &#123;</span><br><span class="line">      state.count++</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  actions: &#123;</span><br><span class="line">    increment: <span class="function">(<span class="params">&#123; commit, state &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">      commit(<span class="string">'increment'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>注册<code>mutations</code>，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.forEachMutation(<span class="function">(<span class="params">mutation, key</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 存储的是带有命名空间的key</span></span><br><span class="line">  <span class="keyword">const</span> namespacedType = namespace + key</span><br><span class="line">  registerMutation(store, namespacedType, mutation, local)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">registerMutation</span> (<span class="params">store, type, handler, local</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 可以看到同一个类型的 mutation 可能会有多个 handler</span></span><br><span class="line">  <span class="keyword">const</span> entry = store._mutations[type] || (store._mutations[type] = [])</span><br><span class="line">  entry.push(<span class="function"><span class="keyword">function</span> <span class="title">wrappedMutationHandler</span> (<span class="params">payload</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注册之后，上面的例子中此时<code>store._mutations</code>的内容如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">'moduleA/increment'</span>: [f wrappedMutationHandler (payload)]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注册<code>actions</code>，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.forEachAction(<span class="function">(<span class="params">action, key</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> type = action.root ? key : namespace + key</span><br><span class="line">  <span class="keyword">const</span> handler = action.handler || action</span><br><span class="line">  registerAction(store, type, handler, local)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">registerAction</span> (<span class="params">store, type, handler, local</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 可以看到同一个类型的 action 可能会有多个 handler</span></span><br><span class="line">  <span class="keyword">const</span> entry = store._actions[type] || (store._actions[type] = [])</span><br><span class="line">  entry.push(<span class="function"><span class="keyword">function</span> <span class="title">wrappedActionHandler</span> (<span class="params">payload</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注册之后，上面的例子中此时<code>store._actions</code>的内容如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">'moduleA/increment'</span>: [f wrappedActionHandler (payload)]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注册<code>getters</code>，主要的代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.forEachGetter(<span class="function">(<span class="params">getter, key</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> namespacedType = namespace + key</span><br><span class="line">  registerGetter(store, namespacedType, getter, local)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">registerGetter</span> (<span class="params">store, type, rawGetter, local</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  store._wrappedGetters[type] = <span class="function"><span class="keyword">function</span> <span class="title">wrappedGetter</span> (<span class="params">store</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注册之后，上面的例子中此时<code>store._wrappedGetters</code>的内容如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">'moduleA/evenOrOdd'</span>: ƒ wrappedGetter(store)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>后面我们看到对缓存起来的<code>mutations</code>、<code>actions</code>、<code>getters</code>的使用。</p>
+</li>
+</ul>
+<h3 id="初始化store-vm"><a href="#初始化store-vm" class="headerlink" title="初始化store._vm"></a>初始化store._vm</h3><p><code>Store</code>类自己创建了一个Vue实例<code>_vm</code>，来建立起<code>state</code>和<code>getters</code>的依赖关系，我们知道<code>getters</code>的返回值一般都是要依赖于<code>state</code>的。接下来我们看一下<code>resetStoreVM</code>方法是如何做到的，先看下面这段：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">store._vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  data: &#123;</span><br><span class="line">    $$state: state</span><br><span class="line">  &#125;,</span><br><span class="line">  computed</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>当我们访问<code>store.state</code>时，实际上访问的是下面这个<code>get</code>方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">get</span> state () &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>._vm._data.$$state</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就前后联系起来了。然后再看一下<code>computed</code>的生成过程：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">store.getters = &#123;&#125;</span><br><span class="line"><span class="comment">// 清空之前对getters的缓存，之后每次访问getters时会重新加入</span></span><br><span class="line">store._makeLocalGettersCache = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</span><br><span class="line"><span class="comment">// store._wrappedGetters 中存储的内容是在上一步注册getters时完成的</span></span><br><span class="line"><span class="keyword">const</span> wrappedGetters = store._wrappedGetters</span><br><span class="line"><span class="keyword">const</span> computed = &#123;&#125;</span><br><span class="line">forEachValue(wrappedGetters, (fn, key) =&gt; &#123;</span><br><span class="line">  computed[key] = partial(fn, store)</span><br><span class="line">  <span class="built_in">Object</span>.defineProperty(store.getters, key, &#123;</span><br><span class="line">    <span class="keyword">get</span>: () =&gt; store._vm[key],</span><br><span class="line">    enumerable: true // for local getters</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>上面已经分析出<code>store._wrappedGetters</code>存储的内容了，对其进行遍历时，<code>fn</code>就是<code>wrappedGetter (store)</code>，<code>key</code>是<code>moduleA/evenOrOdd</code>。所以<code>computed</code>中最后存储的内容为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">'moduleA/evenOrOdd'</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> wrappedGetter(store)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同时在<code>store.getters</code>中也添加了<code>moduleA/evenOrOdd</code>，并将它的值代理到<code>store._vm[&#39;moduleA/evenOrOdd&#39;]</code>。因为Vue实例代理了计算属性，所以可以直接从<code>_vm</code>中访问该属性。</p>
+<p>当访问<code>store.getters[&#39;moduleA/evenOrOdd&#39;]</code>时，实际访问的是<code>store._vm[&#39;moduleA/evenOrOdd&#39;]</code>，触发了计算属性的执行，这样就会去执行<code>wrappedGetter (store)</code>。我们前面看到<code>wrappedGetter (store)</code>中会执行<code>rawGetter(local.state, ...)</code>，就会访问到<code>store.state</code>，也就是<code>store._vm._data.$$state</code>，这样就将<code>state</code>和<code>getters</code>建立起了联系，并且每次访问<code>getters</code>时使用的都是最新的<code>state</code>中的值。</p>
+<p><code>Vuex.Store</code>只有两个实例属性，<code>state</code>和<code>getters</code>，现在我们已经知道它们是如何实现的了。</p>
+<h2 id="主要的实例方法实现"><a href="#主要的实例方法实现" class="headerlink" title="主要的实例方法实现"></a>主要的实例方法实现</h2><h3 id="subscribe"><a href="#subscribe" class="headerlink" title="subscribe"></a>subscribe</h3><p><code>subscribe</code>方法主要提供给开发者在每个<code>mutation</code>执行结束后，处理一些事情。它的代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">subscribe (fn, options) &#123;</span><br><span class="line">  <span class="keyword">return</span> genericSubscribe(fn, <span class="keyword">this</span>._subscribers, options)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">genericSubscribe</span> (<span class="params">fn, subs, options</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (subs.indexOf(fn) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    options &amp;&amp; options.prepend</span><br><span class="line">      ? subs.unshift(fn)</span><br><span class="line">      : subs.push(fn)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> i = subs.indexOf(fn)</span><br><span class="line">    <span class="keyword">if</span> (i &gt; <span class="number">-1</span>) &#123;</span><br><span class="line">      subs.splice(i, <span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到就是使用<code>subscribe</code>方法向内部的<code>_subscribers</code>数组添加了一个<code>handler</code>。它还是接收一个<code>options</code>参数，如果在其中指定了<code>prepend</code>为<code>true</code>，那<code>handler</code>就会添加到<code>_subscribers</code>的第1位，默认情况下会直接追加到数组中。</p>
+<p>而且可以看到<code>subscribe</code>方法的返回值也是一个函数，在这个函数中会将该<code>handler</code>从<code>_subscribers</code>中移除掉。</p>
+<p>官方文档中介绍<code>handler</code>会接收两个参数<code>mutation</code>和<code>state</code>，在接下来的<code>commit</code>方法中会看到这个传参。</p>
+<h3 id="commit"><a href="#commit" class="headerlink" title="commit"></a>commit</h3><p><code>commit</code>方法是用来提交<code>mutations</code>的，它内部的处理流程如下：</p>
+<ul>
+<li><p>处理传参。因为<code>commit</code>即支持使用<code>type</code>字符串的传参方式，也支持使用对象风格的传参方式，所以先将传参规范化，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">commit (_type, _payload, _options) &#123;</span><br><span class="line">  <span class="comment">// check object-style commit</span></span><br><span class="line">  <span class="keyword">const</span> &#123;</span><br><span class="line">    type,</span><br><span class="line">    payload,</span><br><span class="line">    options</span><br><span class="line">  &#125; = unifyObjectStyle(_type, _payload, _options)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用<code>type</code>字符串的传参时写法如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">store.commit(<span class="string">'increment'</span>, <span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<p>使用对象风格的参数时写法如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">store.commit(&#123;</span><br><span class="line">  type: <span class="string">'increment'</span>,</span><br><span class="line">  amount: <span class="number">10</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>可以看到<code>commit</code>还接收一个参数<code>options</code>，其中可以指定<code>root</code>，如果为<code>true</code>，会提交全局的<code>mutations</code>。这个在上面创建<code>module.context</code>时已经看到了对<code>root</code>的使用。</p>
+</li>
+<li><p>提交<code>mutations</code>。将这一段代码简化后如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> mutation = &#123; type, payload &#125;</span><br><span class="line"><span class="keyword">const</span> entry = <span class="keyword">this</span>._mutations[type]</span><br><span class="line">entry.forEach(<span class="function"><span class="keyword">function</span> <span class="title">commitIterator</span> (<span class="params">handler</span>) </span>&#123;</span><br><span class="line">  handler(payload)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>现在取出了<code>_mutations</code>中存的<code>handler</code>，前面我们已经分析出这里的<code>handler</code>是<code>wrappedMutationHandler (payload)</code>函数，它的内容如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">wrappedMutationHandler</span> (<span class="params">payload</span>) </span>&#123;</span><br><span class="line">  handler.call(store, local.state, payload)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从这里可以看出，<code>mutations</code>在执行时的上下文是<code>store</code>，它接收两个参数：本模块的<code>state</code>和<code>payload</code>。</p>
+</li>
+<li><p>执行<code>_subscribers</code>数组中通过<code>subscribe</code>方法添加进来的<code>handler</code>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>._subscribers</span><br><span class="line">  .slice() <span class="comment">// shallow copy to prevent iterator invalidation if subscriber synchronously calls unsubscribe</span></span><br><span class="line">  .forEach(<span class="function"><span class="params">sub</span> =&gt;</span> sub(mutation, <span class="keyword">this</span>.state))</span><br></pre></td></tr></table></figure>
+<p>这里看到给<code>handler</code>传了当前的<code>mutation</code>和<code>state</code>两个参数。</p>
+</li>
+</ul>
+<h3 id="subscribeAction"><a href="#subscribeAction" class="headerlink" title="subscribeAction"></a>subscribeAction</h3><p><code>subscribeAction</code>主要用来订阅<code>store</code>的<code>actions</code>。它的实现代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">subscribeAction (fn, options) &#123;</span><br><span class="line">  <span class="keyword">const</span> subs = <span class="keyword">typeof</span> fn === <span class="string">'function'</span> ? &#123; <span class="attr">before</span>: fn &#125; : fn</span><br><span class="line">  <span class="keyword">return</span> genericSubscribe(subs, <span class="keyword">this</span>._actionSubscribers, options)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>genericSubscribe</code>方法在上面分析<code>subscribe</code>方法时已经分析过了，这里是向<code>_actionSubscribers</code>数组中添加的处理器。</p>
+<p>在<code>subscribeAction</code>接收到参数后，先对其进行了转换，如果传的函数，让它作为<code>before</code>时的处理函数。这是因为<code>subscribeAction</code>支持指定处理函数的被调用时机是在一个<code>action</code>分发之前还是之后，默认是之前。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">store.subscribeAction(&#123;</span><br><span class="line">  before: <span class="function">(<span class="params">action, state</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`before action <span class="subst">$&#123;action.type&#125;</span>`</span>)</span><br><span class="line">  &#125;,</span><br><span class="line">  after: <span class="function">(<span class="params">action, state</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`after action <span class="subst">$&#123;action.type&#125;</span>`</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="dispatch"><a href="#dispatch" class="headerlink" title="dispatch"></a>dispatch</h3><p><code>dispatch</code>方法主要是用来分发<code>actions</code>的，它内部的处理流程如下：</p>
+<ul>
+<li><p>处理参数。跟<code>commit</code>一样，<code>dispatch</code>也支持两种风格的传参方式。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 以载荷形式分发</span></span><br><span class="line">store.dispatch(<span class="string">'incrementAsync'</span>, &#123;</span><br><span class="line">  amount: <span class="number">10</span></span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 以对象形式分发</span></span><br><span class="line">store.dispatch(&#123;</span><br><span class="line">  type: <span class="string">'incrementAsync'</span>,</span><br><span class="line">  amount: <span class="number">10</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>执行通过<code>subscribeAction</code>方法添加的<code>before</code>处理函数，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>._actionSubscribers</span><br><span class="line">  .slice() <span class="comment">// shallow copy to prevent iterator invalidation if subscriber synchronously calls unsubscribe</span></span><br><span class="line">  .filter(<span class="function"><span class="params">sub</span> =&gt;</span> sub.before)</span><br><span class="line">  .forEach(<span class="function"><span class="params">sub</span> =&gt;</span> sub.before(action, <span class="keyword">this</span>.state))</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>分发<code>actions</code>，对应的代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result = entry.length &gt; <span class="number">1</span></span><br><span class="line">  ? <span class="built_in">Promise</span>.all(entry.map(<span class="function"><span class="params">handler</span> =&gt;</span> handler(payload)))</span><br><span class="line">  : entry[<span class="number">0</span>](payload)</span><br></pre></td></tr></table></figure>
+<p>我们上面看到，对于<code>actions</code>来说，一个<code>type</code>可以对应多个处理器，所以这里这里使用了<code>Promise.all</code>来执行所有的处理函数。并且上面已经分析出<code>handler</code>就是<code>wrappedActionHandler</code>函数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">wrappedActionHandler</span> (<span class="params">payload</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> res = handler.call(store, &#123;</span><br><span class="line">    dispatch: local.dispatch,</span><br><span class="line">    commit: local.commit,</span><br><span class="line">    getters: local.getters,</span><br><span class="line">    state: local.state,</span><br><span class="line">    rootGetters: store.getters,</span><br><span class="line">    rootState: store.state</span><br><span class="line">  &#125;, payload)</span><br><span class="line">  <span class="keyword">if</span> (!isPromise(res)) &#123;</span><br><span class="line">    res = <span class="built_in">Promise</span>.resolve(res)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (store._devtoolHook) &#123;</span><br><span class="line">    <span class="keyword">return</span> res.catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">      store._devtoolHook.emit(<span class="string">'vuex:error'</span>, err)</span><br><span class="line">      <span class="keyword">throw</span> err</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到在执行<code>actions</code>的时候，其内部的<code>this</code>会指向<code>store</code>，并且它能接收到的参数如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">actions: &#123;</span><br><span class="line">  increment: <span class="function">(<span class="params">&#123; dispatch, commit, state, getters, state, rootGetters, rootState &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">    commit(<span class="string">'increment'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>并且一个<code>action</code>处理函数会始终返回一个<code>Promise</code>对象。同样地，<code>dispatch</code>执行后也会返回一个<code>Promise</code>对象，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  result.then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="comment">// 先执行了 after 处理函数</span></span><br><span class="line">      <span class="keyword">this</span>._actionSubscribers</span><br><span class="line">        .filter(<span class="function"><span class="params">sub</span> =&gt;</span> sub.after)</span><br><span class="line">        .forEach(<span class="function"><span class="params">sub</span> =&gt;</span> sub.after(action, <span class="keyword">this</span>.state))</span><br><span class="line">    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">      <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">        <span class="built_in">console</span>.warn(<span class="string">`[vuex] error in after action subscribers: `</span>)</span><br><span class="line">        <span class="built_in">console</span>.error(e)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 然后将前面得到的 result 直接 resolve出去</span></span><br><span class="line">    resolve(res)</span><br><span class="line">  &#125;, error =&gt; &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="comment">// 当出错时执行 error 处理函数</span></span><br><span class="line">      <span class="keyword">this</span>._actionSubscribers</span><br><span class="line">        .filter(<span class="function"><span class="params">sub</span> =&gt;</span> sub.error)</span><br><span class="line">        .forEach(<span class="function"><span class="params">sub</span> =&gt;</span> sub.error(action, <span class="keyword">this</span>.state, error))</span><br><span class="line">    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">      <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">        <span class="built_in">console</span>.warn(<span class="string">`[vuex] error in error action subscribers: `</span>)</span><br><span class="line">        <span class="built_in">console</span>.error(e)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    reject(error)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>因为<code>actions</code>中大部分情况是异步操作，用<code>Promise</code>包装后可以很容易知道异步执行什么时候结束，并且可以组合多个<code>actions</code>。</p>
+</li>
+</ul>
+<p>Vuex 的实现就先分析到这，基本上核心内容都已经看过了，其他的方法不是很难，有兴趣可以自己找时间看一下。</p>
+<div class="note info"><p><strong>本文作者：</strong>意林<br><strong>本文链接：</strong><a href="http://shinancao.cn/2020/03/20/Vue-Source-Code-20/" target="_blank" rel="noopener">http://shinancao.cn/2020/03/20/Vue-Source-Code-20/</a><br><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="noopener">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！</p>
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+            <a href="/tags/Vuex/" rel="tag"># Vuex</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/16/Vue-Source-Code-19/" rel="next" title="vue-router.js源码学习 —— 导航守卫">
+                <i class="fa fa-chevron-left"></i> vue-router.js源码学习 —— 导航守卫
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="gitment_container"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="意林">
+          <p class="site-author-name" itemprop="name">意林</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">91</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/shinancao" target="_blank" rel="external nofollow" title="GitHub">
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3178558825/profile?topnav=1&wvr=6&is_all=1" target="_blank" rel="external nofollow" title="微博">
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.douban.com/people/150971507/" target="_blank" rel="external nofollow" title="豆瓣">
+                  
+                  豆瓣
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#运行项目中的例子"><span class="nav-number">1.1.</span> <span class="nav-text">运行项目中的例子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vuex对外的导出"><span class="nav-number">1.2.</span> <span class="nav-text">vuex对外的导出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用store"><span class="nav-number">1.3.</span> <span class="nav-text">使用store</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#install"><span class="nav-number">2.</span> <span class="nav-text">install</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">3.</span> <span class="nav-text">初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化模块"><span class="nav-number">3.1.</span> <span class="nav-text">初始化模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装模块"><span class="nav-number">3.2.</span> <span class="nav-text">安装模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化store-vm"><span class="nav-number">3.3.</span> <span class="nav-text">初始化store._vm</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主要的实例方法实现"><span class="nav-number">4.</span> <span class="nav-text">主要的实例方法实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#subscribe"><span class="nav-number">4.1.</span> <span class="nav-text">subscribe</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#commit"><span class="nav-number">4.2.</span> <span class="nav-text">commit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#subscribeAction"><span class="nav-number">4.3.</span> <span class="nav-text">subscribeAction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dispatch"><span class="nav-number">4.4.</span> <span class="nav-text">dispatch</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意林</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+	
+		
+		
+		
+		<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+		<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+		<script>
+			var gitment = new Gitment({
+			  //id: '页面 ID',
+			  owner: 'shinancao',
+			  repo: 'shinancao.github.io',
+			  oauth: {
+				client_id: 'd9ac25dfb2084f02efb1',
+				client_secret: '7b127bf1c8bccb72ea55c1220c0db3d3e505672e'
+			  }
+			});
+			gitment.render('gitment_container');
+		</script>
+	
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
